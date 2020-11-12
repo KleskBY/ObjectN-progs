@@ -255,7 +255,7 @@ void () hgrenade3;
 
 void () hgrenade2 = [103.0, hgrenade2]
 {
-	footsteps();
+	
 	if (self.velocity_x && self.velocity_y)
 	{
 		if (self.walkframe >= 11) self.walkframe = 0;
@@ -278,7 +278,7 @@ void () hgrenade4;
 
 void () hgrenade3 = [1, hgrenade3] 
 {
-	footsteps();
+	
 	if (self.velocity_x && self.velocity_y)
 	{
 		if (self.walkframe >= 11) self.walkframe = 0;
@@ -321,7 +321,7 @@ void () hgrenade3 = [1, hgrenade3]
 
 void () hgrenade4 = [2, hgrenade4]
 {
-	footsteps();
+	
 	if (self.velocity_x && self.velocity_y)
 	{
 		if (self.walkframe >= 11) self.walkframe = 0;
@@ -349,7 +349,7 @@ void () player_HESwitch = [ 1.000, player_HESwitch2 ]
 
 void () player_HESwitch2 = [ 1.000, player_HESwitch2 ]
 {
-	footsteps();
+	
 	if (self.velocity_x && self.velocity_y)
 	{
 		if (self.walkframe >= 11) self.walkframe = 0;

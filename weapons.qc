@@ -79,8 +79,7 @@ void() ClearMultiDamage =
 
 void() ApplyMultiDamage =
 {
-	if (!multi_ent)
-	return;
+	if (!multi_ent) return;
 	T_Damage (multi_ent, self, self, multi_damage);
 };
 
@@ -223,68 +222,39 @@ void() W_SetCurrentAmmo =
     else if (self.weapon == WP_PM)
 	{
 		self.currentammo = self.ammo_9x18;
-		
 		if(self.team == TEAM_USA) self.weaponmodel = "models/v_glock.md3";
 		else self.weaponmodel = "models/v_pm.md3";
 		self.weaponframe = 0;
-		
-		makevectors (self.v_angle);
-		src = (self.origin + (v_forward * TE_LAVASPLASH));
-		src_z = (self.absmin_z + (self.size_z * 0.800));
-		src_y = (self.absmin_y + (self.size_y * 0.400));
-		traceline (src,(((src + (v_forward * IT_762x54)) - (v_up * 50.000)) - (v_right * 300)),FALSE,self);
-		
 		self.items = self.items | IT_9x18;
 	}
 	else if (self.weapon == WP_TOZ)
 	{
 		self.currentammo = self.ammo_shells;
-		
         if(self.team == TEAM_USA) self.weaponmodel = "models/v_xm.md3";
 		else self.weaponmodel = "models/v_toz.md3";
 		self.weaponframe = 0;
-		
         self.items = self.items | IT_SHELLS;
 	}
     else if (self.weapon == WP_AKM)
     {
 		self.currentammo = self.ammo545x39;
-		
 		if(self.team == TEAM_USA) self.weaponmodel = "models/v_m4.md3";
 		else self.weaponmodel = "models/v_ak74.md3";
 		self.weaponframe = FALSE;
-		
-        makevectors (self.v_angle);
-        src = (self.origin + (v_forward * TE_LAVASPLASH));
-        src_z = (self.absmin_z + (self.size_z * 0.800));
-        src_y = (self.absmin_y + (self.size_y * 0.400));
-        traceline (src,(((src + (v_forward * IT_762x54)) - (v_up * 110.000) - (v_right * 55) ) ),FALSE,self);
-		
         self.items = (self.items | IT_545x39);
 	}
     else if (self.weapon == WP_GRENADE)
 	{	   
 		self.currentammo = self.ammo_rockets;
 		self.weaponmodel = "models/v_grenade.md3";
-		//self.weaponframe = 0;
 		self.items = self.items | IT_ROCKETS;
 	}
     else if (self.weapon == WP_MOSIN)
 	{
 		self.currentammo = self.ammo_762x54;
-		
 		if(self.team == TEAM_USA) self.weaponmodel = "models/v_awp.md3";
 		else self.weaponmodel = "models/v_mosin.md3";
 		self.weaponframe = 0;
-		
-		makevectors (self.v_angle);
-		src = (self.origin + (v_forward * TE_LAVASPLASH));
-		src_z = (self.absmin_z + (self.size_z * 0.800));
-		src_y = (self.absmin_y + (self.size_y * 0.400));
-		traceline (src,(((src + (v_forward * IT_762x54)) - (v_up * 90.000)) - (v_right * 120)),FALSE,self);
-		if (self.zoomlevel != 0)
-		traceline (src,src + (v_forward * IT_762x54),FALSE,self);
-		
         self.items = self.items | IT_762x54;
 	}
 	else if (self.weapon == WP_HAMMER)

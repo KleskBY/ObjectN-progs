@@ -66,18 +66,7 @@ void (float damage, vector dir) MossbergTraceAttack =
 			return;
 		}
 		
-		if (trace_ent.absmax_z - trace_endpos_z <= 13) //headshot
-		{
-			sound (trace_ent, CHAN_WEAPON, "weapons/hitsound.wav", 1, ATTN_NORM);
-			damage = rint(damage * 2);
-			trace_ent.headshot = 1;
-		}
-		else if (((trace_ent.absmax_z - trace_endpos_z) > 26) && ((trace_ent.absmax_z - trace_endpos_z) < 35))	//legshot
-		{
-			trace_ent.headshot = 0;
-			damage = rint(damage * 0.5);
-		}
-		else trace_ent.headshot = -1;
+		DetectHitbox(damage);
 		
 		if (rand < 0.5) Shoot_Blood (org,meatdir);
 		rand=MossbergAddMultiDamage (trace_ent,damage);
@@ -172,7 +161,7 @@ void() player_TozReload = [10, player_TozReload2]
 };
 void() player_TozReload2 = [10, player_TozReload2]
 {
-	footsteps();
+	
 	if (self.velocity_x && self.velocity_y)
 	{
 		if (self.walkframe >= 11) self.walkframe = 0;
@@ -250,14 +239,14 @@ void () player_TozSwitch = [ 1.000, player_TozSwitch2 ]
 	self.weaponframe = 2;
 	self.nextthink = time + 0.05;
 	self.reload = 1;
-	footsteps();
+	
 };
 
 void () player_TozSwitch2 = [ 1.000, player_TozSwitch2 ]
 {
 	self.weaponframe = self.weaponframe + 1;
 	self.nextthink = time + 0.05;
-	footsteps();
+	
 	self.currentammo =  self.ammo_shells;
 	if(self.weaponframe == 12 && self.weaponmodel == "models/v_toz.md3")  sound(self,CHAN_AUTO,"weapons/toz/toz-pump.wav",TRUE,ATTN_NORM);
 	if(self.weaponframe == 34)
@@ -278,7 +267,7 @@ void() player_XmReload = [10, player_XmReload2]
 };
 void() player_XmReload2 = [10, player_XmReload2]
 {
-	footsteps();
+	
 	if (self.velocity_x && self.velocity_y)
 	{
 		if (self.walkframe >= 11) self.walkframe = 0;

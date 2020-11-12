@@ -65,18 +65,7 @@ void (float damage, vector dir) BARRETT_TraceAttack =
 			return;
 		}
 		
-		if (trace_ent.absmax_z - trace_endpos_z <= 13) //headshot
-		{
-			sound (trace_ent, CHAN_WEAPON, "weapons/hitsound.wav", 1, ATTN_NORM);
-			damage = rint(damage * 2);
-			trace_ent.headshot = 1;
-		}
-		else if (((trace_ent.absmax_z - trace_endpos_z) > 26) && ((trace_ent.absmax_z - trace_endpos_z) < 35))	//legshot
-		{
-			trace_ent.headshot = 0;
-			damage = rint(damage * 0.5);
-		}
-		else trace_ent.headshot = -1;
+		DetectHitbox(damage);
 
 		particle_color = random ();
 		meatdir_x = ((random () * 300.000) + dir_x);
@@ -134,8 +123,9 @@ void () W_FireBarrett =
 	self.punchangle_z = random(0.5, 1) * -5;
 	dir = aim (self,1000.000);
 	makevectors (self.v_angle);
-	src = (self.origin + (v_forward * TE_LAVASPLASH));
-	src_z = (self.absmin_z + (self.size_z * 0.800));
+	src = (self.origin + self.view_ofs + (v_forward * TE_LAVASPLASH)); 
+	//src = (self.origin + (v_forward * TE_LAVASPLASH));
+	//src_z = (self.absmin_z + (self.size_z * 0.800));
 	src_y = (self.absmin_y + (self.size_y * 0.500));
 	ClearMultiDamage ();
 	
@@ -154,14 +144,13 @@ void () player_MosinAttack = [1, player_MosinAttack2]
 {
 	self.weaponframe = 1;
 	
-	self.nextthink = time + 0.05;
+	self.nextthink = time + 0.04;
 	self.effects = self.effects | EF_MUZZLEFLASH;
 	sound(self,CHAN_WEAPON,"weapons/mosin/mosin-1.wav",1,ATTN_NORM);
 	W_FireBarrett ();
 };
 void () player_MosinAttack2 = [2, player_MosinAttack2]
 {
-	footsteps();
 	if (self.velocity_x && self.velocity_y)
 	{
 		if (self.walkframe >= 11) self.walkframe = 0;
@@ -187,8 +176,7 @@ void () player_MosinAttack2 = [2, player_MosinAttack2]
 void () player_MosinAttackb = [1, player_MosinAttackb2]
 {
 	self.weaponframe = 216;
-	
-	self.nextthink = time + 0.05;
+	self.nextthink = time + 0.04;
 	self.effects = self.effects | EF_MUZZLEFLASH;
 	sound(self,CHAN_WEAPON,"weapons/mosin/mosin-1.wav",1,ATTN_NORM);
 	W_FireBarrett ();
@@ -197,26 +185,20 @@ void () player_MosinAttackb3;
 void () player_MosinAttackb2 = [2, player_MosinAttackb2]
 {
 	self.weaponframe = self.weaponframe + 1;
-	if (self.weaponframe >= 224)
-	{
-		self.think = player_MosinAttackb3;
-	}
+	if (self.weaponframe >= 224) self.think = player_MosinAttackb3;
 	self.nextthink = time + 0.01;
 };
 void () player_MosinAttackb4;
 void () player_MosinAttackb3 = [2, player_MosinAttackb3]
 {
 	self.weaponframe = self.weaponframe - 1;
-	if (self.weaponframe <= 216)
-	{
-		self.think = player_MosinAttackb4;
-	}
+	if (self.weaponframe <= 216) self.think = player_MosinAttackb4;
 	self.nextthink = time + 0.04;
 };
 
 void () player_MosinAttackb4 = [2, player_MosinAttackb4]
 {
-	self.nextthink = time + 0.025;  
+	self.nextthink = time + 0.02;  
 	if(self.weaponframe == 200)
 	{
 		//self.zoomlevel = 0;
@@ -236,16 +218,17 @@ void () player_MosinAttackb4 = [2, player_MosinAttackb4]
 
 void () player_MosinZoom = [1, player_MosinZoom2]
 {
+	self.nextthink = time + 0.01;  
 	self.FOV = 90;
 	self.weaponframe = 200;
 	self.attack_finished = time + 0.11;
-	self.nextthink = time + 0.025;
 	self.reload = 1;
 };
 
 void () player_MosinZoom2 = [2, player_MosinZoom2]
-{ 
-	footsteps();
+{
+	self.nextthink = time + 0.01;  
+	
 	if (self.velocity_x && self.velocity_y)
 	{
 		if (self.walkframe >= 11) self.walkframe = 0;
@@ -254,7 +237,7 @@ void () player_MosinZoom2 = [2, player_MosinZoom2]
 		self.walkframe = self.walkframe + 0.15;
 	}
 
-	self.nextthink = time + 0.025;  
+	
 	if(self.weaponframe == 216)
 	{
 		self.zoomlevel = 1;
@@ -275,13 +258,13 @@ void () player_MosinZoom2 = [2, player_MosinZoom2]
 void () player_MosinZoomOut = [2, player_MosinZoomOut2]
 {
 	self.weaponframe = 216;
-	self.nextthink = time + 0.1;
+	self.nextthink = time + 0.01;
 	self.reload = 1;
 };
 
 void () player_MosinZoomOut2 = [2, player_MosinZoomOut2]
 {
-	footsteps();
+	
 	if (self.velocity_x && self.velocity_y)
 	{
 		if (self.walkframe >= 11) self.walkframe = 0;
@@ -290,7 +273,7 @@ void () player_MosinZoomOut2 = [2, player_MosinZoomOut2]
 		self.walkframe = self.walkframe + 0.15;
 	}
 	
-	self.nextthink = time + 0.025;  
+	self.nextthink = time + 0.01;  
 	if(self.weaponframe <= 200)
 	{
 		self.zoomlevel = 0;
@@ -345,7 +328,7 @@ void () player_MosinReload = [1, player_MosinReload]
 
 void () player_MosinReload2 = [1, player_MosinReload2]
 {
-	footsteps();
+	
 	if (self.velocity_x && self.velocity_y)
 	{
 		if (self.walkframe >= 11) self.walkframe = 0;
@@ -385,14 +368,13 @@ void () player_AwpAttack = [1, player_AwpAttack2]
 {
 	self.weaponframe = 1;
 	
-	self.nextthink = time + 0.05;
+	self.nextthink = time + 0.04;
 	self.effects = self.effects | EF_MUZZLEFLASH;
 	sound(self,CHAN_WEAPON,"weapons/mosin/awp.wav",1,ATTN_NORM);
 	W_FireBarrett ();
 };
 void () player_AwpAttack2 = [2, player_AwpAttack2]
 {
-	footsteps();
 	if (self.velocity_x && self.velocity_y)
 	{
 		if (self.walkframe >= 11) self.walkframe = 0;
@@ -403,7 +385,6 @@ void () player_AwpAttack2 = [2, player_AwpAttack2]
 	
 	local vector dir;
 	self.weaponframe = self.weaponframe + 1;
-	//if (self.weaponframe == 22) sound(self,CHAN_WEAPON,"weapons/mosin/mosin_put.wav",0.4,ATTN_NORM);
 	if (self.weaponframe == 21) sound(self,CHAN_WEAPON,"weapons/mosin/mosin_boltback.wav",0.4,ATTN_NORM); 
 	else if (self.weaponframe == 28) eject_shell (self.origin + self.view_ofs + v_up * -15 + v_forward*28 - v_right * (-6), dir);
 	else if (self.weaponframe == 29) sound(self,CHAN_WEAPON,"weapons/mosin/mosin_boltrelease.wav",0.4,ATTN_NORM);
@@ -412,14 +393,13 @@ void () player_AwpAttack2 = [2, player_AwpAttack2]
 		self.zoomlevel = 0;
 		self.think = player_run;
 	}
-	self.nextthink = time + 0.055;
+	self.nextthink = time + 0.05;
 };
 
 
 void () player_AwpAttackb = [1, player_AwpAttackb2]
 {
 	self.weaponframe = 178;
-	
 	self.nextthink = time + 0.05;
 	self.effects = self.effects | EF_MUZZLEFLASH;
 	sound(self,CHAN_WEAPON,"weapons/mosin/awp.wav",1,ATTN_NORM);
@@ -468,13 +448,13 @@ void () player_AwpZoom = [1, player_AwpZoom2]
 	self.FOV = 90;
 	self.weaponframe = 161;
 	self.attack_finished = time + 0.11;
-	self.nextthink = time + 0.025;
+	self.nextthink = time + 0.01;
 	self.reload = 1;
 };
 
 void () player_AwpZoom2 = [2, player_AwpZoom2]
 { 
-	footsteps();
+	self.nextthink = time + 0.01;  
 	if (self.velocity_x && self.velocity_y)
 	{
 		if (self.walkframe >= 11) self.walkframe = 0;
@@ -482,8 +462,7 @@ void () player_AwpZoom2 = [2, player_AwpZoom2]
 		else self.frame = $run1 + self.walkframe;
 		self.walkframe = self.walkframe + 0.15;
 	}
-
-	self.nextthink = time + 0.025;  
+	
 	if(self.weaponframe == 177)
 	{
 		self.zoomlevel = 1;
@@ -503,13 +482,13 @@ void () player_AwpZoom2 = [2, player_AwpZoom2]
 void () player_AwpZoomOut = [2, player_AwpZoomOut2]
 {
 	self.weaponframe = 177;
-	self.nextthink = time + 0.1;
+	self.nextthink = time + 0.01;
 	self.reload = 1;
 };
 
 void () player_AwpZoomOut2 = [2, player_AwpZoomOut2]
 {
-	footsteps();
+	self.nextthink = time + 0.01;  
 	if (self.velocity_x && self.velocity_y)
 	{
 		if (self.walkframe >= 11) self.walkframe = 0;
@@ -518,7 +497,7 @@ void () player_AwpZoomOut2 = [2, player_AwpZoomOut2]
 		self.walkframe = self.walkframe + 0.15;
 	}
 	
-	self.nextthink = time + 0.025;  
+	
 	if(self.weaponframe <= 161)
 	{
 		self.zoomlevel = 0;
@@ -573,7 +552,7 @@ void () player_AwpReload = [1, player_AwpReload]
 
 void () player_AwpReload2 = [1, player_AwpReload2]
 {
-	footsteps();
+	
 	if (self.velocity_x && self.velocity_y)
 	{
 		if (self.walkframe >= 11) self.walkframe = 0;

@@ -114,7 +114,7 @@ void () player_HammerSwitch = [ 1.000, player_HammerSwitch2 ]
 	self.weaponframe = 1;
 	self.nextthink = time + 0.05;
 	self.reload = 1;
-	footsteps();
+	
 };
 
 
@@ -122,7 +122,7 @@ void () player_HammerSwitch2 = [ 1.000, player_HammerSwitch2 ]
 {
 	self.weaponframe = self.weaponframe + 1;
 	self.nextthink = time + 0.025;
-	footsteps();
+	
 	if(self.weaponframe == 46)
 	{
 		self.think = player_run;//player_change_gun;

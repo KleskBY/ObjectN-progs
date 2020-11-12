@@ -80,9 +80,8 @@ void()	demon1_jump4	=[	$leap4,		demon1_jump5	]
 	self.touch = Demon_JumpTouch;
 	makevectors (self.angles);
 	self.origin_z = self.origin_z + 1;
-	self.velocity = v_forward * 600 + v_up * 600 + '0 0 250'; 
-	if (self.flags & FL_ONGROUND)
-		self.flags = self.flags - FL_ONGROUND;
+	self.velocity = v_forward * 650 + '0 0 250'; 
+	if (self.flags & FL_ONGROUND) self.flags = self.flags - FL_ONGROUND;
 };
 void()	demon1_jump5	=[	$leap5,		demon1_jump6	] {};
 void()	demon1_jump6	=[	$leap6,		demon1_jump7	] {};
@@ -90,8 +89,7 @@ void()	demon1_jump7	=[	$leap7,		demon1_jump8	] {};
 void()	demon1_jump8	=[ 	$leap8,		demon1_jump9	] {};
 void()	demon1_jump9	=[ 	$leap9,		demon1_jump10	] {};
 void()	demon1_jump10	=[ 	$leap10,	demon1_jump1	] {
-self.nextthink = time + 3;
-// if three seconds pass, assume demon is stuck and jump again
+	self.nextthink = time + 1; // if three seconds pass, assume demon is stuck and jump again
 };
 
 void()	demon1_jump11	=[ 	$leap11,	demon1_jump12	] {};
@@ -132,8 +130,7 @@ void(entity attacker, float damage)	demon1_pain =
 	self.pain_finished = time + 1;
     sound (self, CHAN_VOICE, "demon/dpain1.wav", 1, ATTN_NORM);
 
-	if (random()*200 > damage)
-		return;		// didn't flinch
+	if (random()*200 > damage) return;		// didn't flinch
 		
 	demon1_pain1 ();
 };
@@ -153,15 +150,15 @@ void()	demon1_die9		=[	$death9,		demon1_die9 ] {};
 void() demon_die =
 {
 // check for gib
-	if (self.health < -80)
-	{
-		sound (self, CHAN_VOICE, "player/udeath.wav", 1, ATTN_NORM);
-		ThrowHead ("progs/h_demon.mdl", self.health);
-		ThrowGib ("progs/gib1.mdl", self.health);
-		ThrowGib ("progs/gib1.mdl", self.health);
-		ThrowGib ("progs/gib1.mdl", self.health);
-		return;
-	}
+	// if (self.health < -80)
+	// {
+		// sound (self, CHAN_VOICE, "player/udeath.wav", 1, ATTN_NORM);
+		// ThrowHead ("progs/h_demon.mdl", self.health);
+		// ThrowGib ("progs/gib1.mdl", self.health);
+		// ThrowGib ("progs/gib1.mdl", self.health);
+		// ThrowGib ("progs/gib1.mdl", self.health);
+		// return;
+	// }
 
 // regular death
 	demon1_die1 ();
@@ -199,7 +196,7 @@ void() monster_demon1 =
 	setmodel (self, "models/npc/demon.md3");
 
 	setsize (self, VEC_HULL2_MIN, VEC_HULL2_MAX);
-	self.health = 1000;
+	self.health = 1200;
 
 	self.th_stand = demon1_stand1;
 	self.th_walk = demon1_walk1;
@@ -276,8 +273,6 @@ float()	CheckDemonJump =
 
 float()	DemonCheckAttack =
 {
-	local	vector	vec;
-	
 // if close enough for slashing, go for it
 	if (CheckDemonMelee ())
 	{

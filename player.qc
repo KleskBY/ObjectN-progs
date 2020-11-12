@@ -11,47 +11,27 @@ $origin 0 -6 24
 $base base		
 $skin skin
 
-//
 // running
-//
 $frame run1 run2 run3 run4 run5 run6 run7 run8 run9 run10 run11 run12 run13 //11 + 1 fake
 
-//
 // standing
-//
 $frame stand1 //13
 $frame axstnd1 //14
 
-
-//
 // pain
-//
 $frame axpain1 axpain2 axpain3 axpain4 axpain5  //15-19
-
 $frame pain1 pain2 pain3 pain4 pain5 //20-24
 
 
-//
 // death
-//
-
 $frame deatha1 deatha2 deatha3 deatha4 deatha5 deatha6 deatha7 deatha8 deatha9 deatha10 deatha11	//35				
-
 $frame deathb1 deathb2 deathb3 deathb4 deathb5 deathb6 deathb7 deathb8 deathb9 deathb10 deathb11	//46
-
 $frame deathc1 deathc2 deathc3 deathc4 deathc5 deathc6 deathc7 deathc8 deathc9 deathc10 deathc11	//57
-
 $frame crouch1																						//58
-
 $frame crouchrun1 crouchrun2 crouchrun3 crouchrun4 crouchrun5 crouchrun6 crouchrun7 crouchrun8 crouchrun9 crouchrun10 crouchrun11 crouchrun12 crouchrun13
 
-//
 // attacks
-//
-
 $frame knifeattack1 knifeattack2 knifeattack3 knifeattack4
-
-
 
 /*
 	==============================================================================
@@ -59,29 +39,9 @@ $frame knifeattack1 knifeattack2 knifeattack3 knifeattack4
 	==============================================================================
 */
 
-void() footsteps =
-{
-	if (time < intermission_exittime) return;
-	if(self.flags & FL_ONGROUND && !self.duck && !self.button4)
-	{
-		if(fabs(self.velocity_x + self.velocity_y + self.velocity_z) > 60) 
-		{
-			if(time+random(0,0.2) >self.footstep_finished || self.footstep_finished == 0) 
-			{
-				local float r;
-				r=random();
-				if (r <=0.25) sound(self, CHAN_BODY, "player/footstep1.wav", 0.15, ATTN_NORM);
-				else if (r <=0.5 && r>0.25) sound(self, CHAN_BODY, "player/footstep2.wav", 0.15, ATTN_NORM);
-				else if (r <=0.75 && r>0.5) sound(self, CHAN_BODY, "player/footstep3.wav", 0.15, ATTN_NORM);
-				else sound(self, CHAN_BODY, "player/footstep4.wav", 0.15, ATTN_NORM);
-				self.footstep_finished = time +0.5;
-			}
-		}
-	}
-}
-
 void () shell_touch = 
 {
+	//bprint("debug shell_touch()\n");
 	if ((other.classname == "door")) 
 	{
 		SUB_Remove ();
@@ -94,6 +54,7 @@ void () shell_touch =
 
 void (vector org, vector dir) eject_shell = 
 {
+	//bprint("debug eject_shell()\n");
 	local float r;
 	
 	makevectors (self.v_angle);
@@ -160,34 +121,8 @@ void()	player_stand1 =[	$axstnd1,	player_stand1	]
 
 void()	player_run =[	$run1,	player_run	]
 {
-	footsteps();
 	if(fabs(self.punchangle_x) < 1) self.ShootsFired = 0;
-	//DrawMuzzle(self.origin + (v_forward * 300.000) - (v_right) + (v_up * 19.000));
-	
-	// local entity e, nearest;
-	// for (e = findchain(classname, "player"); e; e = e.chain) 
-	// {
-		// bprint(e.netname);
-		// bprint("\n");
-		// if(e != self)
-		// {
-			// if (!nearest) 
-			// {
-				// nearest = e;
-			// } 
-			// else if(vlen(e.origin - self.origin) < vlen(nearest.origin - self.origin)) 
-			// {
-				// nearest = e;
-			// }
-		// }
-	// }
 
-	// if(nearest)
-	// {
-		// bprint(ftos(vlen(nearest.origin - self.origin)));
-		// bprint("\n");
-		// T_Damage (trace_ent, self, self, 65);
-	// }
 	self.weaponframe=0;
 	if (self.zoomlevel == 1 && self.weapon != WP_MOSIN)
 	{
@@ -210,8 +145,9 @@ void()	player_run =[	$run1,	player_run	]
 	self.walkframe = self.walkframe + 1;
 };
 	
-	void (vector position, vector direction) Shoot_Blood = 
-	{
+void (vector position, vector direction) Shoot_Blood = 
+{
+	//bprint("debug Shoot_Blood()\n");
 	local entity blood;
 	
 	blood = spawn ();
@@ -226,10 +162,11 @@ void()	player_run =[	$run1,	player_run	]
 	setmodel (blood,"models/blood.mdl");
 	setsize (blood,VEC_ORIGIN,VEC_ORIGIN);
 	setorigin (blood,position);
-	};
+};
 	
-	void (vector position, vector direction) ShootGlass = 
-	{
+void (vector position, vector direction) ShootGlass = 
+{
+	//bprint("debug ShootGlass()\n");
 	local entity blood;
 	
 	blood = spawn ();
@@ -247,11 +184,12 @@ void()	player_run =[	$run1,	player_run	]
 	setmodel (blood,"models/gib.md3");
 	setsize (blood,VEC_ORIGIN,VEC_ORIGIN);
 	setorigin (blood,position);
-	};
+};
 	
 	
-	void() PainSound =
-	{
+void() PainSound =
+{
+	//bprint("debug PainSound()\n");
 	local float		rs;
 	if (self.health < 0) return;
 	
@@ -262,34 +200,34 @@ void()	player_run =[	$run1,	player_run	]
 	}
 	
 	// water pain sounds
-	if (self.watertype == CONTENT_WATER && self.waterlevel == 3)
-	{
-	//DeathBubbles(1);
-	//if (random() > 0.5) sound (self, CHAN_VOICE, "player/drown1.wav", 1, ATTN_NORM);
-	//else sound (self, CHAN_VOICE, "player/drown2.wav", 1, ATTN_NORM);
-	return;
-	}
+	// if (self.watertype == CONTENT_WATER && self.waterlevel == 3)
+	// {
+		// DeathBubbles(1);
+		// if (random() > 0.5) sound (self, CHAN_VOICE, "player/drown1.wav", 1, ATTN_NORM);
+		// else sound (self, CHAN_VOICE, "player/drown2.wav", 1, ATTN_NORM);
+		// return;
+	// }
 	
 	// slime pain sounds
-	if (self.watertype == CONTENT_SLIME)
-	{
-	// FIX ME	put in some steam here
-	//if (random() > 0.5) sound (self, CHAN_VOICE, "player/lburn1.wav", 1, ATTN_NORM);
-	//else sound (self, CHAN_VOICE, "player/lburn2.wav", 1, ATTN_NORM);
-	return;
-	}
+	// if (self.watertype == CONTENT_SLIME)
+	// {
+		// FIX ME	put in some steam here
+		// if (random() > 0.5) sound (self, CHAN_VOICE, "player/lburn1.wav", 1, ATTN_NORM);
+		// else sound (self, CHAN_VOICE, "player/lburn2.wav", 1, ATTN_NORM);
+		// return;
+	// }
 	
-	if (self.watertype == CONTENT_LAVA)
-	{
-	//if (random() > 0.5) sound (self, CHAN_VOICE, "player/lburn1.wav", 1, ATTN_NORM);
-	//else sound (self, CHAN_VOICE, "player/lburn2.wav", 1, ATTN_NORM);
-	return;
-	}
+	// if (self.watertype == CONTENT_LAVA)
+	// {
+		// if (random() > 0.5) sound (self, CHAN_VOICE, "player/lburn1.wav", 1, ATTN_NORM);
+		// else sound (self, CHAN_VOICE, "player/lburn2.wav", 1, ATTN_NORM);
+		// return;
+	// }
 	
 	if (self.pain_finished > time)
 	{
-	self.axhitme = 0;
-	return;
+		self.axhitme = 0;
+		return;
 	}
 	self.pain_finished = time + 0.5;
 	
@@ -298,9 +236,9 @@ void()	player_run =[	$run1,	player_run	]
 	// ax pain sound
 	if (self.axhitme == 1)
 	{
-	self.axhitme = 0;
-	sound (self, CHAN_VOICE, "weapons/knife/knife_hit1.wav", 1, ATTN_NORM);
-	return;
+		self.axhitme = 0;
+		sound (self, CHAN_VOICE, "weapons/knife/knife_hit1.wav", 1, ATTN_NORM);
+		return;
 	}
 	
 	
@@ -316,88 +254,89 @@ void()	player_run =[	$run1,	player_run	]
 	
 	sound (self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
 	return;
-	};
-	
-	void()	player_pain1 =	[	$pain1,	player_pain2	] {PainSound();self.weaponframe=0;};
-	void()	player_pain2 =	[	$pain2,	player_pain3	] {};
-	void()	player_pain3 =	[	$pain3,	player_pain4	] {};
-	void()	player_pain4 =	[	$pain4,	player_pain5	] {};
-	void()	player_pain5 =	[	$pain5,	player_run		] {};
-	
-	void()	player_axpain1 =	[	$axpain1,	player_axpain2	] {PainSound();self.weaponframe=0;};
-	void()	player_axpain2 =	[	$axpain2,	player_axpain3	] {};
-	void()	player_axpain3 =	[	$axpain3,	player_axpain4	] {};
-	void()	player_axpain4 =	[	$axpain4,	player_axpain5	] {};
-	void()	player_axpain5 =	[	$axpain5,	player_run	] {};
-	
-	void() player_pain =
-	{
+};
+
+void()	player_pain1 =	[	$pain1,	player_pain2	] {PainSound();self.weaponframe=0;};
+void()	player_pain2 =	[	$pain2,	player_pain3	] {};
+void()	player_pain3 =	[	$pain3,	player_pain4	] {};
+void()	player_pain4 =	[	$pain4,	player_pain5	] {};
+void()	player_pain5 =	[	$pain5,	player_run		] {};
+
+void()	player_axpain1 =	[	$axpain1,	player_axpain2	] {PainSound();self.weaponframe=0;};
+void()	player_axpain2 =	[	$axpain2,	player_axpain3	] {};
+void()	player_axpain3 =	[	$axpain3,	player_axpain4	] {};
+void()	player_axpain4 =	[	$axpain4,	player_axpain5	] {};
+void()	player_axpain5 =	[	$axpain5,	player_run	] {};
+
+void() player_pain =
+{
 	if (self.weaponframe) return;
 	//if (self.invisible_finished > time) return;		// eyes don't have pain frames
 	if (self.weapon == WP_ONE) player_axpain1 ();
 	else player_pain1 ();
+};
 	
-	};
+void() player_diea1;
+void() player_dieb1;
+void() player_diec1;
+
+void() DeathSound =
+{
+	//bprint("debug DeathSound()\n");
+	local float		rs;
+	// water death sounds
+	// if (self.waterlevel == 3)
+	// {
+		// sound (self, CHAN_VOICE, "player/h2odeath.wav", 1, ATTN_NONE);
+		// return;
+	// }
+
+	rs = rint ((random() * 2) + 1);
+	if (rs == 1) self.noise = "player/death1.wav";
+	else if (rs == 2) self.noise = "player/death2.wav";
+	else self.noise = "player/death3.wav";
 	
-	void() player_diea1;
-	void() player_dieb1;
-	void() player_diec1;
-	
-	void() DeathSound =
-	{
-		local float		rs;
-		// water death sounds
-		if (self.waterlevel == 3)
-		{
-		//sound (self, CHAN_VOICE, "player/h2odeath.wav", 1, ATTN_NONE);
-		return;
-		}
-	
-		rs = rint ((random() * 2) + 1);
-		if (rs == 1) self.noise = "player/death1.wav";
-		else if (rs == 2) self.noise = "player/death2.wav";
-		else self.noise = "player/death3.wav";
-		
-		sound (self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
-		return;
-	};
-	
-	
-	void() PlayerDead =
-	{
+	sound (self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
+	return;
+};
+
+
+void() PlayerDead =
+{
+	//bprint("debug PlayerDead()\n");
 	self.nextthink = -1;
 	// allow respawn after a certain time
 	self.deadflag = DEAD_DEAD;
-	};
-	
-	vector(float dm) VelocityForDamage =
-	{
+};
+
+vector(float dm) VelocityForDamage =
+{
+	//bprint("debug VelocityForDamage()\n");
 	local vector v;
-	
+
 	v_x = 100 * crandom();
 	v_y = 100 * crandom();
 	v_z = 200 + 100 * random();
-	
+
 	if (dm > -50)
 	{
-	//		dprint ("level 1\n");
-	v = v * 0.7;
+		//		dprint ("level 1\n");
+		v = v * 0.7;
 	}
 	else if (dm > -200)
 	{
-	//		dprint ("level 3\n");
-	v = v * 2;
+		//		dprint ("level 3\n");
+		v = v * 2;
 	}
-	else
-	v = v * 10;
-	
+	else v = v * 10;
 	return v;
-	};
-	
-	void(string gibname, float dm) ThrowGib =
-	{
+};
+
+void(string gibname, float dm) ThrowGib =
+{
+	//bprint("debug ThrowGib()\n");
 	local	entity new;
-	
+
 	new = spawn();
 	new.origin = self.origin;
 	setmodel (new, gibname);
@@ -413,10 +352,11 @@ void()	player_run =[	$run1,	player_run	]
 	new.nextthink = time + 10 + random()*10;
 	new.frame = 0;
 	new.flags = 0;
-	};
-	
-	void(string gibname, float dm) ThrowHead =
-	{
+};
+
+void(string gibname, float dm) ThrowHead =
+{
+	//bprint("debug ThrowHead()\n");
 	setmodel (self, gibname);
 	self.frame = 0;
 	self.nextthink = -1;
@@ -429,27 +369,30 @@ void()	player_run =[	$run1,	player_run	]
 	//self.origin_z = self.origin_z - 24;
 	self.flags = self.flags - (self.flags & FL_ONGROUND);
 	self.avelocity = crandom() * '0 600 0';
-	};
-	
-	void()	headless_corpse1	=	[0,		headless_corpse2] 
-	{
+};
+
+void()	headless_corpse1	=	[0,		headless_corpse2] 
+{
+	//bprint("debug headless_corpse1()\n");
 	self.nextthink = time + 0.09;
 	Shoot_Blood (self.origin + '10 10 0',v_forward * 2000);
 	Shoot_Blood (self.origin,v_forward * 2000);
 	//sound (self, CHAN_VOICE, "wizard/hit.wav", 1, ATTN_NONE);
-	};
-	void()      headless_corpse2 =     [1,         headless_corpse3]{self.nextthink = time + 0.09;};    
-	void()      headless_corpse3 =     [2,         headless_corpse4]{self.nextthink = time + 0.09;};
-	void()      headless_corpse4 =     [3,         headless_corpse5]{self.nextthink = time + 0.09;};  
-	void()      headless_corpse5 =     [4,         headless_corpse6]{self.nextthink = time + 0.09;};
-	void()      headless_corpse6 =     [5,         headless_corpse7]{self.nextthink = time + 0.09;};
-	void()      headless_corpse7 =     [6,         headless_corpse8]{self.nextthink = time + 0.09;};   
-	void()      headless_corpse8 =     [7,         headless_corpse9]{self.nextthink = time + 0.09;};
-	void()      headless_corpse9 =     [8,         headless_corpse10]{self.nextthink = time + 0.09;};   
-	void()      headless_corpse10 =     [9,         headless_corpse10]{self.nextthink = time + 112;};  
-	
-	void(string gibname, float dm) ThrowHeadlessCorpse =
-	{
+};
+
+void()      headless_corpse2 =     [1,         headless_corpse3]{self.nextthink = time + 0.09;};    
+void()      headless_corpse3 =     [2,         headless_corpse4]{self.nextthink = time + 0.09;};
+void()      headless_corpse4 =     [3,         headless_corpse5]{self.nextthink = time + 0.09;};  
+void()      headless_corpse5 =     [4,         headless_corpse6]{self.nextthink = time + 0.09;};
+void()      headless_corpse6 =     [5,         headless_corpse7]{self.nextthink = time + 0.09;};
+void()      headless_corpse7 =     [6,         headless_corpse8]{self.nextthink = time + 0.09;};   
+void()      headless_corpse8 =     [7,         headless_corpse9]{self.nextthink = time + 0.09;};
+void()      headless_corpse9 =     [8,         headless_corpse10]{self.nextthink = time + 0.09;};   
+void()      headless_corpse10 =     [9,         headless_corpse10]{self.nextthink = time + 112;};  
+
+void(string gibname, float dm) ThrowHeadlessCorpse =
+{
+	//bprint("debug ThrowHeadlessCorpse()\n");
 	setmodel (self, gibname);
 	self.movetype = MOVETYPE_BOUNCE;
 	self.takedamage = DAMAGE_NO;
@@ -458,29 +401,32 @@ void()	player_run =[	$run1,	player_run	]
 	setsize (self, '-16 -16 -24', '16 16 35');
 	self.flags = self.flags - (self.flags & FL_ONGROUND);
 	self.avelocity = crandom() * '0 0 0';
-	
+
 	headless_corpse10 ();
-	};
-	
-	void()	blasted_corpse1	=	[0,		blasted_corpse2] {self.nextthink = time + 0.03;
+};
+
+void()	blasted_corpse1	=	[0,		blasted_corpse2] 
+{
+	self.nextthink = time + 0.03;
 	particle ((self.origin),'0.000 0.000 3.000',72.000,38.000);
 	particle ((self.origin),'0.000 3.000 3.000',72.000,38.000);
 	particle ((self.origin),'0.000 -3.000 3.000',72.000,38.000);
 	particle ((self.origin),'3.000 0.000 3.000',72.000,38.000);
 	particle ((self.origin),'-3.000 0.000 3.000',72.000,38.000);
-	};
-	void()	blasted_corpse2	=	[1,		blasted_corpse3] {self.nextthink = time + 0.035;};
-	void()	blasted_corpse3	=	[2,		blasted_corpse4] {self.nextthink = time + 0.035;};
-	void()	blasted_corpse4	=	[3,		blasted_corpse5] {self.nextthink = time + 0.035;};
-	void()	blasted_corpse5	=	[4,		blasted_corpse6] {self.nextthink = time + 0.035;};
-	void()	blasted_corpse6	=	[5,		blasted_corpse7] {self.nextthink = time + 0.035;};
-	void()	blasted_corpse7	=	[6,		blasted_corpse8] {self.nextthink = time + 0.035;};
-	void()	blasted_corpse8	=	[7,		blasted_corpse9] {self.nextthink = time + 0.035;};
-	void()	blasted_corpse9	=	[8,		blasted_corpse10] {self.nextthink = time + 0.035;};
-	void()	blasted_corpse10	=	[9,		blasted_corpse10] {self.nextthink = time + 112;};
-	
-	void(string gibname, float dm) ThrowBlastedCorpse =
-	{
+};
+void()	blasted_corpse2	=	[1,		blasted_corpse3] {self.nextthink = time + 0.035;};
+void()	blasted_corpse3	=	[2,		blasted_corpse4] {self.nextthink = time + 0.035;};
+void()	blasted_corpse4	=	[3,		blasted_corpse5] {self.nextthink = time + 0.035;};
+void()	blasted_corpse5	=	[4,		blasted_corpse6] {self.nextthink = time + 0.035;};
+void()	blasted_corpse6	=	[5,		blasted_corpse7] {self.nextthink = time + 0.035;};
+void()	blasted_corpse7	=	[6,		blasted_corpse8] {self.nextthink = time + 0.035;};
+void()	blasted_corpse8	=	[7,		blasted_corpse9] {self.nextthink = time + 0.035;};
+void()	blasted_corpse9	=	[8,		blasted_corpse10] {self.nextthink = time + 0.035;};
+void()	blasted_corpse10	=	[9,		blasted_corpse10] {self.nextthink = time + 112;};
+
+void(string gibname, float dm) ThrowBlastedCorpse =
+{
+	//bprint("debug ThrowBlastedCorpse()\n");
 	setmodel (self, gibname);
 	self.movetype = MOVETYPE_BOUNCE;
 	self.takedamage = DAMAGE_NO;
@@ -489,32 +435,34 @@ void()	player_run =[	$run1,	player_run	]
 	setsize (self, '-16 -16 -24', '16 16 35');
 	self.flags = self.flags - (self.flags & FL_ONGROUND);
 	self.avelocity = crandom() * '0 0 0';
-	
+
 	blasted_corpse1 ();
-	};
-	
-	void(string gibname, float dm) ThrowChunk =
-	{
+};
+
+void(string gibname, float dm) ThrowChunk =
+{
+	//bprint("debug ThrowChunk()\n");
 	local	entity new;
-	
+
 	new = spawn();
 	new.origin = self.origin;
 	setmodel (new, gibname);
-    new.view_ofs = '0 0 8';
+	new.view_ofs = '0 0 8';
 	setsize (new, '-16 -16 0', '16 16 56');
 	new.velocity = VelocityForDamage (dm);
 	new.movetype = MOVETYPE_BOUNCE;
 	new.solid = SOLID_NOT;
-    new.avelocity = crandom() * '0 600 0';
+	new.avelocity = crandom() * '0 600 0';
 	new.think = SUB_Remove;
 	new.ltime = time;
 	new.nextthink = time + 10 + random()*10;
 	new.frame = 0;
 	new.flags = new.flags - (new.flags & FL_ONGROUND);
-	};
+};
 	
 void() GibPlayer =
 {
+	//bprint("debug GibPlayer()\n");
 	ThrowHead ("progs/gib1.mdl", self.health);
 	ThrowGib ("progs/gib1.mdl", self.health);
 	ThrowGib ("progs/gib2.mdl", self.health);
@@ -541,6 +489,7 @@ void() GibPlayer =
 	
 void() DropBomb =
 {
+	//bprint("debug DropBomb()\n");
 	local entity	item;
 
 	item = spawn();
@@ -567,6 +516,7 @@ void() DropBomb =
 	
 void() PlayerDie =
 {
+	//bprint("debug PlayerDie()\n");
 	local	float	i;
 	
 	self.items = self.items - (self.items & IT_INVISIBILITY);
@@ -613,49 +563,50 @@ void() PlayerDie =
 
 };
 	
-	void() set_suicide_frame =
-	{	// used by klill command and diconnect command
+void() set_suicide_frame =
+{	
+	//bprint("debug set_suicide_frame()\n");
+	// used by klill command and diconnect command
 	//if (self.model != "progs/player.mdl") return;	// allready gibbed
 	self.frame = $deatha11;
 	self.solid = SOLID_NOT;
 	self.movetype = MOVETYPE_TOSS;
 	self.deadflag = DEAD_DEAD;
 	self.nextthink = -1;
-	};
+};
 	
-	
-	void()	player_diea1	=	[	$deatha1,	player_diea2	] {};
-	void()	player_diea2	=	[	$deatha2,	player_diea3	] {};
-	void()	player_diea3	=	[	$deatha3,	player_diea4	] {};
-	void()	player_diea4	=	[	$deatha4,	player_diea5	] {};
-	void()	player_diea5	=	[	$deatha5,	player_diea6	] {};
-	void()	player_diea6	=	[	$deatha6,	player_diea7	] {};
-	void()	player_diea7	=	[	$deatha7,	player_diea8	] {};
-	void()	player_diea8	=	[	$deatha8,	player_diea9	] {};
-	void()	player_diea9	=	[	$deatha9,	player_diea10	] {};
-	void()	player_diea10	=	[	$deatha10,	player_diea11 	] {};
-	void()	player_diea11	=	[	$deatha11,	player_diea11 ] {PlayerDead();};
-	
-	void()	player_dieb1	=	[	$deathb1,	player_dieb2	] {};
-	void()	player_dieb2	=	[	$deathb2,	player_dieb3	] {};
-	void()	player_dieb3	=	[	$deathb3,	player_dieb4	] {};
-	void()	player_dieb4	=	[	$deathb4,	player_dieb5	] {};
-	void()	player_dieb5	=	[	$deathb5,	player_dieb6	] {};
-	void()	player_dieb6	=	[	$deathb6,	player_dieb7	] {};
-	void()	player_dieb7	=	[	$deathb7,	player_dieb8	] {};
-	void()	player_dieb8	=	[	$deathb8,	player_dieb9	] {};
-	void()	player_dieb9	=	[	$deathb9,	player_dieb10	] {};
-	void()	player_dieb10	=	[	$deathb10,	player_dieb11	] {};
-	void()	player_dieb11	=	[	$deathb11,	player_dieb11	] {PlayerDead();};
-	
-	void()	player_diec1	=	[	$deathc1,	player_diec2	] {};
-	void()	player_diec2	=	[	$deathc2,	player_diec3	] {};
-	void()	player_diec3	=	[	$deathc3,	player_diec4	] {};
-	void()	player_diec4	=	[	$deathc4,	player_diec5	] {};
-	void()	player_diec5	=	[	$deathc5,	player_diec6	] {};
-	void()	player_diec6	=	[	$deathc6,	player_diec7	] {};
-	void()	player_diec7	=	[	$deathc7,	player_diec8	] {};
-	void()	player_diec8	=	[	$deathc8,	player_diec9	] {};
-	void()	player_diec9	=	[	$deathc9,	player_diec10	] {};
-	void()	player_diec10	=	[	$deathc10,	player_diec11 ] {};
-	void()	player_diec11	=	[	$deathc11,	player_diec11 ] {PlayerDead();};	
+void()	player_diea1	=	[	$deatha1,	player_diea2	] {};
+void()	player_diea2	=	[	$deatha2,	player_diea3	] {};
+void()	player_diea3	=	[	$deatha3,	player_diea4	] {};
+void()	player_diea4	=	[	$deatha4,	player_diea5	] {};
+void()	player_diea5	=	[	$deatha5,	player_diea6	] {};
+void()	player_diea6	=	[	$deatha6,	player_diea7	] {};
+void()	player_diea7	=	[	$deatha7,	player_diea8	] {};
+void()	player_diea8	=	[	$deatha8,	player_diea9	] {};
+void()	player_diea9	=	[	$deatha9,	player_diea10	] {};
+void()	player_diea10	=	[	$deatha10,	player_diea11 	] {};
+void()	player_diea11	=	[	$deatha11,	player_diea11 ] {PlayerDead();};
+
+void()	player_dieb1	=	[	$deathb1,	player_dieb2	] {};
+void()	player_dieb2	=	[	$deathb2,	player_dieb3	] {};
+void()	player_dieb3	=	[	$deathb3,	player_dieb4	] {};
+void()	player_dieb4	=	[	$deathb4,	player_dieb5	] {};
+void()	player_dieb5	=	[	$deathb5,	player_dieb6	] {};
+void()	player_dieb6	=	[	$deathb6,	player_dieb7	] {};
+void()	player_dieb7	=	[	$deathb7,	player_dieb8	] {};
+void()	player_dieb8	=	[	$deathb8,	player_dieb9	] {};
+void()	player_dieb9	=	[	$deathb9,	player_dieb10	] {};
+void()	player_dieb10	=	[	$deathb10,	player_dieb11	] {};
+void()	player_dieb11	=	[	$deathb11,	player_dieb11	] {PlayerDead();};
+
+void()	player_diec1	=	[	$deathc1,	player_diec2	] {};
+void()	player_diec2	=	[	$deathc2,	player_diec3	] {};
+void()	player_diec3	=	[	$deathc3,	player_diec4	] {};
+void()	player_diec4	=	[	$deathc4,	player_diec5	] {};
+void()	player_diec5	=	[	$deathc5,	player_diec6	] {};
+void()	player_diec6	=	[	$deathc6,	player_diec7	] {};
+void()	player_diec7	=	[	$deathc7,	player_diec8	] {};
+void()	player_diec8	=	[	$deathc8,	player_diec9	] {};
+void()	player_diec9	=	[	$deathc9,	player_diec10	] {};
+void()	player_diec10	=	[	$deathc10,	player_diec11 ] {};
+void()	player_diec11	=	[	$deathc11,	player_diec11 ] {PlayerDead();};	

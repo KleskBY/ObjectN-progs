@@ -169,14 +169,10 @@ World Types:
 //=======================
 void() worldspawn =
 {
+	//bprint("debug worldspawn()\n");
 	lastspawn = world;
 	InitBodyQue ();
 
-// custom map attributes
-	// if (self.model == "maps/e1m8.bsp")
-		// cvar_set ("sv_gravity", "100");
-	// else
-		//
 	cvar_set ("sv_gravity", "800");
 	cvar_set ("sv_maxspeed", "200");
 	
@@ -196,68 +192,36 @@ void() worldspawn =
 	pdude_precache();
 	precache_model2 ("models/blood.mdl");
 
-// setup precaches allways needed
-	precache_sound ("misc/item_respawn.wav");		// item respawn sound
+	// setup precaches allways needed
+	precache_sound ("misc/item_respawn.wav");	// item respawn sound
 
-	// precache_sound ("player/drown1.wav");		// drowning pain
-	// precache_sound ("player/drown2.wav");		// drowning pain
+	// precache_sound ("player/drown1.wav");	// drowning pain
+	// precache_sound ("player/drown2.wav");	// drowning pain
 	// precache_sound ("player/gasp1.wav");		// gasping for air
 	// precache_sound ("player/gasp2.wav");		// taking breath
-	// precache_sound ("player/h2odeath.wav");		// drowning death
+	// precache_sound ("player/h2odeath.wav");	// drowning death
 
 	precache_sound ("misc/talk.wav");			// talk
 	precache_model ("progs/gib1.mdl");
 	precache_model ("progs/gib2.mdl");
 	precache_model ("progs/gib3.mdl");
 
-	precache_model ("progs/s_explod.spr");	// sprite explosion
-	
-	
-
-//
-// Setup light animation tables. 'a' is total darkness, 'z' is maxbright.
-//
-
-	// 0 normal
-	lightstyle(0, "m");
-	
-	// 1 FLICKER (first variety)
-	lightstyle(1, "mmnmmommommnonmmonqnmmo");
-	
-	// 2 SLOW STRONG PULSE
-	lightstyle(2, "abcdefghijklmnopqrstuvwxyzyxwvutsrqponmlkjihgfedcba");
-	
-	// 3 CANDLE (first variety)
-	lightstyle(3, "mmmmmaaaaammmmmaaaaaabcdefgabcdefg");
-	
-	// 4 FAST STROBE
-	lightstyle(4, "mamamamamama");
-	
-	// 5 GENTLE PULSE 1
-	lightstyle(5,"jklmnopqrstuvwxyzyxwvutsrqponmlkj");
-	
-	// 6 FLICKER (second variety)
-	lightstyle(6, "nmonqnmomnmomomno");
-	
-	// 7 CANDLE (second variety)
-	lightstyle(7, "mmmaaaabcdefgmmmmaaaammmaamm");
-	
-	// 8 CANDLE (third variety)
-	lightstyle(8, "mmmaaammmaaammmabcdefaaaammmmabcdefmmmaaaa");
-	
-	// 9 SLOW STROBE (fourth variety)
-	lightstyle(9, "aaaaaaaazzzzzzzz");
-	
-	// 10 FLUORESCENT FLICKER
-	lightstyle(10, "mmamammmmammamamaaamammma");
-
-	// 11 SLOW PULSE NOT FADE TO BLACK
-	lightstyle(11, "abcdefghijklmnopqrrqponmlkjihgfedcba");
+	// Setup light animation tables. 'a' is total darkness, 'z' is maxbright.
+	lightstyle(0, "m"); 													// 0 normal
+	lightstyle(1, "mmnmmommommnonmmonqnmmo"); 								// 1 FLICKER (first variety)
+	lightstyle(2, "abcdefghijklmnopqrstuvwxyzyxwvutsrqponmlkjihgfedcba"); 	// 2 SLOW STRONG PULSE
+	lightstyle(3, "mmmmmaaaaammmmmaaaaaabcdefgabcdefg"); 					// 3 CANDLE (first variety)
+	lightstyle(4, "mamamamamama"); 											// 4 FAST STROBE
+	lightstyle(5,"jklmnopqrstuvwxyzyxwvutsrqponmlkj"); 						// 5 GENTLE PULSE 1
+	lightstyle(6, "nmonqnmomnmomomno"); 									// 6 FLICKER (second variety)
+	lightstyle(7, "mmmaaaabcdefgmmmmaaaammmaamm"); 							// 7 CANDLE (second variety)
+	lightstyle(8, "mmmaaammmaaammmabcdefaaaammmmabcdefmmmaaaa"); 			// 8 CANDLE (third variety)
+	lightstyle(9, "aaaaaaaazzzzzzzz"); 										// 9 SLOW STROBE (fourth variety)
+	lightstyle(10, "mmamammmmammamamaaamammma"); 							// 10 FLUORESCENT FLICKER
+	lightstyle(11, "abcdefghijklmnopqrrqponmlkjihgfedcba");					// 11 SLOW PULSE NOT FADE TO BLACK
 	
 	// styles 32-62 are assigned by the light program for switchable lights
-
-	// 63 testing
-	lightstyle(63, "a");
+	lightstyle(63, "a");// 63 testing
 };
 
 void() StartFrame =
@@ -284,6 +248,7 @@ void() bodyque =
 
 void() InitBodyQue =
 {	
+	//bprint("debug InitBodyQue()\n");
 	bodyque_head = spawn();
 	bodyque_head.classname = "bodyque";
 	bodyque_head.owner = spawn();
@@ -300,6 +265,7 @@ void() InitBodyQue =
 // respawned elsewhere
 void(entity ent) CopyToBodyQue =
 {
+	//bprint("debug CopyToBodyQue()\n");
 	bodyque_head.angles = ent.angles;
 	bodyque_head.model = ent.model;
 	bodyque_head.modelindex = ent.modelindex;

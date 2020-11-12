@@ -42,7 +42,6 @@ void() PlaceItem =
 	self.solid = SOLID_TRIGGER;
 	self.movetype = MOVETYPE_TOSS;	
 	self.velocity = '0 0 0';
-	self.origin_z = self.origin_z + 6;
 	oldz = self.origin_z;
 	// if (!droptofloor())
 	// {
@@ -762,7 +761,7 @@ void() item_key1 =
 {
 	precache_model ("models/keycard.bsp");
 	setmodel (self, "models/keycard.bsp");
-	self.netname = "blue key";
+	self.netname = "blue keycard";
 
 	precache_sound ("misc/key.wav");
 	self.noise = "misc/key.wav";

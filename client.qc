@@ -1,6 +1,4 @@
-
-// prototypes
-void () W_WeaponFrame;
+void() W_WeaponFrame;
 void() W_SetCurrentAmmo;
 void() player_pain;
 void() player_stand1;
@@ -32,6 +30,7 @@ void() info_intermission =
 
 void() SetChangeParms =
 {
+	//bprint("debug SetChangeParms()\n");
 	if (self.health <= 0)
 	{
 		SetNewParms();
@@ -63,6 +62,7 @@ void() SetChangeParms =
 
 void() SetNewParms =
 {
+	//bprint("debug SetNewParms()\n");
 	parm1 = IT_PM | IT_KNIFE | IT_GRENADE;
 	parm2 = 100;
 	parm3 = 0;
@@ -83,6 +83,7 @@ void() SetNewParms =
 
 void() SetNewParmsObserver =
 {
+	//bprint("debug SetNewParmsObserver()\n");
 	parm1 = 0;
 	parm2 = 666;
 	parm3 = 0;
@@ -103,6 +104,7 @@ void() SetNewParmsObserver =
 
 void() SetNewParmsKZ =
 {
+	//bprint("debug SetNewParmsKZ()\n");
 	parm1 = 0;
 	parm2 = 100;
 	parm3 = 0;
@@ -123,6 +125,7 @@ void() SetNewParmsKZ =
 
 void() SetNewParmsSeeker =
 {
+	//bprint("debug SetNewParmsSeeker()\n");
 	parm1 = IT_KNIFE;
 	parm2 = 100;
 	parm3 = 0;
@@ -144,6 +147,7 @@ void() SetNewParmsSeeker =
 
 void() SetNewParmsStormtrooper =
 {
+	//bprint("debug SetNewParmsStormtrooper()\n");
 	parm1 = IT_PM | IT_KNIFE | IT_AKM | IT_GRENADE;
 	parm2 = 100;
 	parm3 = 0;
@@ -164,6 +168,7 @@ void() SetNewParmsStormtrooper =
 
 void() SetNewParmsBreacher =
 {
+	//bprint("debug SetNewParmsBreacher()\n");
 	parm1 = IT_PM | IT_KNIFE | IT_TOZ | IT_GRENADE ;
 	parm2 = 100;
 	parm3 = 0;
@@ -184,6 +189,7 @@ void() SetNewParmsBreacher =
 
 void() SetNewParmsEngineer =
 {
+	//bprint("debug SetNewParmsEngineer()\n");
 	parm1 = IT_PM | IT_KNIFE | IT_HAMMER | IT_GRENADE ;
 	parm2 = 100;
 	parm3 = 0;
@@ -206,6 +212,7 @@ void() SetNewParmsEngineer =
 
 void() SetNewParmsMarksman =
 {
+	//bprint("debug SetNewParmsMarksman()\n");
 	parm1 = IT_PM | IT_KNIFE | IT_HAMMER | IT_GRENADE ;
 	parm2 = 100;
 	parm3 = 0;
@@ -227,6 +234,7 @@ void() SetNewParmsMarksman =
 
 void() SetNewParmsAssassin =
 {
+	//bprint("debug SetNewParmsAssassin()\n");
 	parm1 = IT_KNIFE;
 	parm2 = 100;
 	parm3 = 0;
@@ -247,6 +255,7 @@ void() SetNewParmsAssassin =
 
 void() DecodeLevelParms =
 {
+	//bprint("debug DecodeLevelParms()\n");
 	if (serverflags)
 	{
 		if (world.model == "maps/start.bsp" || world.model == "maps/e1m1.bsp") SetNewParms();		// take away all stuff on starting new episode
@@ -275,14 +284,12 @@ void() DecodeLevelParms =
 	self.ammo_barricades = parm18;
 	self.weapon = parm8;
 	self.armortype = parm9 * 0.01;
-        self.weapons = parm10;
-        self.PMclip = parm11;
-        self.mossclip = parm12;
-        self.AKMclip = parm13;
-        self.psg1clip = parm15;
-        self.m60clip = parm16;
-	
-	
+	self.weapons = parm10;
+	self.PMclip = parm11;
+	self.mossclip = parm12;
+	self.AKMclip = parm13;
+	self.psg1clip = parm15;
+	self.m60clip = parm16;
 };
 
 /*
@@ -294,10 +301,11 @@ Returns the entity to view from
 */
 entity() FindIntermission =
 {
+	//bprint("debug FindIntermission()\n");
 	local	entity spot;
 	local	float cyc;
 
-// look for info_intermission first
+	// look for info_intermission first
 	spot = find (world, classname, "info_intermission");
 	if (spot)
 	{	// pick a random one
@@ -312,15 +320,13 @@ entity() FindIntermission =
 		return spot;
 	}
 
-// then look for the start position
+	// then look for the start position
 	spot = find (world, classname, "info_player_start");
-	if (spot)
-		return spot;
+	if (spot) return spot;
 	
-// testinfo_player_start is only found in regioned levels
+	// testinfo_player_start is only found in regioned levels
 	spot = find (world, classname, "testplayerstart");
-	if (spot)
-		return spot;
+	if (spot) return spot;
 	
 	objerror ("FindIntermission: no spot");
 	
@@ -331,15 +337,15 @@ entity() FindIntermission =
 string nextmap;
 void() GotoNextMap =
 {
-	if (cvar("samelevel"))	// if samelevel is set, stay on same level
-		changelevel (mapname);
-	else
-		changelevel (nextmap);
+	//bprint("debug GotoNextMap()\n");
+	if (cvar("samelevel")) changelevel (mapname); // if samelevel is set, stay on same level
+	else changelevel (nextmap);
 };
 
 
 void() ExitIntermission =
 {
+	//bprint("debug ExitIntermission()\n");
 // skip any text in deathmatch
 	if (deathmatch)
 	{
@@ -435,6 +441,7 @@ When the player presses attack or jump, change to the next level
 */
 void() IntermissionThink =
 {
+	//bprint("debug IntermissionThink()\n");
 	if (time < intermission_exittime) return;
 	if (!self.button0 && !self.button1 && !self.button2) return;
 	
@@ -443,6 +450,7 @@ void() IntermissionThink =
 
 void() execute_changelevel =
 {
+	//bprint("debug execute_changelevel()\n");
 	local entity	pos;
 	intermission_running = 1;
 	
@@ -478,6 +486,7 @@ void() execute_changelevel =
 
 void() changelevel_touch =
 {
+	//bprint("debug changelevel_touch()\n");
 	if (other.classname != "player") return;
 
 	if ((cvar("noexit") == 1) || ((cvar("noexit") == 2) && (mapname != "start")))
@@ -515,8 +524,8 @@ When the player touches this, he gets sent to the map listed in the "map" variab
 */
 void() trigger_changelevel =
 {
+	//bprint("debug trigger_changelevel()\n");
 	if (!self.map) objerror ("changelevel trigger doesn't have map");
-	
 	InitTrigger ();
 	self.touch = changelevel_touch;
 };
@@ -535,6 +544,7 @@ void() PutObserverInServer;
 // called by ClientKill and DeadThink
 void() respawn =
 {
+	//bprint("debug respawn()\n");
 	if (coop)
 	{
 		CopyToBodyQue (self);	// make a copy of the dead body for appearances sake
@@ -614,8 +624,7 @@ entity() SelectSpawnPoint =
 	
 // testinfo_player_start is only found in regioned levels
 	spot = find (world, classname, "testplayerstart");
-	if (spot)
-		return spot;
+	if (spot) return spot;
 		
 // choose a info_player_deathmatch point
 	if (coop)
@@ -685,7 +694,7 @@ void() PutObserverInServer;
 
 void() PutClientInServer =
 {
-	cvar_set ("r_ambient", "1");
+	stuffcmd (self, "r_ambient 1\n");
 	if(deathmatch)
 	{
 		if (self.team == NO_TEAM && self.class == NO_TEAM) // if you don't have a team selected 
@@ -1032,10 +1041,7 @@ void() PlayerDeathThink =
 				{
 					//bprint(e.netname);
 					//bprint("\n");
-					if (!nearest) 
-					{
-						nearest = e;
-					} 
+					if (!nearest) nearest = e;
 					else if(vlen(e.origin - self.origin) < vlen(nearest.origin - self.origin)) 
 					{
 						nearest = e;
@@ -1052,6 +1058,13 @@ void() PlayerDeathThink =
 				nearest.model = "models/runner_red.md3";
 				setmodel(nearest, "models/runner_red.md3");
 				nearest.health = 100;
+			}
+		}
+		else for (e = findchain(classname, "player"); e; e = e.chain) 
+		{
+			if(e != self && e.team == TEAM_USSR)
+			{
+				e.health = 100;
 			}
 		}
 	}
@@ -1243,7 +1256,7 @@ Called every frame before physics are run
 */
 void() UseTouch =
 {
-	if (other.message)
+	if (other.classname != "worldspawn" && other.message)
 	{
 		centerprint(self.owner, other.message);
 		sound (other, CHAN_BODY, "misc/talk.wav", 1, ATTN_NORM);
@@ -1253,7 +1266,7 @@ void() UseTouch =
 void() UseSmth =
 {
 	local	entity missile;
-	if(self.buttonuse && self.classname == "player")
+	if(self.classname == "player")
 	{
 		missile = spawn ();
 		missile.owner = self;
@@ -1282,8 +1295,25 @@ void() UseSmth =
 	}
 }
 
+
+
 void() PlayerPreThink =
 {
+	// bprint(ftos(self.angles_x));
+	// bprint(" | ");
+	// bprint(ftos(self.angles_y));
+	// bprint(" | ");
+	// bprint(ftos(self.angles_z));
+	// bprint("\n");
+	// if(self.flags & FL_JUMPRELEASED) bprint("1 ");
+	// else bprint("0 ");
+	// if(self.flags & FL_ONGROUND) bprint("1 ");
+	// else bprint("0 ");
+	// if(self.flags & FL_LADDERJUMP) bprint("1 ");
+	// else bprint("0 ");
+	// bprint("\n");
+
+
 	local float crosshaircvar;
 	if (intermission_running)
 	{
@@ -1397,6 +1427,7 @@ void() PlayerPreThink =
 	
 	if (self.deadflag == DEAD_DYING) return;	// dying, so do nothing
 
+	if(self.flags & FL_ONGROUND) self.flags = self.flags - (self.flags & FL_LADDERJUMP);
 	if (self.button2) PlayerJump ();
 	else self.flags = self.flags | FL_JUMPRELEASED;
 	// if(self.weapon == WP_AKM) stuffcmd (self, "cl_forwardspeed 185;cl_backspeed 185;cl_sidespeed 185;\n");
@@ -1433,20 +1464,55 @@ void() PlayerPreThink =
 		if(!self.hooking) FireHook ();
 	}
 	else BreakHook();
-	UseSmth();
+	
+	if(self.buttonuse) UseSmth();
 	
 	if(self.button3)
 	{
-		self.duck = 1;
-		setsize (self, '-15 -15 -24', '15 15 20');
-		//setsize (self, '0 0 0', '10 10 10');
-		self.view_ofs = '0 0 10';
+		if(!self.duck)
+		{
+			self.duck = 1;
+			setsize (self, '-15 -15 -24', '15 15 1');
+			self.view_ofs = '0 0 10';
+		}
 	}
 	else
 	{
-		self.duck = 0;
-		setsize (self, '-16 -16 -24', '16 16 35');
-		self.view_ofs = '0 0 22';
+		if(self.duck)
+		{
+			self.duck = 0;
+			setsize (self, '-16 -16 -24', '16 16 35');
+			self.view_ofs = '0 0 22';
+		}
+	}
+	if(self.movetype == MOVETYPE_NOCLIP && !self.button2 && !self.button3)
+	{
+		local float sv_accelerate;
+		local float sv_friction;
+		local float sv_maxspeed;
+		local vector wishvel, wishdir;
+		local float wishspeed, f;
+		
+		sv_maxspeed = cvar("sv_maxspeed");
+		sv_friction = cvar("sv_friction");
+		sv_accelerate = cvar("sv_accelerate");
+		
+		self.velocity = self.velocity * (1 - frametime * sv_friction);
+		makevectors(self.v_angle);
+		wishvel = v_forward * self.movement_x + v_right * (self.movement_z * 30);
+		
+		// acceleration
+		wishdir = normalize(wishvel);
+		wishspeed = vlen(wishvel);
+		//if (wishspeed > sv_maxspeed) wishspeed = sv_maxspeed;
+		
+		if (time >= self.teleport_time)
+		{
+			f = wishspeed - (self.velocity * wishdir);
+			if (f > 0) self.velocity = self.velocity + wishdir * min(f, sv_accelerate * frametime * wishspeed);
+			self.velocity_z =  self.velocity_z * 6;
+			if(self.button4) self.velocity = self.velocity * 4;
+		}
 	}
 	
 	if (time < self.pausetime) self.velocity = '0 0 0'; // teleporters can force a non-moving pause time	
@@ -1459,6 +1525,8 @@ void() PlayerPreThink =
 		//self.weapon = W_BestWeapon ();
 		//W_SetCurrentAmmo ();
 	}
+	
+
 };
 
 
@@ -1469,11 +1537,15 @@ PlayerPostThink
 Called every frame after physics are run
 ================
 */
+
+
 void() PlayerPostThink =
 {
 	if (self.view_ofs == '0 0 0') return;		// intermission or finale
 	if (self.deadflag) return;
-		
+	
+	if(fabs(self.velocity_x + self.velocity_y + self.velocity_z) > 60) footsteps();
+	
 // do weapon stuff
 	W_WeaponFrame();
 // check to see if player landed and play landing sound	
@@ -1527,8 +1599,7 @@ called when a player disconnects from a server
 */
 void() ClientDisconnect =
 {
-	if (gameover)
-		return;
+	if (gameover) return;
 	// if the level end trigger has been activated, just return
 	// since they aren't *really* leaving
 
@@ -1692,4 +1763,5 @@ void(entity targ, entity attacker) ClientObituary =
 			bprint (" died\n");
 		}
 	}
-}; 
+};
+ 

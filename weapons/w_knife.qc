@@ -10,24 +10,19 @@ void() W_FireKnife =
 	local float damage;
 	local entity nearest;
 	local entity e;
-	damage = 55;
+	damage = 50;
 	for (e = findchain(classname, "player"); e; e = e.chain) 
 	{
 		if(e != self)
 		{
-			if (!nearest) 
-			{
-				nearest = e;
-			} 
-			else if(vlen(e.origin - self.origin) < vlen(nearest.origin - self.origin)) 
-			{
-				nearest = e;
-			}
+			if (!nearest) nearest = e;
+			else if(vlen(e.origin - self.origin) < vlen(nearest.origin - self.origin)) nearest = e;
 		}
 	}
 	if(nearest && vlen(nearest.origin - self.origin) < 80)
 	{
 		T_Damage (nearest, self, self, damage);
+		trace_ent.headshot = 0;
 	}
 	else
 	{
@@ -78,17 +73,8 @@ void() W_FireKnife =
 				return;
 			}
 			
-			if (trace_ent.absmax_z - trace_endpos_z <= 13) //headshot
-			{
-				sound (trace_ent, CHAN_WEAPON, "weapons/hitsound.wav", 1, ATTN_NORM);
-				damage = rint(damage * 2);
-				trace_ent.headshot = 1;
-			}
-			else if(trace_ent.headshot == 1)
-			{
-				damage = rint(damage * 0.5);
-				trace_ent.headshot = 0;
-			}
+			DetectHitbox(damage);
+			
 			if(self.class == CLASS_ASSASSIN) damage = damage *2;
 			
 			trace_ent.axhitme = 1;
@@ -172,14 +158,14 @@ void () player_KnifeSwitch = [ 1.000, player_KnifeSwitch2 ]
 	self.weaponframe = 3;
 	self.nextthink = time + 0.05;
 	self.reload = 1;
-	footsteps();
+	
 };
 
 void () player_KnifeSwitch2 = [ 1.000, player_KnifeSwitch2 ]
 {
 	self.weaponframe = self.weaponframe + 1;
 	self.nextthink = time + 0.05;
-	footsteps();
+	
 	if(self.weaponframe == 25)
 	{
 		self.think = player_run;//player_change_gun;

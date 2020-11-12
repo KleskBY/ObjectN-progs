@@ -26,6 +26,7 @@ void() Sight_Think =
 
 void () DrawLaser =
 {
+	
 	local entity sight;
     sight = spawn ();
 	sight.owner = self;

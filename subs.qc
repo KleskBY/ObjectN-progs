@@ -1,9 +1,5 @@
-
-
 void() SUB_Null = {};
-
 void() SUB_Remove = {remove(self);};
-
 
 /*
 QuakeEd only writes a single float for angles (bad idea), so up and down are
@@ -11,10 +7,9 @@ just constant angles.
 */
 void() SetMovedir =
 {
-	if (self.angles == '0 -1 0')
-		self.movedir = '0 0 1';
-	else if (self.angles == '0 -2 0')
-		self.movedir = '0 0 -1';
+	//bprint("debug SetMovedir()\n");
+	if (self.angles == '0 -1 0') self.movedir = '0 0 1';
+	else if (self.angles == '0 -2 0') self.movedir = '0 0 -1';
 	else
 	{
 		makevectors (self.angles);
@@ -31,10 +26,10 @@ InitTrigger
 */
 void() InitTrigger =
 {
+	//bprint("debug InitTrigger()\n");
 // trigger angles are used for one-way touches.  An angle of 0 is assumed
 // to mean no restrictions, so use a yaw of 360 instead.
-	if (self.angles != '0 0 0')
-		SetMovedir ();
+	if (self.angles != '0 0 0') SetMovedir ();
 	self.solid = SOLID_TRIGGER;
 	setmodel (self, self.model);	// set size and link into world
 	self.movetype = MOVETYPE_NONE;
@@ -52,7 +47,8 @@ self.origin traveling at speed
 */
 void(entity ent, vector tdest, float tspeed, void() func) SUB_CalcMoveEnt =
 {
-local entity	stemp;
+	//bprint("debug SUB_CalcMoveEnt()\n");
+	local entity	stemp;
 	stemp = self;
 	self = ent;
 
@@ -62,6 +58,7 @@ local entity	stemp;
 
 void(vector tdest, float tspeed, void() func) SUB_CalcMove =
 {
+	//bprint("debug SUB_CalcMove()\n");
 	local vector	vdestdelta;
 	local float		len, traveltime;
 	if (!tspeed) objerror("No speed is defined!");
@@ -102,11 +99,11 @@ After moving, set origin to exact final destination
 */
 void()  SUB_CalcMoveDone =
 {
+	//bprint("debug SUB_CalcMoveDone()\n");
 	setorigin(self, self.finaldest);
 	self.velocity = '0 0 0';
 	self.nextthink = -1;
-	if (self.think1)
-		self.think1();
+	if (self.think1) self.think1();
 };
 
 
@@ -122,7 +119,8 @@ The calling function should make sure self.think is valid
 */
 void(entity ent, vector destangle, float tspeed, void() func) SUB_CalcAngleMoveEnt =
 {
-local entity		stemp;
+	//bprint("debug SUB_CalcAngleMoveEnt()\n");
+	local entity stemp;
 	stemp = self;
 	self = ent;
 	SUB_CalcAngleMove (destangle, tspeed, func);
@@ -131,27 +129,27 @@ local entity		stemp;
 
 void(vector destangle, float tspeed, void() func) SUB_CalcAngleMove =
 {
-local vector	destdelta;
-local float		len, traveltime;
+	//bprint("debug SUB_CalcAngleMove()\n");
+	local vector	destdelta;
+	local float		len, traveltime;
 
-	if (!tspeed)
-		objerror("No speed is defined!");
-		
-// set destdelta to the vector needed to move
+	if (!tspeed) objerror("No speed is defined!");
+
+	// set destdelta to the vector needed to move
 	destdelta = destangle - self.angles;
-	
-// calculate length of vector
+
+	// calculate length of vector
 	len = vlen (destdelta);
-	
-// divide by speed to get time to reach dest
+
+	// divide by speed to get time to reach dest
 	traveltime = len / tspeed;
 
-// set nextthink to trigger a think when dest is reached
+	// set nextthink to trigger a think when dest is reached
 	self.nextthink = self.ltime + traveltime;
 
-// scale the destdelta vector by the time spent traveling to get velocity
+	// scale the destdelta vector by the time spent traveling to get velocity
 	self.avelocity = destdelta * (1 / traveltime);
-	
+
 	self.think1 = func;
 	self.finalangle = destangle;
 	self.think = SUB_CalcAngleMoveDone;
@@ -164,11 +162,11 @@ After rotating, set angle to exact final angle
 */
 void() SUB_CalcAngleMoveDone =
 {
+	//bprint("debug SUB_CalcAngleMoveDone()\n");
 	self.angles = self.finalangle;
 	self.avelocity = '0 0 0';
 	self.nextthink = -1;
-	if (self.think1)
-		self.think1();
+	if (self.think1) self.think1();
 };
 
 
@@ -176,6 +174,7 @@ void() SUB_CalcAngleMoveDone =
 
 void() DelayThink =
 {
+	//bprint("debug DelayThink()\n");
 	activator = self.enemy;
 	SUB_UseTargets ();
 	remove(self);
@@ -302,3 +301,46 @@ void (void() thinkst) SUB_CheckRefire =
 	self.cnt = 1;
 	self.think = thinkst;
 };
+
+void DetectHitbox(float damage)
+{
+	if (trace_ent.absmax_z - trace_endpos_z <= 13) //headshot
+	{
+		sound (trace_ent, CHAN_WEAPON, "weapons/hitsound.wav", 1, ATTN_NORM);
+		damage = rint(damage * 2);
+		trace_ent.headshot = 1;
+	}
+	else if (((trace_ent.absmax_z - trace_endpos_z) > 26) && ((trace_ent.absmax_z - trace_endpos_z) < 35))	//legshot
+	{
+		trace_ent.headshot = 0;
+		damage = rint(damage * 0.5);
+	}
+	else trace_ent.headshot = -1;
+	//sound(self,CHAN_BODY,"weapons/hitsound.wav",1,ATTN_NORM);
+}
+
+void() footsteps =
+{
+	if(self.flags & FL_ONGROUND && !self.duck && !self.button4 && self.classname != "monster_zombie" &&  self.movetype != MOVETYPE_NOCLIP)
+	{
+		if(time+random(0,0.2) > self.footstep_finished || self.footstep_finished == 0) 
+		{
+			local float r;
+			r=random();
+			if (r <=0.25) sound(self, CHAN_BODY, "player/footstep1.wav", 0.15, ATTN_NORM);
+			else if (r <=0.5 && r>0.25) sound(self, CHAN_BODY, "player/footstep2.wav", 0.15, ATTN_NORM);
+			else if (r <=0.75 && r>0.5) sound(self, CHAN_BODY, "player/footstep3.wav", 0.15, ATTN_NORM);
+			else sound(self, CHAN_BODY, "player/footstep4.wav", 0.15, ATTN_NORM);
+			self.footstep_finished = time +0.5;
+		}
+	}
+}
+
+void() ZombieAttackSound = 
+{
+	local float r;
+	r=random();
+	if (r <=0.33) sound(self, CHAN_BODY, "zombie/attack1.wav", 0.7, ATTN_NORM);
+	else if (r <=0.33 && r>0.66) sound(self, CHAN_BODY, "zombie/attack2.wav", 0.7, ATTN_NORM);
+	else sound(self, CHAN_BODY, "zombie/attack3.wav", 0.7, ATTN_NORM);
+}

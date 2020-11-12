@@ -1,8 +1,5 @@
 void() movetarget_f;
 void() t_movetarget;
-void() knight_walk1;
-void() knight_bow6;
-void() knight_bow1;
 void(entity etemp, entity stemp, entity stemp, float dmg) T_Damage;
 /*
 
@@ -275,13 +272,14 @@ void() HuntTarget =
 void() SightSound =
 {
 	local float	rsnd;
-	if (self.classname == "monster_zombie")
+	if (self.classname == "monster_zombie" || self.classname == "monster_zombie_big")
 	{
 		rsnd = rint(random() * 3);	
 		if (rsnd == 1) sound (self, CHAN_VOICE, "zombie/sight1.wav", 1, ATTN_NORM); 
 		else if (rsnd == 2) sound (self, CHAN_VOICE, "zombie/sight2.wav", 1, ATTN_NORM); 
 		else sound (self, CHAN_VOICE, "zombie/sight3.wav", 1, ATTN_NORM); 
 	}
+	else if (self.classname == "monster_demon1") sound (self, CHAN_VOICE, "demon/sight2.wav", 1, ATTN_NORM);
 	else
 	{
 		rsnd = rint(random() * 15);			
@@ -652,6 +650,9 @@ The monster has an enemy it is trying to kill
 void(float dist) ai_run =
 {
 	movedist = dist;
+	
+	footsteps();
+
 // see if the enemy is dead
 	if (self.enemy.health <= 0)
 	{

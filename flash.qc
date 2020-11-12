@@ -9,7 +9,7 @@ void() flash_update =
 	// vec = aim (self.owner, 10000);
 	// vec = normalize (vec);
 	// self.angles = vectoangles (vec);
-	
+	if (self.owner.view_ofs == '0 0 0') self.think = SUB_Remove;
 	makevectors(self.owner.v_angle);
 	traceline(self.owner.origin , (self.owner.origin+(v_forward * 6)), FALSE , self);
 	setorigin (self, trace_endpos + '0 0 10' /*+ (v_forward * - 6)*/); //4
@@ -20,7 +20,7 @@ void() flash_update =
 	self.light_lev = 250 - random(-6,6);
 	self.skin = 237;
 	
-	if(self.classname == "observer") self.think = SUB_Remove;
+	if(self.owner.classname == "observer") self.think = SUB_Remove;
 	self.nextthink = time + 0.02;
 };
 

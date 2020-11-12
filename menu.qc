@@ -8,13 +8,13 @@ void ()SetNewParmsMarksman;
 void ()SelectTeamUSSR =
 {
 	T_Damage (self, self, self, 100);
-	bprint (self.netname); //Shows your name to everybody
-	bprint (" joined USSR team\n"); //And a nice little text to show what team you're joining
-	self.skin = 0; 			     //Default skin
-	modelindex_ussr_aps = self.modelindex; //This is a special trick I'll explain below
-	setsize (self, '-16 -16 -24', '16 16 32'); //Sets size to standard player size, putclientinserver does this too but it doesn't hurt
-	self.menu = MENU_OFF;  			//turn the menu off
-	centerprint (self, "");               //Remove the menu
+	bprint (self.netname); 						//Shows your name to everybody
+	bprint (" joined USSR team\n"); 			//And a nice little text to show what team you're joining
+	self.skin = 0; 			     				//Default skin
+	modelindex_ussr_aps = self.modelindex;  	//This is a special trick I'll explain below
+	setsize (self, '-16 -16 -24', '16 16 32'); 	//Sets size to standard player size, putclientinserver does this too but it doesn't hurt
+	self.menu = MENU_OFF;  						//turn the menu off
+	centerprint (self, "");               		//Remove the menu
 	setcolor(self, 0);
 }
 void ()SelectTeamUSA =
@@ -32,6 +32,5 @@ void ()SelectTeamUSA =
 
 void(float pcolor) SV_ChangeTeam =
 {
-	T_Damage(self, world, world, 200);
-	//stuffcmd (self, "kill\n");
+	if(deathmatch) T_Damage(self, world, world, 100);
 }

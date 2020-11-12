@@ -43,27 +43,14 @@ void (float damage, vector dir) AKM_TraceAttack = {
 			return;
 		}
 		
+		DetectHitbox(damage);
 		
-		if (trace_ent.absmax_z - trace_endpos_z <= 13) //headshot
-		{
-			sound (trace_ent, CHAN_WEAPON, "weapons/hitsound.wav", 1, ATTN_NORM);
-			damage = rint(damage * 2);
-			trace_ent.headshot = 1;
-		}
-		else if (((trace_ent.absmax_z - trace_endpos_z) > 26) && ((trace_ent.absmax_z - trace_endpos_z) < 35))	//legshot
-		{
-			trace_ent.headshot = 0;
-			damage = rint(damage * 0.5);
-		}
-		else trace_ent.headshot = -1;
-   
-		sound(trace_ent,CHAN_BODY,"weapons/hitsound.wav",1,ATTN_NORM);
 		particle_color = random ();
 		meatdir_x = ((random () * 300.000) + dir_x);
 		meatdir_y = ((random () * 300.000) + dir_y);
 		meatdir_z = ((random () * 300.000) + dir_z);
 		makevectors (self.v_angle);
-		trace_ent.flags = (trace_ent.flags - FL_ONGROUND);
+		//trace_ent.flags = (trace_ent.flags - FL_ONGROUND);
 		  
 		if(trace_ent.health> 1)
 		{
@@ -128,8 +115,9 @@ void () W_FireAKM =
 	
 	dir = aim (self,1000.000);
 	makevectors (self.v_angle);
-	src = (self.origin + (v_forward * TE_LAVASPLASH));
-	src_z = (self.absmin_z + (self.size_z * 0.800));
+	src = (self.origin + self.view_ofs + (v_forward * TE_LAVASPLASH)); 
+	//src = (self.origin + (v_forward * TE_LAVASPLASH));
+	//src_z = (self.absmin_z + (self.size_z * 0.800));
 	src_y = (self.absmin_y + (self.size_y * 0.500));
 	ClearMultiDamage ();
 	
@@ -182,7 +170,7 @@ void () player_AK74Reload = [ 103.000, player_AK74Reload2 ]
 
 void () player_AK74Reload2 = [ 103.000, player_AK74Reload2 ] 
 {
-	footsteps();
+	
 	if (self.velocity_x && self.velocity_y)
 	{
 		if (self.walkframe >= 11) self.walkframe = 0;
@@ -200,7 +188,8 @@ void () player_AK74Reload2 = [ 103.000, player_AK74Reload2 ]
 	sound(self,CHAN_WEAPON,"weapons/ak47/ak47_clipin.wav",1,ATTN_NORM);
 	if (self.weaponframe == 104)
 	sound(self,CHAN_WEAPON,"weapons/ak47/ak47_boltpull.wav",1,ATTN_NORM);
-	if (self.weaponframe == 120)
+
+	if (self.weaponframe == 120 || (self.weaponframe == 96 && self.AKMclip > 0))
 	{
 		if(self.ammo545x39 >= 30)
 		{
@@ -229,7 +218,7 @@ void () player_AK74Attack = [ 103.000, player_AK74Attack2 ]
 
 void () player_AK74Attack2 = [103, player_AK74Attack2 ]
 {
-	footsteps();
+	
 	if (self.velocity_x && self.velocity_y)
 	{
 		if (self.walkframe >= 11) self.walkframe = 0;
@@ -261,7 +250,7 @@ void () player_AK74Switch = [ 1.000, player_AK74Switch2 ]
 
 void () player_AK74Switch2 = [ 1.000, player_AK74Switch2 ]
 {
-	footsteps();
+	
 	if (self.velocity_x && self.velocity_y)
 	{
 		if (self.walkframe >= 11) self.walkframe = 0;

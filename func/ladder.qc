@@ -14,11 +14,64 @@ void() ladder_sound =
 		}
 	}
 }
+float sv_accelerate;
+float sv_friction;
+float sv_maxspeed;
 
 void() ladder_touch =
 {
+	local vector wishvel, wishdir;
+	local float wishspeed, f;
 	if (other.classname != "player") return;
-	//if (self.owner.attack_finished > time) return;
+	sv_maxspeed = cvar("sv_maxspeed");
+	sv_friction = cvar("sv_friction");
+	sv_accelerate = cvar("sv_accelerate");
+	
+	if(vlen(other.velocity) > 200) ladder_sound();
+	
+	if(!(other.flags & FL_LADDERJUMP) && !(other.flags & FL_JUMPRELEASED))
+	{
+		other.flags = other.flags | FL_LADDERJUMP;
+	}
+	else if((other.flags & FL_LADDERJUMP) && (other.flags & FL_JUMPRELEASED))
+	{
+		other.flags = other.flags - (other.flags & FL_LADDERJUMP);
+	}
+	
+	if(other.lasttouch > time) return;
+	if(other.button2 && !(other.flags & FL_LADDERJUMP) && !(other.flags & FL_ONGROUND)) 
+	{ 
+		makevectors(self.angles);
+		other.velocity = other.velocity + (v_forward * 200);
+		other.velocity_z = other.velocity_z + 100;
+		other.lasttouch = time + 0.2;
+		return;
+	}
+
+	
+	other.velocity = other.velocity * (1 - frametime * sv_friction);
+	makevectors(other.v_angle);
+	wishvel = v_forward * other.movement_x + v_right * other.movement_y + '0 0 1' * other.movement_z;
+	
+	// acceleration
+	wishdir = normalize(wishvel);
+	wishspeed = vlen(wishvel);
+	if (wishspeed > sv_maxspeed) wishspeed = sv_maxspeed;
+	if(other.button3 || other.button4) wishspeed = wishspeed *0.7;
+	if (time >= other.teleport_time)
+	{
+		f = wishspeed - (other.velocity * wishdir);
+		if (f > 0)
+		{
+			other.velocity = other.velocity + wishdir * min(f, sv_accelerate * frametime * wishspeed);
+
+		}
+	}
+	//if(other.angles_x > 0.5) 
+	other.velocity_z  = other.velocity_z + 5.71;
+	other.velocity_x = other.velocity_x * 0.7;
+	other.velocity_y = other.velocity_y * 0.7;
+		//if (self.owner.attack_finished > time) return;
 	//self.owner.attack_finished = time + 2;
 
 	// if (self.owner.message != "")
@@ -27,28 +80,28 @@ void() ladder_touch =
 		// sound (other, CHAN_VOICE, "misc/talk.wav", 1, ATTN_NORM);
 	// }
 	//other.velocity = '0 0 300';
-	if(other.button2)
-	{
-		other.velocity = '0 0 0';
-		other.origin_z = other.origin_z+2;
-		setorigin (other, other.origin);
-		ladder_sound();
-	}	
-	else if(other.button3 || other.button4)
-	{
-		other.velocity = '0 0 0';
-		other.origin_z = other.origin_z-2;
-		setorigin (other, other.origin);
-		ladder_sound();
-	}	
-	else
-	{
-		other.velocity = '0 0 0';
-		other.origin_z = other.origin_z+0.076;
-		setorigin (other, other.origin);
-	}
-	other.lasttouch = time+0.3;
-	//other.movetype = MOVETYPE_FLY;
+	
+	// if(other.button2)
+	// {
+		// other.velocity = '0 0 0';
+		// other.origin_z = other.origin_z+2;
+		// setorigin (other, other.origin);
+		// ladder_sound();
+	// }	
+	// else if(other.button3 || other.button4)
+	// {
+		// other.velocity = '0 0 0';
+		// other.origin_z = other.origin_z-2;
+		// setorigin (other, other.origin);
+		// ladder_sound();
+	// }	
+	// else
+	// {
+		// other.velocity = '0 0 0';
+		// other.origin_z = other.origin_z+0.076;
+		// setorigin (other, other.origin);
+	// }
+	// other.lasttouch = time+0.3;
 	
 };
 

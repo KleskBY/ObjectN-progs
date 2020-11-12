@@ -362,60 +362,55 @@ void() pdude_drawb1;
 
 void()      pdude_drawa1   =[    $drawa1,     pdude_drawa2   ] 
 {
- local float temp;
+	local float temp;
 
- temp = random();
- ai_face();
- if (temp < 0.35)
-  {
-   self.think = pdude_drawa1;
-   self.nextthink = time + 0.03;
-  }
- if ( (temp < 0.8) && (temp >= 0.35) )
-  {
-   self.think = pdude_drawb1;
-   self.nextthink = time + 0.03;
-  }
- if ( (temp < 0.9) && (temp >= 0.8) ) 
-  { 
-   self.think = pdude_roll1;
-   self.nextthink = time + 0.03;
-  }
- if ( (temp < 0.95) && (temp >= 0.9) )
-  {
-   self.think = pdude_leapright1;
-   self.nextthink = time + 0.03;
-  }
- if (temp >= 0.95)
-  {
-   self.think = pdude_leapleft1;
-   self.nextthink = time + 0.03;
-  }
+	temp = random();
+	ai_face();
+	
+	/*** Check to see if grenades are throwable ***/
+	if (((self.absmax_z - self.enemy.absmax_z) > -50) && (vlen(self.enemy.origin - self.origin) > 500) && random () < 0.5 )
+	{
+		self.think = pdude_grenade1;
+		self.attack_finished = time + 1.3;
+	}   
+	else
+	{
+		if (temp < 0.35)
+		{
+			self.think = pdude_drawa1;
+			self.nextthink = time + 0.03;
+		}
+		else if ((temp < 0.8) && (temp >= 0.35))
+		{
+			self.think = pdude_drawb1;
+			self.nextthink = time + 0.03;
+		}
+		else if ((temp < 0.9) && (temp >= 0.8)) 
+		{ 
+			self.think = pdude_roll1;
+			self.nextthink = time + 0.03;
+		}
+		else if ((temp < 0.95) && (temp >= 0.9))
+		{
+			self.think = pdude_leapright1;
+			self.nextthink = time + 0.03;
+		}
+		else if (temp >= 0.95)
+		{
+			self.think = pdude_leapleft1;
+			self.nextthink = time + 0.03;
+		}
+	}
 
-/*** Check to see if grenades are throwable ***/
- if ( ( (self.absmax_z - self.enemy.absmax_z) > -50) 
-    && ( ( vlen(self.enemy.origin - self.origin) ) > 500) 
-    /*&& (self.firstgrenade != 23)*/ )
-  {
-   if (random () < 0.8)
-    {
-     self.think = pdude_grenade1;
-     self.attack_finished = time + 1.3;
-     /*self.firstgrenade = 23;*/
-    }
-  }   
+	/*** Check to see if reload is necessary ***/
+	if (self.PMclip <= 0) self.think = pdude_load1;
 
-/*** Check to see if reload is necessary ***/
- if (self.PMclip <= 0)
-    self.think = pdude_load1;
- 
-
-/*** Check to see if someone is in front of me ***/
+	/*** Check to see if someone is in front of me ***/
 	traceline(self.origin,self.enemy.origin,0,self);
 	if ( (trace_ent.classname == "monster_heavy") || (trace_ent.classname == "monster_light") )
 	{
-		if (random() < 0.50)self.think = pdude_leapright1;
-		else self.think = pdude_leapleft1;
+	if (random() < 0.50)self.think = pdude_leapright1;
+	else self.think = pdude_leapleft1;
 	}
 
 };
@@ -431,24 +426,24 @@ void()      pdude_drawa7   =[    $drawa7,     pdude_firea1   ] {ai_face();self.n
 
 void()      pdude_fireb1         =[    $fireb1,     pdude_fireb2   ] 
 { 
- ai_face();
- pdude_fire();
+	ai_face();
+	pdude_fire();
 };
 
 void()      pdude_fireb2         =[    $fireb2,     pdude_fireb3   ] 
 { 
- ai_face();
-  pdude_fire();
+	ai_face();
+	pdude_fire();
 };
 
 
 void()      pdude_fireb3         =[    $fireb1,     pdude_run1     ] 
 { 
- ai_face();
- self.nextthink = time + 0.02;
- SUB_CheckRefire (pdude_fireb1);
- if (self.PMclip <= 0) self.think = pdude_load1;
- else pdude_fire();
+	ai_face();
+	self.nextthink = time + 0.02;
+	SUB_CheckRefire (pdude_fireb1);
+	if (self.PMclip <= 0) self.think = pdude_load1;
+	else pdude_fire();
 };
 
 void()      pdude_drawb1   =[    $drawb1,     pdude_drawb2   ] {ai_face();self.nextthink = time + 0.03;};
@@ -621,7 +616,7 @@ void() pdude_fire =
 	traceline (src, src + dir * 1024, FALSE, self);
 	if (trace_fraction != 1.0)
 	{
-		if (trace_ent.takedamage) T_Damage (trace_ent, self, self, 17);
+		if (trace_ent.takedamage) T_Damage (trace_ent, self, self, 8);
 		else
 		{
 			// WriteByte (MSG_BROADCAST,SVC_TEMPENTITY);
