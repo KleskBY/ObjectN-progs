@@ -266,6 +266,16 @@ void() SUB_UseTargets =
 			activator = act;
 		} while ( 1 );
 	}
+	else if (self.killtarget) // kill the killtagets
+	{
+		t = world;
+		do
+		{
+			t = find (t, targetname, self.killtarget);
+			if (!t) return;
+			remove (t);
+		} while ( 1 );
+	}
 
 
 
@@ -284,54 +294,33 @@ some monsters refire twice automatically
 void(float normal) SUB_AttackFinished =
 {
 	self.cnt = 0;		// refire count for nightmare
-	if (skill != 3)
-		self.attack_finished = time + normal;
+	if (skill != 3) self.attack_finished = time + normal;
 };
 
 float (entity targ) visible;
 
 void (void() thinkst) SUB_CheckRefire =
 {
-	if (skill != 3)
-		return;
-	if (self.cnt == 1)
-		return;
-	if (!visible (self.enemy))
-		return;
+	if (skill != 3) return;
+	if (self.cnt == 1) return;
+	if (!visible (self.enemy)) return;
 	self.cnt = 1;
 	self.think = thinkst;
 };
-
-void DetectHitbox(float damage)
-{
-	if (trace_ent.absmax_z - trace_endpos_z <= 13) //headshot
-	{
-		sound (trace_ent, CHAN_WEAPON, "weapons/hitsound.wav", 1, ATTN_NORM);
-		damage = rint(damage * 2);
-		trace_ent.headshot = 1;
-	}
-	else if (((trace_ent.absmax_z - trace_endpos_z) > 26) && ((trace_ent.absmax_z - trace_endpos_z) < 35))	//legshot
-	{
-		trace_ent.headshot = 0;
-		damage = rint(damage * 0.5);
-	}
-	else trace_ent.headshot = -1;
-	//sound(self,CHAN_BODY,"weapons/hitsound.wav",1,ATTN_NORM);
-}
 
 void() footsteps =
 {
 	if(self.flags & FL_ONGROUND && !self.duck && !self.button4 && self.classname != "monster_zombie" &&  self.movetype != MOVETYPE_NOCLIP)
 	{
-		if(time+random(0,0.2) > self.footstep_finished || self.footstep_finished == 0) 
+		if(time+random(0,0.1) > self.footstep_finished || self.footstep_finished == 0) 
 		{
 			local float r;
 			r=random();
-			if (r <=0.25) sound(self, CHAN_BODY, "player/footstep1.wav", 0.15, ATTN_NORM);
-			else if (r <=0.5 && r>0.25) sound(self, CHAN_BODY, "player/footstep2.wav", 0.15, ATTN_NORM);
-			else if (r <=0.75 && r>0.5) sound(self, CHAN_BODY, "player/footstep3.wav", 0.15, ATTN_NORM);
-			else sound(self, CHAN_BODY, "player/footstep4.wav", 0.15, ATTN_NORM);
-			self.footstep_finished = time +0.5;
+			if (r <=0.25) sound(self, CHAN_BODY, "player/footstep1.wav", 0.5, ATTN_IDLE );
+			else if (r <=0.5 && r>0.25) sound(self, CHAN_BODY, "player/footstep2.wav", 0.5, ATTN_IDLE );
+			else if (r <=0.75 && r>0.5) sound(self, CHAN_BODY, "player/footstep3.wav", 0.5, ATTN_IDLE );
+			else sound(self, CHAN_BODY, "player/footstep4.wav", 0.5, ATTN_IDLE );
+			self.footstep_finished = time + 0.5;
 		}
 	}
 }

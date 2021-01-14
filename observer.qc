@@ -11,7 +11,7 @@ void() PutObserverInServer =		//Koolio, Just like PutClientInServer
 		return; // and forget the rest 
 	}
 	//bprint("shit\n");
-	local	entity spot;
+	local entity spot;
 
 	spot = SelectSpawnPoint ();
 
@@ -40,23 +40,17 @@ void() PutObserverInServer =		//Koolio, Just like PutClientInServer
 
 	self.attack_finished = time;	
 	self.deadflag = DEAD_NO;
-	// pausetime is set by teleporters to keep the player from moving a while
-	self.pausetime = 0;
+	self.pausetime = 0; 	// pausetime is set by teleporters to keep the player from moving a while
 	self.origin = spot.origin + '0 0 1';
 	self.angles = spot.angles;
 	self.fixangle = TRUE;		// turn this way immediately
 
-	// oh, this is no longer a hack!  =)
-	//setmodel (self, "progs/eyes.mdl");
-	//modelindex_eyes = self.modelindex;
-
 	setcolor(self, 255);
-	setmodel (self, ""); //We're going to replace this soon
-	modelindex_ussr_aps = self.modelindex;
+	setmodel (self, ""); 
 
 	setsize (self, VEC_HULL_MIN, VEC_HULL_MAX);
 	
-	self.view_ofs = '0 0 22';
+	self.view_ofs = '0 0 23';
 
 	player_stand1 ();
 	

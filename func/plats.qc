@@ -240,14 +240,28 @@ void() train_wait =
 
 void() train_next =
 {
-	local entity	targ;
+	local entity targ, t;
 	targ = find (world, targetname, self.target);
 	self.target = targ.target;
+	self.speed = targ.speed;
+	if(!self.speed) self.speed = 100;
 	if (!self.target) objerror ("train_next: no next target");
 	if (targ.wait) self.wait = targ.wait;
 	else self.wait = 0;
 	sound (self, CHAN_VOICE, self.noise1, 1, ATTN_NORM);
 	SUB_CalcMove (targ.origin - self.mins, self.speed, train_wait);
+	if (targ.killtarget) // kill the killtagets
+	{
+		t = world;
+		do
+		{
+			t = find (t, targetname, targ.killtarget);
+			if (!t) return;
+			ambientsound (self.origin, "misc/null.wav", 1, ATTN_NONE);
+			remove (t);
+		} 
+		while ( 1 );
+	}
 };
 
 void() func_train_find =
@@ -290,17 +304,23 @@ void() func_train =
 	}
 	else if (self.sounds == 1)
 	{
-		self.noise = ("func/trainstart1.wav");
-		precache_sound ("func/trainstart1.wav");
-		self.noise1 = ("func/trainstart1.wav");
-		precache_sound ("func/trainstart1.wav");
+		precache_sound ("func/train.wav");
+		self.noise = ("func/train.wav");
+		self.noise1 = ("func/train.wav");
 	}
 	else if (self.sounds == 2)
 	{
+		precache_sound2("func/doormove2.wav");
 		precache_sound2("func/doorstop1.wav");
-		precache_sound2("func/doormove1.wav");
-		self.noise1 = "func/doorstop1.wav";
-		self.noise2 = "func/doormove1.wav";
+		self.noise = "func/doorstop1.wav";
+		self.noise1 = "func/doormove2.wav";
+	}
+	else if (self.sounds == 3)
+	{
+		precache_sound2("misc/null.wav");
+		precache_sound2("func/doorstop3.wav");
+		self.noise = "misc/null.wav";
+		self.noise1 = "func/doorstop3.wav";
 	}
 	self.cnt = 1;
 	self.solid = SOLID_BSP;

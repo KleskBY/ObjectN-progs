@@ -31,15 +31,15 @@ void (float damage, vector dir) PM_TraceAttack =
 			meatdir_x = ((random () * 300.000) + dir_x);
 			meatdir_y = ((random () * 300.000) + dir_y);
 			meatdir_z = ((random () * 300.000) + dir_z);
-			ShootGlass (org,meatdir);
+			shootGib (org,meatdir,trace_ent.sounds);
 			meatdir_x = ((random () * 300.000) + dir_x);
 			meatdir_y = ((random () * 300.000) + dir_y);
 			meatdir_z = ((random () * 300.000) + dir_z);
-			ShootGlass (org,meatdir);
+			shootGib (org,meatdir,trace_ent.sounds);
 			meatdir_x = ((random () * 300.000) + dir_x);
 			meatdir_y = ((random () * 300.000) + dir_y);
 			meatdir_z = ((random () * 300.000) + dir_z);
-			ShootGlass (org,meatdir);
+			shootGib (org,meatdir,trace_ent.sounds);
 			AddMultiDamage (trace_ent,damage);
 			return;
 		}

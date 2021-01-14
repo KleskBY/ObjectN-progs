@@ -28,9 +28,10 @@ void() Barricade_Think =
 	droptofloor();
 	if(self.owner.attack_finished < time && self.owner.button0)
 	{
-		self.owner.currentammo = self.owner.ammo_barricades = self.owner.ammo_barricades - 1;
+		self.owner.currentammo = self.owner.ammoBarricades = self.owner.ammoBarricades - 1;
 		sound(self, CHAN_VOICE, "weapons/build.wav", 1, ATTN_NORM);
 		self.alpha = 1;
+		self.sounds = 3;
 		self.movetype = MOVETYPE_NONE;
 		self.owner.barricade_flag = FALSE;
 		self.owner.attack_finished = self.owner.attack_finished  + 1.5;
@@ -45,7 +46,7 @@ void() Barricade_Think =
 
 void() Barricade_Die =
 {
-	sound(self, CHAN_VOICE, "func/metal1.wav", 0.6, ATTN_NORM);
+	sound(self, CHAN_VOICE, "func/metal1.wav", 1, ATTN_NORM);
 	self.think = SUB_Remove;
 	self.nextthink = self.ltime + 0.01;
 };
@@ -85,45 +86,43 @@ void() DrawBarricade =
 	sight.think = Barricade_Think;	
 };
 
-void () player_HammerAttack = [$knifeattack1, HammerA2]
+void() player_HammerAttack = [1, HammerA2]
 {
-	self.weaponframe = 47;
-	self.nextthink = time + 0.02;
-	if(!self.barricade_flag && self.owner.attack_finished < time && self.ammo_barricades > 0)
+	self.weaponframe = 35;
+	self.nextthink = time + 0.01;
+	if(!self.barricade_flag && self.owner.attack_finished < time && self.ammoBarricades > 0)
 	{
 		DrawBarricade(); 
 		self.barricade_flag = TRUE;
 		self.attack_finished = time + 0.5;
 		self.think = player_run;
 	}
-	if(self.ammo_barricades == 0) self.think = player_run;
+	if(self.ammoBarricades == 0) self.think = player_run;
 };
 
-void () HammerA2 = [$knifeattack2, HammerA2]
+void() HammerA2 = [2, HammerA2]
 {
 	self.weaponframe = self.weaponframe + 1;
 	self.nextthink = time + 0.025;
 	self.attack_finished = self.attack_finished + 0.005;
 	
-	if(self.weaponframe >= 112) self.think = player_run;
+	if(self.weaponframe >= 89) self.think = player_run;
 };
 
-void () player_HammerSwitch = [ 1.000, player_HammerSwitch2 ]
+void() player_HammerSwitch = [ 1, player_HammerSwitch2 ]
 {
-	self.weaponmodel = "models/v_hammer.md3";
 	self.weaponframe = 1;
-	self.nextthink = time + 0.05;
+	self.nextthink = time + 0.025;
 	self.reload = 1;
-	
 };
 
 
-void () player_HammerSwitch2 = [ 1.000, player_HammerSwitch2 ]
+void() player_HammerSwitch2 = [ 2, player_HammerSwitch2 ]
 {
 	self.weaponframe = self.weaponframe + 1;
 	self.nextthink = time + 0.025;
 	
-	if(self.weaponframe == 46)
+	if(self.weaponframe == 35)
 	{
 		self.think = player_run;//player_change_gun;
 		self.reload = 0;

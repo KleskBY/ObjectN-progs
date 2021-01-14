@@ -1,9 +1,10 @@
 void (entity targ, entity inflictor, entity attacker, float damage) T_Damage;
-void () player_run;
+void() player_run;
 void(entity bomb, entity attacker, float rad, entity ignore) T_RadiusDamage;
 void(vector org, vector vel, float damage) SpawnBlood;
-void (float shotcount,vector dir,vector spread) FireMossberg;
-
+void (float shotcount,vector dir,vector spread) FireShotgun;
+void() SpawnBot;
+void() KickBot;
 float() crandom =
 {
 	return 2*(random() - 0.5);
@@ -115,11 +116,11 @@ void (float damage, vector dir) TraceAttack =
 	
 	vel = normalize (((dir + (v_up * crandom ())) + (v_right * crandom ())));
 	vel = (vel + (FL_SWIM * trace_plane_normal));
-	vel = (vel * 200.000);
+	vel = (vel * 200);
 	org = (trace_endpos - (dir * MOVETYPE_STEP));
 	if (trace_ent.takedamage) 
 	{
-		SpawnBlood (org,(vel * 0.200),(damage * 100.000));
+		SpawnBlood (org,(vel * 0.200),(damage * 100));
 		AddMultiDamage (trace_ent,damage);
 	} 
 	else 
@@ -129,9 +130,9 @@ void (float damage, vector dir) TraceAttack =
 		WriteCoord (MSG_BROADCAST,org_x);
 		WriteCoord (MSG_BROADCAST,org_y);
 		WriteCoord (MSG_BROADCAST,org_z);
-		particle (org,'3.000 2.000 7.000',192.000,TE_WIZSPIKE);
-		particle (org,'7.000 6.000 8.000',192.000,TE_WIZSPIKE);
-		//sound (self.enemy,CHAN_AUTO,"sound/weapons/ak47/ak47-1.wav",TRUE,ATTN_NORM);         
+		particle (org,'3 2 7',192,TE_WIZSPIKE);
+		particle (org,'7 6 8',192,TE_WIZSPIKE);
+		//sound (self.enemy,CHAN_AUTO,"sound/weapons/rifle/shot.wav",TRUE,ATTN_NORM);         
 		pointparticles(particleeffectnum("double_shotgun_muzzleflash"), self.origin + self.view_ofs + v_up * -8 + v_forward*20, self.velocity*50, 1);
 	}
 };
@@ -172,7 +173,7 @@ void(float shotcount, vector dir, vector spread) FireBullets =
 // self.velocity = aim(self.owner, 1000);
 // self.angles = vectoangles(self.velocity);
 // self.angles = self.angles + '0 -90 0';			
-// setorigin (self, self.owner.origin + (v_forward * 30.000) - (v_right * -0.5) + (v_up * 19.000));
+// setorigin (self, self.owner.origin + (v_forward * 30) - (v_right * -0.5) + (v_up * 19));
 
 // self.nextthink = time;
 // self.think = Muzzle_Think;
@@ -205,62 +206,62 @@ void(float shotcount, vector dir, vector spread) FireBullets =
 
 void() W_SetCurrentAmmo =
 {
-    local vector src;
 	player_run ();		// get out of any weapon firing states
-	self.zoomlevel = 0;
-	stuffcmd(self,"fov 90 \n");
-	
 	self.items = self.items - ( self.items & (IT_SHELLS | IT_545x39 | IT_ROCKETS | IT_762x54 | IT_9x18));
     // Remove_Laser_Sights();  // remove any active laser sights
 	
     if (self.weapon == WP_ONE)
 	{
 		self.currentammo = 0;
-		self.weaponmodel = "models/v_knife.md3";
+		if(self.team == TEAM_USA) self.weaponmodel = "models/v_knife_usa.md3";
+		else self.weaponmodel = "models/v_knife.md3";
 		self.weaponframe = 0;
 	}
-    else if (self.weapon == WP_PM)
+    else if (self.weapon == WP_PISTOL)
 	{
-		self.currentammo = self.ammo_9x18;
-		if(self.team == TEAM_USA) self.weaponmodel = "models/v_glock.md3";
+		self.currentammo = self.ammoPistol;
+		if(self.team == TEAM_USA) self.weaponmodel = "models/v_colt.md3";
 		else self.weaponmodel = "models/v_pm.md3";
 		self.weaponframe = 0;
 		self.items = self.items | IT_9x18;
 	}
-	else if (self.weapon == WP_TOZ)
+	else if (self.weapon == WP_SHOTGUN)
 	{
-		self.currentammo = self.ammo_shells;
-        if(self.team == TEAM_USA) self.weaponmodel = "models/v_xm.md3";
-		else self.weaponmodel = "models/v_toz.md3";
+		self.currentammo = self.ammoShells;
+        if(self.team == TEAM_USA) self.weaponmodel = "models/v_shot_usa.md3";
+		else self.weaponmodel = "models/v_shot.md3";
 		self.weaponframe = 0;
         self.items = self.items | IT_SHELLS;
 	}
-    else if (self.weapon == WP_AKM)
+    else if (self.weapon == WP_RIFLE)
     {
-		self.currentammo = self.ammo545x39;
+		self.currentammo = self.ammoRifle;
 		if(self.team == TEAM_USA) self.weaponmodel = "models/v_m4.md3";
-		else self.weaponmodel = "models/v_ak74.md3";
-		self.weaponframe = FALSE;
+		else self.weaponmodel = "models/v_ak.md3";
+		self.weaponframe = 0;
         self.items = (self.items | IT_545x39);
 	}
     else if (self.weapon == WP_GRENADE)
 	{	   
-		self.currentammo = self.ammo_rockets;
-		self.weaponmodel = "models/v_grenade.md3";
+		self.currentammo = self.ammoGrenades;
+		if(self.team == TEAM_USA) self.weaponmodel = "models/v_grenade_usa.md3";
+		else self.weaponmodel = "models/v_grenade.md3";
 		self.items = self.items | IT_ROCKETS;
 	}
-    else if (self.weapon == WP_MOSIN)
+    else if (self.weapon == WP_SNIPER)
 	{
-		self.currentammo = self.ammo_762x54;
-		if(self.team == TEAM_USA) self.weaponmodel = "models/v_awp.md3";
-		else self.weaponmodel = "models/v_mosin.md3";
+		self.currentammo = self.ammoSniper;
+		if(self.team == TEAM_USA) self.weaponmodel = "models/v_sniper.md3";
+		else self.weaponmodel = "models/v_svd.md3";
 		self.weaponframe = 0;
         self.items = self.items | IT_762x54;
 	}
 	else if (self.weapon == WP_HAMMER)
 	{	   
-		self.currentammo = self.ammo_barricades;
-		self.weaponmodel = "models/v_hammer.md3";
+		self.currentammo = self.ammoBarricades;
+		if(self.team == TEAM_USA) self.weaponmodel = "models/v_hammer_usa.md3";
+		else self.weaponmodel = "models/v_hammer.md3";
+		self.weaponframe = 0;
 		self.items = self.items | IT_BARRICADES;
 	}
 	// else
@@ -276,10 +277,10 @@ float() W_BestWeapon =
 	local float	wp;
 	wp = self.items;
 	
-	if ((self.psg1clip >= 1) && (wp & WP_MOSIN)) return WP_MOSIN; // Barrett
-	if ((self.AKMclip >= 1) && (wp & WP_AKM)) return WP_AKM; // AKM
-	if ((self.mossclip >= 1) && (wp & WP_TOZ)) return WP_TOZ; // mossberg
-	if ((self.PMclip >= 1) && (wp & WP_PM)) return WP_PM; // PM
+	if ((self.sniperClip >= 1) && (wp & WP_SNIPER)) return WP_SNIPER; // Barrett
+	if ((self.rifleClip >= 1) && (wp & WP_RIFLE)) return WP_RIFLE; // AKM
+	if ((self.shotgunClip >= 1) && (wp & WP_SHOTGUN)) return WP_SHOTGUN; // mossberg
+	if ((self.pistolClip >= 1) && (wp & WP_PISTOL)) return WP_PISTOL; // PM
 	
 	return WP_ONE;
 };
@@ -293,47 +294,35 @@ float() W_BestWeapon =
 	============
 */
 
-void()	player_ApsAttack;
-void()  player_ApsReload;
-void()  player_ApsSwitch;
+void()	playerPistolAttack;
+void()  playerPistolReload;
+void()  playerPistolSwitch;
 
-void()  player_KnifeAttack; 
-void()  player_KnifeAttackb; 
-void()  player_KnifeSwitch;
+void()  playerKnifeAttack; 
+void()  playerKnifeAttackB; 
+void()  playerKnifeSwitch;
 
 void()  player_HEAttack;
 void() 	player_HESwitch;
 
-void()  player_TozAttack;
-void()  player_TozReload;
+void()  playerShotgunAttack;
+void()  playerShotgunReload;
 void()  player_TozSwitch;
-void()  player_XmReload;
 
-void()	player_AK74Attack;
-void()  player_AK74Reload;
-void() 	player_AK74Switch;
+void()	playerRifleAttack;
+void()  playerRifleReload;
+void() 	playerRifleSwitch;
 
-void()  player_MosinAttack;
-void()  player_MosinAttackb;
-void()  player_MosinReload;
+void()  playerSniperAttack;
+void()  playerSniperReload;
+void() 	playerSniperSwitch;
 
-void()  player_AwpAttack;
-void()  player_AwpAttackb;
-void()  player_AwpReload;
-
-void () player_MosinZoomOut;
-void () player_MosinZoom;
-
-void () player_AwpZoomOut;
-void () player_AwpZoom;
-
-void () player_HammerAttack;
-void () player_HammerSwitch;
+void() player_HammerAttack;
+void() player_HammerSwitch;
 
 void() W_Attack =
 {
 	local float	r;
-	
 	if (deathmatch && !self.team && !self.class) return;
 	if (self.reload == 1) return;
     self.weaponfired = self.weapon;
@@ -345,19 +334,19 @@ void() W_Attack =
     if (self.weapon == WP_ONE)
 	{
 		self.attack_finished = time + 0.5;
-		if(r <0.55) player_KnifeAttack();
-		else player_KnifeAttackb();
+		if(r < 0.55) playerKnifeAttack();
+		else playerKnifeAttackB();
 	}
     else if (self.weapon == WP_GRENADE)
 	{
-		if (self.ammo_rockets > 0) 
+		if (self.ammoGrenades > 0) 
 		{
 			self.grenadetime = 0;
 			self.attack_finished = time + 9999; //ugly hack, but lets you hold the grenade almost indefinately
 			
 			player_HEAttack();
-			self.ammo_rockets = self.ammo_rockets - 1;
-			self.currentammo = self.ammo_rockets;
+			self.ammoGrenades = self.ammoGrenades - 1;
+			self.currentammo = self.ammoGrenades;
 		}
 		else
 		{
@@ -366,66 +355,56 @@ void() W_Attack =
 			return;
 		}
 	}
-    else if (self.weapon == WP_PM)
+    else if (self.weapon == WP_PISTOL)
 	{
-		if (self.PMclip > 0)
+		if (self.pistolClip > 0)
 		{
-			player_ApsAttack();
-			self.attack_finished = time + 0.18;
+			playerPistolAttack();
+			self.attack_finished = time + 0.2;
 		}
         else
 		{
-			sound(self,CHAN_WEAPON,"weapons/pm/pm_noammo.wav",TRUE,ATTN_NORM);
+			sound(self, CHAN_WEAPON, "weapons/noammo.wav", 1, ATTN_NORM);
 			self.attack_finished = time + 0.5;
 		}
 	}
-    else if (self.weapon == WP_TOZ)
+    else if (self.weapon == WP_SHOTGUN)
 	{
-        if (self.mossclip > 0)
+        if (self.shotgunClip > 0)
         {       
-			player_TozAttack();
-			pointparticles(particleeffectnum("double_shotgun_muzzleflash"), self.origin + self.view_ofs + v_up * -2.6 + v_forward*26 + v_right*3.7, self.velocity*50, 1);
-			self.attack_finished = time + 0.850;
+			playerShotgunAttack();
+			pointparticles(particleeffectnum("double_shotgun_muzzleflash"), self.origin + self.view_ofs + v_up * -2.6 + v_forward * 26 + v_right*3.7, self.velocity*50, 1);
+			self.attack_finished = time + 1;
 		}
         else 
         {
-            sound(self,CHAN_WEAPON,"weapons/pm/pm_noammo.wav",TRUE,ATTN_NORM);
+            sound(self, CHAN_WEAPON, "weapons/noammo.wav", 1, ATTN_NORM);
             self.attack_finished = (time + 0.400);
 		}
 	}
-    else if (self.weapon == WP_AKM)
+    else if (self.weapon == WP_RIFLE)
     {
-		if (self.AKMclip > 0) 
+		if (self.rifleClip > 0) 
 		{            
-			player_AK74Attack ();   
+			playerRifleAttack ();   
 			self.attack_finished = time + 0.11; //DELAY BETWEEN SHOOTS
 		}                           
 		else 
 		{
-			sound (self,CHAN_WEAPON,"weapons/ak47/ak47_click.wav",TRUE,ATTN_NORM);
+			sound(self, CHAN_WEAPON, "weapons/noammo.wav", 1, ATTN_NORM);
 			self.attack_finished = (time + 0.400);
 		}
 	} 
-	else if (self.weapon == WP_MOSIN)
+	else if (self.weapon == WP_SNIPER)
 	{
-		if (self.psg1clip > 0)
+		if (self.sniperClip > 0)
 		{
-			if(self.zoomlevel == 0)
-			{
-				if(self.weaponmodel == "models/v_awp.md3") player_AwpAttack();
-				else player_MosinAttack();
-				self.attack_finished = time + 2.3; //DELAY BETWEEN SHOOTS
-			}
-			else 
-			{
-				if(self.weaponmodel == "models/v_awp.md3") player_AwpAttackb();
-				else player_MosinAttackb();
-				self.attack_finished = time + 3;
-			}
+			playerSniperAttack();
+			self.attack_finished = time + 1.1; //DELAY BETWEEN SHOOTS
 		}
 		else
 		{
-			sound (self,CHAN_WEAPON,"weapons/ak47/ak47_click.wav",TRUE,ATTN_NORM);
+			sound(self, CHAN_WEAPON, "weapons/noammo.wav", 1, ATTN_NORM);
 			self.attack_finished = time + 0.7;
 		}
 	}
@@ -458,8 +437,8 @@ void() W_ChangeWeapon =
 	if (self.impulse == 1) fl = WP_ONE;
 	else if (self.impulse == 2)
 	{
-		fl = WP_PM;
-		if (self.PMclip < 1 && self.ammo_9x18 < 1) am = 1;
+		fl = WP_PISTOL;
+		if (self.pistolClip < 1 && self.ammoPistol < 1) am = 1;
 	}
 	else if (self.impulse == 3)
 	{
@@ -467,51 +446,51 @@ void() W_ChangeWeapon =
 		{
 			if(self.class == CLASS_BREACHER)
 			{
-				fl = WP_TOZ;
-				if (self.mossclip < 1 && self.ammo_shells < 1) am = 1;
+				fl = WP_SHOTGUN;
+				if (self.shotgunClip < 1 && self.ammoShells < 1) am = 1;
 			}
 			else if(self.class == CLASS_MARKSMAN)
 			{
-				fl = WP_MOSIN;
-				if (self.psg1clip < 1 && self.ammo_762x54 < 1) am = 1;
+				fl = WP_SNIPER;
+				if (self.sniperClip < 1 && self.ammoSniper < 1) am = 1;
 			}
 			else if(self.class == CLASS_ENGINEER)
 			{
 				fl = WP_HAMMER;
-				if (self.ammo_barricades < 1) am = 1;
+				if (self.ammoBarricades < 1) am = 1;
 			}
 			else
 			{
-				fl = WP_AKM;
-				if (self.AKMclip < 1 && self.ammo545x39 < 1) am = 1;
+				fl = WP_RIFLE;
+				if (self.rifleClip < 1 && self.ammoRifle < 1) am = 1;
 			}
 		}
 		else
 		{
-			fl = WP_TOZ;
-			if (self.mossclip < 1 && self.ammo_shells < 1) am = 1;
+			fl = WP_SHOTGUN;
+			if (self.shotgunClip < 1 && self.ammoShells < 1) am = 1;
 		}
 	}
 	else if (self.impulse == 4) 
 	{
-		fl = WP_AKM;
-		if (self.AKMclip < 1 && self.ammo545x39 < 1) am = 1;
+		fl = WP_RIFLE;
+		if (self.rifleClip < 1 && self.ammoRifle < 1) am = 1;
 	}
 	else if (self.impulse == 5)
 	{
-		fl = WP_MOSIN;
-		if (self.psg1clip < 1 && self.ammo_762x54 < 1) am = 1;
+		fl = WP_SNIPER;
+		if (self.sniperClip < 1 && self.ammoSniper < 1) am = 1;
 	}
     else if (self.impulse == 6)
 	{
 		fl = WP_GRENADE;
 		self.hgrenade = 1;
-		if (self.ammo_rockets < 1) am = 1;
+		if (self.ammoGrenades < 1) am = 1;
 	}
 	else if (self.impulse == 7)
 	{
 		fl = WP_HAMMER;
-		if (self.ammo_barricades < 1) am = 1;
+		if (self.ammoBarricades < 1) am = 1;
 	}
 	
 	self.impulse = 0;
@@ -537,16 +516,15 @@ void() W_ChangeWeapon =
 	W_SetCurrentAmmo ();
 	
 	r = random();
-	if(r <0.3) r =0.3;
-	if(r >0.8) r =0.8;
-	sound(self,CHAN_AUTO,"weapons/pm/pm_cloth.wav",r,ATTN_NORM);
+	if(r < 0.3) r = 0.3;
+	if(r > 0.8) r = 0.8;
+	sound(self,CHAN_AUTO,"player/switch.wav",r,ATTN_NORM);
 	
-	if(fl == WP_PM) 
+	if(fl == WP_PISTOL) 
 	{
-		if(self.team == TEAM_USA) setmodel (self, "models/usa_glock.md3");
-		else setmodel (self, "models/ussr_aps.md3");
-		modelindex_ussr_aps = self.modelindex;
-		player_ApsSwitch();
+		if(self.team == TEAM_USA) setmodel (self, "models/usa_pistol.md3");
+		else setmodel (self, "models/ussr_pistol.md3");
+		playerPistolSwitch();
 	}
 	else if(fl == WP_ONE) 
 	{
@@ -555,31 +533,33 @@ void() W_ChangeWeapon =
 		{
 			if(self.team == TEAM_USA) setmodel (self, "models/usa_knife.md3");
 			else setmodel (self, "models/ussr_knife.md3");
-			modelindex_ussr_knife = self.modelindex;
-			player_KnifeSwitch();
+			playerKnifeSwitch();
 		}
 	}
-	else if(fl == WP_TOZ)
+	else if(fl == WP_SHOTGUN)
 	{
-		if(self.team == TEAM_USA) setmodel (self, "models/usa_xm.md3");
-		else setmodel (self, "models/ussr_toz.md3");
-		modelindex_ussr_toz = self.modelindex;
+		if(self.team == TEAM_USA) setmodel (self, "models/usa_shot.md3");
+		else setmodel (self, "models/ussr_shot.md3");
 		player_TozSwitch();
 	}
-	else if(fl == WP_AKM)
+	else if(fl == WP_RIFLE)
 	{
-		if(self.team == TEAM_USA) setmodel (self, "models/usa_m4.md3");
-		else setmodel (self, "models/ussr_ak74.md3");
-		modelindex_ussr_ak74 = self.modelindex;
-		player_AK74Switch();
+		if(self.team == TEAM_USA) setmodel (self, "models/usa_rifle.md3");
+		else setmodel (self, "models/ussr_rifle.md3");
+		playerRifleSwitch();
 	}
-	else if(fl == WP_MOSIN)
+	else if(fl == WP_SNIPER)
 	{
-		if(self.team == TEAM_USA) setmodel (self, "models/usa_awp.md3");
-		else setmodel (self, "models/ussr_mosin.md3");
-		modelindex_ussr_mosin = self.modelindex;
+		if(self.team == TEAM_USA) setmodel (self, "models/usa_sniper.md3");
+		else setmodel (self, "models/ussr_sniper.md3");
+		playerSniperSwitch();
 	}
-	else if(fl == WP_GRENADE) player_HESwitch();
+	else if(fl == WP_GRENADE) 
+	{
+		//if(self.team == TEAM_USA) setmodel (self, "models/v_grenade_usa.md3");
+		//else setmodel (self, "models/v_grenade.md3");
+		player_HESwitch();
+	}
 	else if(fl == WP_HAMMER) player_HammerSwitch();
 	
 	setsize (self, VEC_HULL_MIN, VEC_HULL_MAX);
@@ -595,11 +575,11 @@ void() CheatCommand =
 {
 	if (deathmatch /*|| coop*/) return;
 	
-	self.ammo_9x18 = 100;
-	self.ammo_rockets = 100;
-	self.ammo545x39 = 200;
-	self.ammo_shells = 100;
-	self.ammo_barricades = 5;
+	self.ammoPistol = 100;
+	self.ammoGrenades = 100;
+	self.ammoRifle = 200;
+	self.ammoShells = 100;
+	self.ammoBarricades = 5;
 	self.items = self.items | 
 	IT_KNIFE |
 	IT_PM |
@@ -611,21 +591,21 @@ void() CheatCommand =
 	IT_KEY1 | IT_KEY2;
 	self.weapons = self.weapons |
 	WP_ONE |
-	WP_PM |
-	WP_TOZ |
-	WP_AKM |
+	WP_PISTOL |
+	WP_SHOTGUN |
+	WP_RIFLE |
 	WP_GRENADE |
 	WP_HAMMER |
-	WP_MOSIN;
-	self.ammo_762x54 = 200;
-	self.PMclip = 20;
-	self.mossclip = 7;
-	self.AKMclip = 30;
-	self.psg1clip = 5;
+	WP_SNIPER;
+	self.ammoSniper = 200;
+	self.pistolClip = CLIP_PISTOL;
+	self.shotgunClip = CLIP_SHOTGUN;
+	self.rifleClip = CLIP_RIFLE;
+	self.sniperClip = CLIP_SNIPER;
 	self.m60clip = 200;
 	self.items = self.items | IT_BOMB;
 	
-    self.weapon = WP_MOSIN;
+    self.weapon = WP_SNIPER;
 	self.impulse = 0;
 	W_SetCurrentAmmo ();
 };
@@ -641,51 +621,51 @@ void() CycleWeaponCommand =
 {
 	if(self.weapon == WP_ONE)
 	{
-		if((self.weapons & WP_PM) && (self.PMclip > 0 || self.ammo_9x18 > 0)) self.impulse = 2;
-		else if((self.weapons & WP_TOZ) && (self.mossclip > 0 && self.ammo_shells > 0)) self.impulse = 3;
-		else if((self.weapons & WP_AKM) && (self.AKMclip > 0 || self.ammo545x39 > 0)) self.impulse = 4;
-		else if((self.weapons & WP_MOSIN) && (self.psg1clip > 0 || self.ammo_762x54 > 0)) self.impulse = 5;
+		if((self.weapons & WP_PISTOL) && (self.pistolClip > 0 || self.ammoPistol > 0)) self.impulse = 2;
+		else if((self.weapons & WP_SHOTGUN) && (self.shotgunClip > 0 && self.ammoShells > 0)) self.impulse = 3;
+		else if((self.weapons & WP_RIFLE) && (self.rifleClip > 0 || self.ammoRifle > 0)) self.impulse = 4;
+		else if((self.weapons & WP_SNIPER) && (self.sniperClip > 0 || self.ammoSniper > 0)) self.impulse = 5;
 		else if(self.weapons & WP_GRENADE) self.impulse = 6;
 	}
-	if(self.weapon == WP_PM)
+	if(self.weapon == WP_PISTOL)
 	{
-		if((self.weapons & WP_TOZ) && (self.mossclip > 0 && self.ammo_shells > 0)) self.impulse = 3;
-		else if((self.weapons & WP_AKM) && (self.AKMclip > 0 || self.ammo545x39 > 0)) self.impulse = 4;
-		else if((self.weapons & WP_MOSIN) && (self.psg1clip > 0 || self.ammo_762x54 > 0)) self.impulse = 5;
+		if((self.weapons & WP_SHOTGUN) && (self.shotgunClip > 0 && self.ammoShells > 0)) self.impulse = 3;
+		else if((self.weapons & WP_RIFLE) && (self.rifleClip > 0 || self.ammoRifle > 0)) self.impulse = 4;
+		else if((self.weapons & WP_SNIPER) && (self.sniperClip > 0 || self.ammoSniper > 0)) self.impulse = 5;
 		else if(self.weapons & WP_ONE) self.impulse = 1;
 		else if(self.weapons & WP_GRENADE) self.impulse = 6;
 	}
-	if(self.weapon == WP_TOZ)
+	if(self.weapon == WP_SHOTGUN)
 	{
-		if((self.weapons & WP_AKM) && (self.AKMclip > 0 || self.ammo545x39 > 0)) self.impulse = 4;
-		else if((self.weapons & WP_MOSIN) && (self.psg1clip > 0 || self.ammo_762x54 > 0)) self.impulse = 5;
+		if((self.weapons & WP_RIFLE) && (self.rifleClip > 0 || self.ammoRifle > 0)) self.impulse = 4;
+		else if((self.weapons & WP_SNIPER) && (self.sniperClip > 0 || self.ammoSniper > 0)) self.impulse = 5;
 		else if(self.weapons & WP_GRENADE) self.impulse = 6;
 		else if(self.weapons & WP_ONE) self.impulse = 1;
-		else if((self.weapons & WP_PM) && (self.PMclip > 0 || self.ammo_9x18 > 0)) self.impulse = 2;
+		else if((self.weapons & WP_PISTOL) && (self.pistolClip > 0 || self.ammoPistol > 0)) self.impulse = 2;
 	}
-	if(self.weapon == WP_AKM)
+	if(self.weapon == WP_RIFLE)
 	{
-		if((self.weapons & WP_MOSIN) && self.psg1clip > 0 && self.ammo_762x54 > 0) self.impulse = 5;
+		if((self.weapons & WP_SNIPER) && self.sniperClip > 0 && self.ammoSniper > 0) self.impulse = 5;
 		else if(self.weapons & WP_GRENADE) self.impulse = 6;
 		else if(self.weapons & WP_ONE) self.impulse = 1;
-		else if((self.weapons & WP_PM) && (self.PMclip > 0 || self.ammo_9x18 > 0)) self.impulse = 2;
-		else if((self.weapons & WP_TOZ) && (self.mossclip > 0 && self.ammo_shells > 0)) self.impulse = 3;
+		else if((self.weapons & WP_PISTOL) && (self.pistolClip > 0 || self.ammoPistol > 0)) self.impulse = 2;
+		else if((self.weapons & WP_SHOTGUN) && (self.shotgunClip > 0 && self.ammoShells > 0)) self.impulse = 3;
 	}
-	if(self.weapon == WP_MOSIN)
+	if(self.weapon == WP_SNIPER)
 	{
 		if(self.weapons & WP_GRENADE) self.impulse = 6;
 		else if(self.weapons & WP_ONE) self.impulse = 1;
-		else if((self.weapons & WP_PM) && (self.PMclip > 0 || self.ammo_9x18 > 0)) self.impulse = 2;
-		else if((self.weapons & WP_TOZ) && (self.mossclip > 0 && self.ammo_shells > 0)) self.impulse = 3;
-		else if((self.weapons & WP_AKM) && (self.AKMclip > 0 || self.ammo545x39 > 0)) self.impulse = 4;
+		else if((self.weapons & WP_PISTOL) && (self.pistolClip > 0 || self.ammoPistol > 0)) self.impulse = 2;
+		else if((self.weapons & WP_SHOTGUN) && (self.shotgunClip > 0 && self.ammoShells > 0)) self.impulse = 3;
+		else if((self.weapons & WP_RIFLE) && (self.rifleClip > 0 || self.ammoRifle > 0)) self.impulse = 4;
 	}
 	if(self.weapon == WP_GRENADE)
 	{
 		if(self.weapons & WP_ONE) self.impulse = 1;
-		else if((self.weapons & WP_PM) && (self.PMclip > 0 || self.ammo_9x18 > 0)) self.impulse = 2;
-		else if((self.weapons & WP_TOZ) && (self.mossclip > 0 && self.ammo_shells > 0)) self.impulse = 3;
-		else if((self.weapons & WP_AKM) && (self.AKMclip > 0 || self.ammo545x39 > 0)) self.impulse = 4;
-		else if((self.weapons & WP_MOSIN) && (self.psg1clip > 0 || self.ammo_762x54 > 0)) self.impulse = 5;
+		else if((self.weapons & WP_PISTOL) && (self.pistolClip > 0 || self.ammoPistol > 0)) self.impulse = 2;
+		else if((self.weapons & WP_SHOTGUN) && (self.shotgunClip > 0 && self.ammoShells > 0)) self.impulse = 3;
+		else if((self.weapons & WP_RIFLE) && (self.rifleClip > 0 || self.ammoRifle > 0)) self.impulse = 4;
+		else if((self.weapons & WP_SNIPER) && (self.sniperClip > 0 || self.ammoSniper > 0)) self.impulse = 5;
 	}
 	
 	W_ChangeWeapon();
@@ -701,52 +681,52 @@ void() CycleWeaponCommand =
 */
 void() CycleWeaponReverseCommand =
 {
-	if(self.weapon == WP_MOSIN)
+	if(self.weapon == WP_SNIPER)
 	{
-		if((self.weapons & WP_AKM) && (self.AKMclip > 0 || self.ammo545x39 > 0)) self.impulse = 4;
-		else if((self.weapons & WP_TOZ) && (self.mossclip > 0 && self.ammo_shells > 0)) self.impulse = 3;
-		else if((self.weapons & WP_PM) && (self.PMclip > 0 || self.ammo_9x18 > 0)) self.impulse = 2;
+		if((self.weapons & WP_RIFLE) && (self.rifleClip > 0 || self.ammoRifle > 0)) self.impulse = 4;
+		else if((self.weapons & WP_SHOTGUN) && (self.shotgunClip > 0 && self.ammoShells > 0)) self.impulse = 3;
+		else if((self.weapons & WP_PISTOL) && (self.pistolClip > 0 || self.ammoPistol > 0)) self.impulse = 2;
 		else if(self.weapons & WP_ONE) self.impulse = 1;
 		else if(self.weapons & WP_GRENADE) self.impulse = 6;
 	}
-	if(self.weapon == WP_AKM)
+	if(self.weapon == WP_RIFLE)
 	{
-		if((self.weapons & WP_TOZ) && (self.mossclip > 0 && self.ammo_shells > 0)) self.impulse = 3;
-		else if((self.weapons & WP_PM) && (self.PMclip > 0 || self.ammo_9x18 > 0)) self.impulse = 2;
+		if((self.weapons & WP_SHOTGUN) && (self.shotgunClip > 0 && self.ammoShells > 0)) self.impulse = 3;
+		else if((self.weapons & WP_PISTOL) && (self.pistolClip > 0 || self.ammoPistol > 0)) self.impulse = 2;
 		else if(self.weapons & WP_ONE) self.impulse = 1;
 		else if(self.weapons & WP_GRENADE) self.impulse = 6;
-		else if((self.weapons & WP_MOSIN) && (self.psg1clip > 0 || self.ammo_762x54 > 0)) self.impulse = 5;
+		else if((self.weapons & WP_SNIPER) && (self.sniperClip > 0 || self.ammoSniper > 0)) self.impulse = 5;
 	}
-	if(self.weapon == WP_TOZ)
+	if(self.weapon == WP_SHOTGUN)
 	{
-		if((self.weapons & WP_PM) && (self.PMclip > 0 || self.ammo_9x18 > 0)) self.impulse = 2;
+		if((self.weapons & WP_PISTOL) && (self.pistolClip > 0 || self.ammoPistol > 0)) self.impulse = 2;
 		else if(self.weapons & WP_ONE) self.impulse = 1;
 		else if(self.weapons & WP_GRENADE) self.impulse = 6;
-		else if((self.weapons & WP_MOSIN) && (self.psg1clip > 0 || self.ammo_762x54 > 0)) self.impulse = 5;
-		else if((self.weapons & WP_AKM) && (self.AKMclip > 0 || self.ammo545x39 > 0)) self.impulse = 4;
+		else if((self.weapons & WP_SNIPER) && (self.sniperClip > 0 || self.ammoSniper > 0)) self.impulse = 5;
+		else if((self.weapons & WP_RIFLE) && (self.rifleClip > 0 || self.ammoRifle > 0)) self.impulse = 4;
 	}
-	if(self.weapon == WP_PM)
+	if(self.weapon == WP_PISTOL)
 	{
 		if(self.weapons & WP_ONE) self.impulse = 1;
 		else if(self.weapons & WP_GRENADE) self.impulse = 6;
-		else if((self.weapons & WP_MOSIN) && (self.psg1clip > 0 || self.ammo_762x54 > 0)) self.impulse = 5;
-		else if((self.weapons & WP_AKM) && (self.AKMclip > 0 || self.ammo545x39 > 0)) self.impulse = 4;
-		else if((self.weapons & WP_TOZ) && (self.mossclip > 0 && self.ammo_shells > 0)) self.impulse = 3;
+		else if((self.weapons & WP_SNIPER) && (self.sniperClip > 0 || self.ammoSniper > 0)) self.impulse = 5;
+		else if((self.weapons & WP_RIFLE) && (self.rifleClip > 0 || self.ammoRifle > 0)) self.impulse = 4;
+		else if((self.weapons & WP_SHOTGUN) && (self.shotgunClip > 0 && self.ammoShells > 0)) self.impulse = 3;
 	}
 	if(self.weapon == WP_ONE)
 	{
 		if(self.weapons & WP_GRENADE) self.impulse = 6;
-		else if((self.weapons & WP_MOSIN) && self.ammo_rockets > 0) self.impulse = 5;
-		else if((self.weapons & WP_AKM) && (self.AKMclip > 0 || self.ammo545x39 > 0)) self.impulse = 4;
-		else if((self.weapons & WP_TOZ) && (self.mossclip > 0 && self.ammo_shells > 0)) self.impulse = 3;
-		else if((self.weapons & WP_PM) && (self.PMclip > 0 || self.ammo_9x18 > 0)) self.impulse = 2;
+		else if((self.weapons & WP_SNIPER) && self.ammoGrenades > 0) self.impulse = 5;
+		else if((self.weapons & WP_RIFLE) && (self.rifleClip > 0 || self.ammoRifle > 0)) self.impulse = 4;
+		else if((self.weapons & WP_SHOTGUN) && (self.shotgunClip > 0 && self.ammoShells > 0)) self.impulse = 3;
+		else if((self.weapons & WP_PISTOL) && (self.pistolClip > 0 || self.ammoPistol > 0)) self.impulse = 2;
 	}
 	if(self.weapon == WP_GRENADE)
 	{
-		if((self.weapons & WP_MOSIN) && self.ammo_rockets > 0) self.impulse = 5;
-		else if((self.weapons & WP_AKM) && (self.AKMclip > 0 || self.ammo545x39 > 0)) self.impulse = 4;
-		else if((self.weapons & WP_TOZ) && (self.mossclip > 0 && self.ammo_shells > 0)) self.impulse = 3;
-		else if((self.weapons & WP_PM) && (self.PMclip > 0 || self.ammo_9x18 > 0)) self.impulse = 2;
+		if((self.weapons & WP_SNIPER) && self.ammoGrenades > 0) self.impulse = 5;
+		else if((self.weapons & WP_RIFLE) && (self.rifleClip > 0 || self.ammoRifle > 0)) self.impulse = 4;
+		else if((self.weapons & WP_SHOTGUN) && (self.shotgunClip > 0 && self.ammoShells > 0)) self.impulse = 3;
+		else if((self.weapons & WP_PISTOL) && (self.pistolClip > 0 || self.ammoPistol > 0)) self.impulse = 2;
 		else if(self.weapons & WP_ONE) self.impulse = 1;
 	}
 	
@@ -782,100 +762,65 @@ void() ImpulseCommands =
 	if (self.impulse == 11) ServerflagsCommand ();
 	if (self.impulse == 12) CycleWeaponReverseCommand ();
 	
-	// if (self.impulse == 13) 
-	// {
-		// DrawBarricade ();
-		// self.impulse = 0;
-	// }
-	if (self.impulse == 14) 
+	if(self.impulse == 100)	//reloading
 	{
-		flash_toggle ();
-		self.impulse = 0;
-	}
-	
-	if((self.impulse == 100) && (self.model == "models/runner_red.md3" || self.model == "models/runner_blue.md3"))  /*&& (strstrofs(world.model,"kz_",0) != -1)*/
-	{
-		if(self.lastcheckpoint_x != 0)
+		switch(self.weapon)
 		{
-			setorigin (self, self.lastcheckpoint);
-			self.impulse = 0;
-			return;
-		}
-		else self.impulse = 0;
-	}
-	
-	/******************** Mossberg reload sequence ***************************/
-	
-	if ((self.impulse == 100) && (self.weaponmodel == "models/v_toz.md3" || self.weaponmodel == "models/v_xm.md3"))
-	{
-		if (self.mossclip == 7 || self.ammo_shells == 0 || self.reload || self.button0)
-		{
-			self.impulse = 0;
-			return;
-		}
-		else
-		{
-			if(self.weaponmodel == "models/v_xm.md3") player_XmReload();
-			else player_TozReload();
-		}
-	}
-    
-	/******************** AKM reload sequence*********************************/
-	
-	if (self.impulse == 100 && (self.weaponmodel == "models/v_ak74.md3" || self.weaponmodel == "models/v_m4.md3" ))                        
-	{
-		if (self.AKMclip == 30 || self.ammo545x39 == 0 || self.reload || self.button0)
-		{
-			self.impulse = 0;
-			return;
-		}
-		else player_AK74Reload ();
-	}
-	
-	/****************** Sniper reload sequence*********************************/
-	
-	if (self.impulse == 100 && (self.weaponmodel == "models/v_mosin.md3" || self.weaponmodel == "models/v_awp.md3"))
-	{
-		if (self.psg1clip == 5 || self.ammo_762x54 == 0 || self.reload || self.button0)
-		{
-			self.impulse = 0;
-			return;
-		}
-		else  
-		{
-			if(self.weaponmodel == "models/v_awp.md3") player_AwpReload();
-			else player_MosinReload();		
-		}
-	}
-	
-	/******************* Pistol reload sequence *********************************/
-	if (self.impulse == 100 && (self.weaponmodel == "models/v_pm.md3" || self.weaponmodel == "models/v_glock.md3" ))
-	{
-		if (self.PMclip == 20 || self.ammo_9x18 == 0 || self.reload || self.button0)
-		{
-			self.impulse = 0;
-			return;
-		}
-		player_ApsReload();
-	} 
-	
-	/******************* Barrett Zoom Feature ************************/
-	if ((self.impulse == 102) && (self.weapon == WP_MOSIN) && (self.psg1clip > 0))
-	{
-		if (self.zoomlevel == 0)
-		{
-			self.zoomlevel = 1;
-			if(self.weaponmodel == "models/v_awp.md3") player_AwpZoom();
-			else player_MosinZoom();
-		}
-		else
-		{
-			self.zoomlevel = 0;
-			if(self.weaponmodel == "models/v_awp.md3") player_AwpZoomOut();
-			else player_MosinZoomOut();
+			case 0:
+				if(self.lastcheckpoint_x != 0) //(self.model == "models/runner_red.md3" || self.model == "models/runner_blue.md3")
+				{
+					setorigin (self, self.lastcheckpoint);
+					self.impulse = 0;
+					return;
+				}
+				else self.impulse = 0;
+			case WP_PISTOL:
+				if (self.pistolClip == CLIP_PISTOL || self.ammoPistol == 0 || self.reload || self.button0)
+				{
+					self.impulse = 0;
+					return;
+				}
+				playerPistolReload();
+			case WP_SHOTGUN:
+				if (self.shotgunClip == CLIP_SHOTGUN || self.ammoShells == 0 || self.reload || self.button0)
+				{
+					self.impulse = 0;
+					return;
+				}
+				playerShotgunReload();
+			case WP_RIFLE:
+				if (self.rifleClip == CLIP_RIFLE || self.ammoRifle == 0 || self.reload || self.button0)
+				{
+					self.impulse = 0;
+					return;
+				}
+				playerRifleReload ();
+			case WP_SNIPER:
+				if (self.sniperClip == CLIP_SNIPER || self.ammoSniper == 0 || self.reload || self.button0)
+				{
+					self.impulse = 0;
+					return;
+				}
+				playerSniperReload();
 		}
 		self.impulse = 0;
 	}
+	if (self.impulse == 102) //zoom
+	{
+		if(self.weapon == WP_SNIPER && self.weaponframe < 90)
+		{
+			if (self.zoomlevel == 0) self.zoomlevel = 1;
+			else self.zoomlevel = 0;
+		}
+		self.impulse = 0;
+	}
+	if (self.impulse == 103) 
+	{ 
+		if(deathmatch) SpawnBot();
+		self.impulse = 0;
+	}
+	if (self.impulse == 104) KickBot();
+
 }
 
 /*
@@ -892,4 +837,124 @@ void() W_WeaponFrame =
 	if (self.button0) W_Attack ();	// check for attack
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void (vector position, vector direction, float type) shootGib = 
+{
+	if(!type) return;
+	local entity blood;
+	local float r;
+	
+	blood = spawn ();
+	blood.owner = self;
+	blood.movetype = MOVETYPE_BOUNCE;
+	blood.solid = SOLID_NOT;
+	makevectors (self.angles);
+	blood.velocity = direction;
+	blood.avelocity = '300 300 300';
+	blood.angles = vectoangles(blood.velocity);
+	blood.nextthink = time + random(2,4);
+	blood.think = SUB_Remove;
+	blood.touch = SUB_Remove;
+	
+	if(type == 1) 
+	{
+		blood.scale = random(0.6,1.6);
+		r = rint(random() * 4);
+		if(r == 1) setmodel (blood, "models/wood1.bsp");
+		else if(r == 2) setmodel (blood, "models/wood2.bsp");
+		else if(r == 3) setmodel (blood, "models/wood3.bsp");
+		else if(r == 4) setmodel (blood, "models/wood4.bsp");
+	}
+	else if(type == 2) 
+	{
+		blood.alpha = 0.5;
+		blood.scale = random(1,3);
+		setmodel (blood,"models/gib.md3");
+	}
+	else 
+	{
+		blood.scale = random(0.6,1.6);
+		r = rint(random() * 4);
+		if(r == 1) setmodel (blood, "models/metal1.bsp");
+		else if(r == 2) setmodel (blood, "models/metal2.bsp");
+		else if(r == 3) setmodel (blood, "models/metal3.bsp");
+		else if(r == 4) setmodel (blood, "models/metal4.bsp");
+	}
+	setsize (blood,VEC_ORIGIN,VEC_ORIGIN);
+	setorigin (blood,position);
+	//pointparticles(particleeffectnum("smoke"), position, direction, 1);
+};
+	
+
+float (float damage) DetectHitbox =
+{
+	if (trace_ent.absmax_z - trace_endpos_z <= 13 && !trace_ent.duck) //headshot
+	{
+		//sound (trace_ent, CHAN_WEAPON, "weapons/hitsound.wav", 1, ATTN_NORM);
+		damage = rint(damage * 1.7);
+		trace_ent.headshot = 1;
+	}
+	else if(trace_ent.duck && trace_ent.absmax_z - trace_endpos_z <= 6)
+	{
+		damage = rint(damage * 1.7);
+		trace_ent.headshot = 1;
+	}
+	else if (((trace_ent.absmax_z - trace_endpos_z) > 26) && ((trace_ent.absmax_z - trace_endpos_z) < 35))	//legshot
+	{
+		trace_ent.headshot = 0;
+		damage = rint(damage * 0.7);
+	}
+	else trace_ent.headshot = -1;
+	return damage;
+}
+
+float (float damage, vector org, vector dir) DetectObject =
+{
+	if(trace_ent.classname == "button")
+	{
+		AddMultiDamage (trace_ent,damage);
+		return TRUE;
+	}
+	else if(trace_ent.classname == "breakable")
+	{
+		local vector meatdir;
+		pointparticles(particleeffectnum("nailgun_muzzleflash"), org, '500 500 500', 1);
+		WriteByte (MSG_BROADCAST,SVC_TEMPENTITY);
+		WriteByte (MSG_BROADCAST,TE_GUNSHOT);
+		WriteCoord (MSG_BROADCAST,org_x);
+		WriteCoord (MSG_BROADCAST,org_y);
+		WriteCoord (MSG_BROADCAST,org_z);
+
+		meatdir_x = ((random () * 300) + dir_x);
+		meatdir_y = ((random () * 300) + dir_y);
+		meatdir_z = ((random () * 300) + dir_z);
+		shootGib (org,meatdir,trace_ent.sounds);
+		meatdir_x = ((random () * 300) + dir_x);
+		meatdir_y = ((random () * 300) + dir_y);
+		meatdir_z = ((random () * 300) + dir_z);
+		shootGib (org,meatdir,trace_ent.sounds);
+		meatdir_x = ((random () * 300) + dir_x);
+		meatdir_y = ((random () * 300) + dir_y);
+		meatdir_z = ((random () * 300) + dir_z);
+		shootGib (org,meatdir,trace_ent.sounds);
+		
+		AddMultiDamage (trace_ent, damage);
+		return TRUE;
+	}
+	return FALSE;
+}
 

@@ -88,7 +88,9 @@ void() path_corner =
 	movetarget_f ();
 };
 
-
+void() waypoint =
+{
+};
 /*
 =============
 t_movetarget
@@ -111,8 +113,7 @@ local entity	temp;
 	self = other;
 	other = temp;
 
-	if (self.classname == "monster_ogre")
-		sound (self, CHAN_VOICE, "ogre/ogdrag.wav", 1, ATTN_IDLE);// play chainsaw drag sound
+	// if (self.classname == "monster_ogre") sound (self, CHAN_VOICE, "ogre/ogdrag.wav", 1, ATTN_IDLE);// play chainsaw drag sound
 
 //dprint ("t_movetarget\n");
 	self.goalentity = self.movetarget = find (world, targetname, other.target);
@@ -272,14 +273,14 @@ void() HuntTarget =
 void() SightSound =
 {
 	local float	rsnd;
-	if (self.classname == "monster_zombie" || self.classname == "monster_zombie_big")
+	if (self.classname == "monster_zombie" || self.classname == "monster_zombie_big" || self.classname == "monster_demon1")
 	{
 		rsnd = rint(random() * 3);	
 		if (rsnd == 1) sound (self, CHAN_VOICE, "zombie/sight1.wav", 1, ATTN_NORM); 
 		else if (rsnd == 2) sound (self, CHAN_VOICE, "zombie/sight2.wav", 1, ATTN_NORM); 
 		else sound (self, CHAN_VOICE, "zombie/sight3.wav", 1, ATTN_NORM); 
 	}
-	else if (self.classname == "monster_demon1") sound (self, CHAN_VOICE, "demon/sight2.wav", 1, ATTN_NORM);
+	//else if (self.classname == "monster_demon1") sound (self, CHAN_VOICE, "jumper/sight2.wav", 1, ATTN_NORM);
 	else
 	{
 		rsnd = rint(random() * 15);			
@@ -548,28 +549,18 @@ FacingIdeal
 float() FacingIdeal =
 {
 	local	float	delta;
-	
 	delta = anglemod(self.angles_y - self.ideal_yaw);
-	if (delta > 45 && delta < 315)
-		return FALSE;
+	if (delta > 45 && delta < 315) return FALSE;
 	return TRUE;
 };
 
 
 //=============================================================================
 
-float()	DogCheckAttack;
-
 float() CheckAnyAttack =
 {
-	if (!enemy_vis)
-		return FALSE;
-	if (self.classname == "monster_army")
-		return SoldierCheckAttack ();
-	//if (self.classname == "monster_ogre") return OgreCheckAttack ();
-	//if (self.classname == "monster_demon1") return DemonCheckAttack ();
-	if (self.classname == "monster_dog") return DogCheckAttack ();
-	//if (self.classname == "monster_wizard") return WizardCheckAttack ();
+	if (!enemy_vis) return FALSE;
+	if (self.classname == "monster_army") return SoldierCheckAttack ();
 	return CheckAttack ();
 };
 

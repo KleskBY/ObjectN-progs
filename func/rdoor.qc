@@ -1,17 +1,39 @@
+void() func_rdoor_think =
+{
+	// bprint(ftos(self.absmin_x));
+	// bprint(" ");
+	// bprint(ftos(self.absmin_y));
+	// bprint(" ");
+	// bprint(ftos(self.absmin_z));
+	// bprint("\n");
+	
+	// bprint(ftos(self.absmax_x));
+	// bprint(" ");
+	// bprint(ftos(self.absmax_y));
+	// bprint(" ");
+	// bprint(ftos(self.absmax_z));
+	// bprint("\n");
+	self.angles_y = self.angles_y + 1;
+	if(self.angles_y > 60) 
+	{
+		self.angles_y = 0;
+		//setorigin (self, self.origin);
+	}
+	//setorigin (self, self.origin + '-3 -3 0');
+	self.nextthink = time + 0.1;
+	self.think = func_rdoor_think;
+	
+}
 void() func_rdoor =
 {
 	self.angles = '0 0 0';
-	self.movetype = MOVETYPE_FLY;	// so it doesn't get pushed by anything
+	self.movetype = MOVETYPE_FLY;
 	self.solid = SOLID_BSP;
-	self.use = func_wall_use;
 	setmodel (self, self.model);
+	//setorigin (self, self.origin);
+	//self.pos1 = self.absmin;
 	
-
-	
-	//self.angles_y = 20; 
-	
-	self.origin_x = 8;
-	self.origin_y = -248;
-	self.origin_z = 24;
-	self.avelocity_y =100;
-};
+	self.think = func_rdoor_think;
+	self.use =func_rdoor_think;
+	self.nextthink = time + 0.1;
+}

@@ -52,15 +52,15 @@ void (float damage, vector dir) MossbergTraceAttack =
 			meatdir_x = ((random () * 300.000) + dir_x);
 			meatdir_y = ((random () * 300.000) + dir_y);
 			meatdir_z = ((random () * 300.000) + dir_z);
-			ShootGlass (org,meatdir);
+			shootGib (org,meatdir,trace_ent.sounds);
 			meatdir_x = ((random () * 300.000) + dir_x);
 			meatdir_y = ((random () * 300.000) + dir_y);
 			meatdir_z = ((random () * 300.000) + dir_z);
-			ShootGlass (org,meatdir);
+			shootGib (org,meatdir,trace_ent.sounds);
 			meatdir_x = ((random () * 300.000) + dir_x);
 			meatdir_y = ((random () * 300.000) + dir_y);
 			meatdir_z = ((random () * 300.000) + dir_z);
-			ShootGlass (org,meatdir);
+			shootGib (org,meatdir,trace_ent.sounds);
 			
 			AddMultiDamage (trace_ent,damage);
 			return;
@@ -134,13 +134,7 @@ void() player_TozAttack = [1, player_TozAttack2]
 
 void() player_TozAttack2 = [2, player_TozAttack2] 
 {
-	if (self.velocity_x && self.velocity_y)
-	{
-		if (self.walkframe >= 11) self.walkframe = 0;
-		if(self.duck ==1) self.frame = $crouchrun1 + self.walkframe;
-		else self.frame = $run1 + self.walkframe;
-		self.walkframe = self.walkframe + 0.15;
-	}
+	playerAnim();
 	
 	self.weaponframe = self.weaponframe + 1;
 	self.nextthink = time + 0.025;
@@ -161,14 +155,7 @@ void() player_TozReload = [10, player_TozReload2]
 };
 void() player_TozReload2 = [10, player_TozReload2]
 {
-	
-	if (self.velocity_x && self.velocity_y)
-	{
-		if (self.walkframe >= 11) self.walkframe = 0;
-		if(self.duck ==1) self.frame = $crouchrun1 + self.walkframe;
-		else self.frame = $run1 + self.walkframe;
-		self.walkframe = self.walkframe + 0.5;
-	}
+	playerAnim();
 	
 	self.weaponframe = self.weaponframe + 1;
 	self.nextthink = time + 0.05;
@@ -267,14 +254,7 @@ void() player_XmReload = [10, player_XmReload2]
 };
 void() player_XmReload2 = [10, player_XmReload2]
 {
-	
-	if (self.velocity_x && self.velocity_y)
-	{
-		if (self.walkframe >= 11) self.walkframe = 0;
-		if(self.duck ==1) self.frame = $crouchrun1 + self.walkframe;
-		else self.frame = $run1 + self.walkframe;
-		self.walkframe = self.walkframe + 0.5;
-	}
+	playerAnim();
 	
 	self.weaponframe = self.weaponframe + 1;
 	self.nextthink = time + 0.035;

@@ -103,7 +103,7 @@ void		end_sys_globals;		// flag for structure dumping
 .float		modelindex;		// *** model index in the precached list
 .vector		absmin, absmax;	// *** origin + mins / maxs
 
-.float		lasttouch;		// Func button fix
+.float		lastTouch;		// Func button fix
 .float		ltime;			// local time for entity
 .float		movetype;
 .float		solid;
@@ -140,7 +140,7 @@ void		end_sys_globals;		// flag for structure dumping
 .string		weaponmodel;
 .float		weaponframe;
 .float		currentammo;
-.float		ammo_9x18, ammo_shells, ammo545x39, ammo_rockets, ammo_762x54, ammo_barricades;
+.float		ammoPistol, ammoShells, ammoRifle, ammoGrenades, ammoSniper, ammoBarricades;
 
 .float		items;			// bit flags
 
@@ -695,26 +695,30 @@ float (entity e, float healamount, float ignore) T_Heal; // health function
 
 float(entity targ, entity inflictor) CanDamage;
 
+//============================================================================
 
-.float reload;
-.float hgrenade;
-.float hgrenadefired;
-.float headshot;
+
 float WP_ONE = 4096;
-
-float WP_PM = 1;
-float WP_TOZ = 2;
-float WP_AKM = 4;
+float WP_PISTOL = 1;
+float WP_SHOTGUN = 2;
+float WP_RIFLE = 4;
 float WP_GRENADE = 8;
-float WP_MOSIN = 16;
+float WP_SNIPER = 16;
 float WP_HAMMER = 32;
 //float WP_ASHOT = 16;
 //float WP_M60 = 64;
+
+.float anim_finished;
+
+.float reload;
+.float hgrenade;
+.float headshot;
+
 //CLIPS
-.float PMclip;
-.float mossclip;
-.float AKMclip;
-.float psg1clip;
+.float pistolClip;
+.float shotgunClip;
+.float rifleClip;
+.float sniperClip;
 .float m60clip;
 .float zoomlevel;
 .float weaponfired;
@@ -722,7 +726,6 @@ float WP_HAMMER = 32;
 .float weapons;
 .float duck;
 .float ShootsFired;
-.float FOV;
 
 .float class;
 .float menu;
@@ -739,14 +742,26 @@ float		CLASS_MARKSMAN		= 5;
 float		CLASS_ENGINEER		= 6;
 float		CLASS_ASSASSIN		= 7;
 
+float CLIP_PISTOL = 8;
+float CLIP_SHOTGUN = 7;
+float CLIP_RIFLE = 30;
+float CLIP_SNIPER = 10;
+
 float MODE_DE = 2;
 float MODE_HNS = 3;
 float MODE_KZ = 4;
 float MODE_ZM = 5;
 
+float AUTOBOTS = 4;
+
+const float STAT_TIMER = 32;
+
 .float flash_flag; // On/off for the flashlight
 .float barricade_flag;
 .entity hook;
 .float hooking;
-.vector		lastcheckpoint;	 //kz checkpoint
-
+.vector	lastcheckpoint;	 //kz checkpoint
+.vector	pos3;
+.vector	pos4;
+.vector	pos5;
+.float timer;

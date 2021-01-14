@@ -147,13 +147,12 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage=
 	}
 
 // check for godmode or invincibility
-	if (targ.flags & FL_GODMODE)
-		return;
+	if (targ.flags & FL_GODMODE) return;
 	if (targ.invincible_finished >= time)
 	{
 		if (self.invincible_sound < time)
 		{
-			sound (targ, CHAN_ITEM, "items/protect3.wav", 1, ATTN_NORM);
+			//sound (targ, CHAN_ITEM, "items/protect3.wav", 1, ATTN_NORM);
 			self.invincible_sound = time + 2;
 		}
 		return;
@@ -161,11 +160,9 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage=
 
 // team play damage avoidance
 //	if ( (teamplay == 1) && (targ.team > 0)&&(targ.team == attacker.team) )
-	if ( (teamplay == 1) && (targ.team > 0) && (targ.team == attacker.team)
-	&& (targ != attacker) 			
-	&& (attacker.classname == "player")
-	&& (inflictor.classname != "door") )	// because squishing a teammate is still possible
-		return;
+	if(coop && targ != attacker	&& attacker.classname == "player" && inflictor.classname != "door") return;
+	if (teamplay && targ.team && targ.team == attacker.team && targ != attacker	
+	&& attacker.classname == "player" && inflictor.classname != "door")	return;// because squishing a teammate is still possible
 		
 // do the damage
 	targ.health = targ.health - take;

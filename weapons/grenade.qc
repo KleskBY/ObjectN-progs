@@ -5,12 +5,8 @@
 
 void() explode1 = [0, explode2] 
 {
-	local float rand;
     self.nextthink = time + 0.02;
-	rand = random();	
-	if (rand < 0.333) sound (self, CHAN_WEAPON, "weapons/grenade/grenade_explode1.wav", 1, ATTN_NORM);	// bounce sound
-	else if ((rand < 0.666) && (rand >= 0.333)) sound (self, CHAN_WEAPON, "weapons/grenade/grenade_explode2.wav", 1, ATTN_NORM);
-	else sound (self, CHAN_WEAPON, "weapons/grenade/grenade_explode3.wav", 1, ATTN_NORM);
+	sound (self, CHAN_WEAPON, "weapons/grenade/explosion.wav", 1, ATTN_NORM);
 };
 void()	explode2	=	[1,		explode3] {self.nextthink = time + 0.02;};
 void()	explode3	=	[2,		explode4] {self.nextthink = time + 0.02;};
@@ -137,7 +133,7 @@ void() BecomeGrenedeExplosion =
     self.angles = '0 0 0';
 	self.velocity = '0 0 0';
 	self.touch = SUB_Null;
-	setmodel (self, "models/explode.mdl");
+	setmodel (self, "models/explode.md3");
 	self.solid = SOLID_NOT;
 
 	for (i = 0; i < 17; i = i+1)	
@@ -169,7 +165,6 @@ void() MyGrenadeExplode =
 
 void() HandGrenadeTouch =
 {
-	local float rand;
 	local vector meatdir;
 
 	if (other == self.owner) return;		// don't explode on owner
@@ -177,18 +172,18 @@ void() HandGrenadeTouch =
 	{
 		T_Damage (other, self, self, 2);
 		pointparticles(particleeffectnum("nailgun_muzzleflash"), self.origin, self.velocity*50, 1);
-		meatdir_x = ((random () * 300.000) +  self.origin_x);
-		meatdir_y = ((random () * 300.000) +  self.origin_y);
-		meatdir_z = ((random () * 300.000) +  self.origin_z);
-		ShootGlass (self.origin,meatdir);
-		meatdir_x = ((random () * 300.000) +  self.origin_x);
-		meatdir_y = ((random () * 300.000) +  self.origin_y);
-		meatdir_z = ((random () * 300.000) +  self.origin_z);
-		ShootGlass (self.origin,meatdir);
-		meatdir_x = ((random () * 300.000) +  self.origin_x);
-		meatdir_y = ((random () * 300.000) +  self.origin_y);
-		meatdir_z = ((random () * 300.000) +  self.origin_z);
-		ShootGlass (self.origin,meatdir);
+		meatdir_x = ((random () * 300) +  self.origin_x);
+		meatdir_y = ((random () * 300) +  self.origin_y);
+		meatdir_z = ((random () * 300) +  self.origin_z);
+		shootGib (self.origin,meatdir,other.sounds);
+		meatdir_x = ((random () * 300) +  self.origin_x);
+		meatdir_y = ((random () * 300) +  self.origin_y);
+		meatdir_z = ((random () * 300) +  self.origin_z);
+		shootGib (self.origin,meatdir,other.sounds);
+		meatdir_x = ((random () * 300) +  self.origin_x);
+		meatdir_y = ((random () * 300) +  self.origin_y);
+		meatdir_z = ((random () * 300) +  self.origin_z);
+		shootGib (self.origin,meatdir,other.sounds);
 	}
 	// if (other.takedamage == DAMAGE_AIM)
 	// {
@@ -196,30 +191,25 @@ void() HandGrenadeTouch =
 		// self.velocity = self.velocity * 0.3;
 		// return;
 	// }
-
-	rand = random();
-	if (rand < 0.333) sound (self, CHAN_WEAPON, "weapons/grenade/grenade_hit1.wav", 1, ATTN_NORM);	// bounce sound
-	else if((rand < 0.666) && (rand >= 0.333)) sound (self, CHAN_WEAPON, "weapons/grenade/grenade_hit2.wav", 1, ATTN_NORM);
-	else sound (self, CHAN_WEAPON, "weapons/grenade/grenade_hit3.wav", 1, ATTN_NORM);
+	sound (self, CHAN_WEAPON, "weapons/grenade/hit.wav", 1, ATTN_NORM);
 	if (self.velocity == '0 0 0') self.avelocity = '0 0 0';
 };
 
 void() W_FireHandGrenade =
 {
-	local	entity missile;
+	local entity missile;
 	self.punchangle_x = -2;
 
 	missile = spawn ();
 	missile.owner = self;
 	missile.movetype = MOVETYPE_BOUNCE;
 	missile.solid = SOLID_BBOX;
-	if(!deathmatch) missile.classname = "player";
-	else missile.classname = "grenade";
+	missile.classname = "grenade";
 // set missile speed
 
 	makevectors (self.v_angle);
 
-	if (self.v_angle_x) missile.velocity = v_forward*(20 * self.grenadetime) + v_up * 200 + (2*(random() - 0.5)) * v_right*10 + (2*(random() - 0.5)) *v_up*30;
+	if (self.v_angle_x) missile.velocity = v_forward * (25 * self.grenadetime) + v_up * 125 + (2*(random() - 0.5)) * v_right*10 + (2*(random() - 0.5)) *v_up*30;
 	else
 	{
 		missile.velocity = aim(self, 10000);
@@ -238,130 +228,83 @@ void() W_FireHandGrenade =
 	missile.search_time = time + 3.0;
 	missile.nextthink   = time + 1.5; //Delay
   
-    self.hgrenadefired = TRUE;
     setmodel (missile, "models/w_grenade.md3");
 	setsize (missile, '0 0 0', '1 1 1');
-	setorigin (missile, self.origin - (v_right * -6.000) + (v_up *    11.000));
+	setorigin (missile, self.origin - (v_right * -6) + (v_up *    11));
 	if(self.currentammo == 0) CycleWeaponReverseCommand();
+	self.grenadetime = 0;
 };
 
-void () player_HEAttack = [103.000, hgrenade2]
+void() player_HEAttack = [103, hgrenade2]
 {
 	self.grenadetime = 10;
-	self.weaponframe = 1;
-	self.nextthink = time + 0.035;
+	self.weaponframe = 36;
+	self.nextthink = time + 0.025;
 };
-void () hgrenade3;
-
-void () hgrenade2 = [103.0, hgrenade2]
+void() hgrenade3;
+void() hgrenade2 = [103.0, hgrenade2]
 {
-	
-	if (self.velocity_x && self.velocity_y)
-	{
-		if (self.walkframe >= 11) self.walkframe = 0;
-		if(self.duck ==1) self.frame = $crouchrun1 + self.walkframe;
-		else self.frame = $run1 + self.walkframe;
-		self.walkframe = self.walkframe + 0.2;
-	}
-	
+	playerAnim();
 	self.weaponframe = self.weaponframe + 1;
-	self.nextthink = time + 0.01;
-	if (self.weaponframe == 10)sound(self,CHAN_WEAPON,"weapons/grenade/grenade_pinpull.wav",1,ATTN_NORM);
-	
-	if (self.weaponframe >= 79)
-	{
-		self.think = hgrenade3;
-	}
+	self.nextthink = time + 0.025;
+	if (self.weaponframe == 49)sound(self,CHAN_WEAPON,"weapons/grenade/pinpull.wav",1,ATTN_NORM);
+	if (self.weaponframe >= 60) self.think = hgrenade3;
 };
 
-void () hgrenade4;
+void() hgrenade4;
 
-void () hgrenade3 = [1, hgrenade3] 
+void() hgrenade3 = [1, hgrenade3] 
 {
-	
-	if (self.velocity_x && self.velocity_y)
-	{
-		if (self.walkframe >= 11) self.walkframe = 0;
-		if(self.duck ==1) self.frame = $crouchrun1 + self.walkframe;
-		else self.frame = $run1 + self.walkframe;
-		self.walkframe = self.walkframe + 0.2;
-	}
-	
-	local string temp;
-	local float power;
+	playerAnim();
+	self.nextthink = time + 0.02;
+	self.attack_finished = time + 0.03;
+		
+
 	if (self.button0)
 	{
-		if (self.grenadetime > 40)
-		{
-			self.nextthink = time + 0.01; 
-			self.attack_finished = self.attack_finished + 0.03;
-		}
-		else
+		if (self.grenadetime <= 40)
 		{
 			self.grenadetime = self.grenadetime + 0.3; 
-			power = ((self.grenadetime-10) / 30) *100;
-			temp = ftos(power);
-			temp = substring(temp,0,strstrofs(temp, ".", 0));
-			temp = strcat(temp, "%");
-			centerprint (self, temp);
-			
-			self.nextthink = time + 0.01;
-			self.attack_finished = self.attack_finished + 0.03;
+			// local string temp;
+			// local float power;
+			// power = ((self.grenadetime-10) / 30) *100;
+			// temp = ftos(power);
+			// temp = substring(temp,0,strstrofs(temp, ".", 0));
+			// temp = strcat(temp, "%");
+			// centerprint (self, temp);
 		}
 	}
-	else
-	{
-		self.nextthink = time + 0.01;
-		self.attack_finished = time + 0.03;
-		
-		self.weaponframe = 80;
-		self.think = hgrenade4;
-	}
+	else self.think = hgrenade4;
 };
 
-void () hgrenade4 = [2, hgrenade4]
+void() hgrenade4 = [2, hgrenade4]
 {
-	
-	if (self.velocity_x && self.velocity_y)
-	{
-		if (self.walkframe >= 11) self.walkframe = 0;
-		if(self.duck ==1) self.frame = $crouchrun1 + self.walkframe;
-		else self.frame = $run1 + self.walkframe;
-		self.walkframe = self.walkframe + 0.2;
-	}
+	playerAnim();
 	
 	self.weaponframe = self.weaponframe + 1;
 	self.nextthink = time + 0.02;
 	
-	if (self.weaponframe == 85) W_FireHandGrenade ();
-	if (self.weaponframe >= 109) self.think = player_run; //self.think = SUB_Remove;	
+	if (self.weaponframe == 70) W_FireHandGrenade ();
+	if (self.weaponframe >= 82) self.think = player_run; //self.think = SUB_Remove;	
 };
 
 
 
-void () player_HESwitch = [ 1.000, player_HESwitch2 ]
+void() player_HESwitch = [ 1, player_HESwitch2 ]
 {
-	self.weaponmodel = "models/v_grenade.md3";
-	self.weaponframe = 111;
+	self.weaponframe = 1;
 	self.nextthink = time + 0.015;
 	self.reload = 1;
 };
 
-void () player_HESwitch2 = [ 1.000, player_HESwitch2 ]
+void() player_HESwitch2 = [ 1, player_HESwitch2 ]
 {
-	
-	if (self.velocity_x && self.velocity_y)
-	{
-		if (self.walkframe >= 11) self.walkframe = 0;
-		if(self.duck ==1) self.frame = $crouchrun1 + self.walkframe;
-		else self.frame = $run1 + self.walkframe;
-		self.walkframe = self.walkframe + 0.2;
-	}
+	playerAnim();
 	
 	self.weaponframe = self.weaponframe + 1;
 	self.nextthink = time + 0.015;
-	self.currentammo =  self.ammo_rockets;
-	if(self.weaponframe >= 142)
+	self.currentammo =  self.ammoGrenades;
+	if(self.weaponframe >= 35)
 	{
 		self.think = player_run;//player_change_gun;
 		self.reload = 0;

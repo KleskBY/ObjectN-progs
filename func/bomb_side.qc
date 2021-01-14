@@ -27,8 +27,13 @@ void EndRound()
 	{
 		remove(e);
 	}
+	e = find(world, classname, "bomb_side0");
+	if(e) e.timer = 0;	
+	e = find(world, classname, "bomb_sideB");
+	if(e) e.timer = 0;
 	for (e = findchain(classname, "player"); e; e = e.chain) 
 	{
+		e.attack_finished = time + 1;
 		if(e.team == TEAM_USSR) USSRPlayers = USSRPlayers + 1;
 		else if(e.team == TEAM_USA) USAPlayers = USAPlayers + 1;
 	}
@@ -108,18 +113,18 @@ void EndRound()
 		e.items = parm1;
 		e.health = parm2;
 		e.armorvalue = parm3;
-		e.ammo_9x18 = parm4;
-		e.ammo545x39 = parm5;
-		e.ammo_rockets = parm6;
-		e.ammo_shells = parm7;
-		e.ammo_762x54 = parm17;
+		e.ammoPistol = parm4;
+		e.ammoRifle = parm5;
+		e.ammoGrenades = parm6;
+		e.ammoShells = parm7;
+		e.ammoSniper = parm17;
 		e.weapon = parm8;
 		e.armortype = parm9 * 0.01;
 		e.weapons = parm10;
-		e.PMclip = parm11;
-		e.mossclip = parm12;
-		e.AKMclip = parm13;
-		e.psg1clip = parm15;
+		e.pistolClip = parm11;
+		e.shotgunClip = parm12;
+		e.rifleClip = parm13;
+		e.sniperClip = parm15;
 		e.m60clip = parm16;
 		
 		backup = self;
@@ -138,10 +143,10 @@ void EndRound()
 		e.angles = spot.angles;
 		e.fixangle = TRUE;		// turn this way immediately
 
-		if(e.weapon == WP_PM) 
+		if(e.weapon == WP_PISTOL) 
 		{
-			if(e.team == TEAM_USA) setmodel (e, "models/usa_glock.md3");
-			else setmodel (e, "models/ussr_aps.md3");
+			if(e.team == TEAM_USA) setmodel (e, "models/usa_pistol.md3");
+			else setmodel (e, "models/ussr_pistol.md3");
 		}
 		else if(e.weapon == WP_ONE) 
 		{
@@ -152,33 +157,31 @@ void EndRound()
 				else setmodel (e, "models/ussr_knife.md3");
 			}
 		}
-		else if(e.weapon == WP_TOZ)
+		else if(e.weapon == WP_SHOTGUN)
 		{
-			if(e.team == TEAM_USA) setmodel (e, "models/usa_xm.md3");
-			else setmodel (e, "models/ussr_toz.md3");
+			if(e.team == TEAM_USA) setmodel (e, "models/usa_shot.md3");
+			else setmodel (e, "models/ussr_shot.md3");
 		}
-		else if(e.weapon == WP_AKM)
+		else if(e.weapon == WP_RIFLE)
 		{
-			if(e.team == TEAM_USA) setmodel (e, "models/usa_m4.md3");
-			else setmodel (e, "models/ussr_ak74.md3");
+			if(e.team == TEAM_USA) setmodel (e, "models/usa_rifle.md3");
+			else setmodel (e, "models/ussr_rifle.md3");
 		}
-		else if(e.weapon == WP_MOSIN)
+		else if(e.weapon == WP_SNIPER)
 		{
-			if(e.team == TEAM_USA) setmodel (e, "models/usa_awp.md3");
-			else setmodel (e, "models/ussr_mosin.md3");
+			if(e.team == TEAM_USA) setmodel (e, "models/usa_sniper.md3");
+			else setmodel (e, "models/ussr_sniper.md3");
 		}
 		else setmodel (e, "models/runner_red.md3");
 		
-		modelindex_ussr_aps = e.modelindex;
-
 		setsize (e, VEC_HULL_MIN, VEC_HULL_MAX);
-		e.view_ofs = '0 0 22';
+		e.view_ofs = '0 0 23';
 		e.velocity = '0 0 0';
 
 		if (deathmatch || coop)
 		{
 			makevectors(e.angles);
-			spawn_tfog (e.origin + v_forward*20);
+			spawn_tfog (e.origin + v_forward * 20);
 		}
 		spawn_tdeath (e.origin, e);
 		
@@ -275,12 +278,11 @@ void() USSR_Win =
 void() bomb_post_think = 
 {
 	local entity e;
-	local float timer;
-	timer = time - self.wait;
-	if(timer >= 38)
+	local float Timer;
+	Timer = time - self.wait;
+	if(Timer >= 40 && world.model != "maps/e1m8.bsp")
 	{
 		bprint("USSR WON\n");
-		self.owner.wait = time;
 		self.owner.touch = bomb_side_touch;
 		if(self.owner.classname == "bomb_sideB")
 		{
@@ -310,12 +312,11 @@ void() bomb_post_think =
 		remove(self);
 		
 	}
-		
 	self.nextthink = time + 0.1;
 }
 void() bombexplode1 = [0, bombexplode2] {
     self.nextthink = time + 0.02;	
-	sound (self, CHAN_WEAPON, "bomb/c4explode.wav", 0.8, ATTN_NONE);	// bounce sound
+	sound (self, CHAN_WEAPON, "bomb/explosion.wav", 0.8, ATTN_NONE);	// bounce sound
 };
 void()	bombexplode2	=	[1,	bombexplode3] {self.nextthink = time + 0.02;};
 void()	bombexplode3	=	[2,	bombexplode4] {self.nextthink = time + 0.02;};
@@ -334,11 +335,14 @@ void()	bombexplode15	=	[14,bombexplode16] {self.nextthink = time + 0.03;};
 void()	bombexplode16	=	[15,bombexplode17] {self.nextthink = time + 0.03;};
 void()	bombexplode17	=	[16,bomb_post_think] 
 {
-	local float r;
-	r = random();
-	if(r < 0.333) sound (self, CHAN_VOICE, "ussr/win1.wav", 1, ATTN_NONE);
-	else if(r > 0.333 && r < 0.666) sound (self, CHAN_VOICE, "ussr/win2.wav", 1, ATTN_NONE);
-	else sound (self, CHAN_VOICE, "ussr/win3.wav", 1, ATTN_NONE);
+	if(world.model != "maps/e1m8.bsp")
+	{
+		local float r;
+		r = random();
+		if(r < 0.333) sound (self, CHAN_VOICE, "ussr/win1.wav", 1, ATTN_NONE);
+		else if(r > 0.333 && r < 0.666) sound (self, CHAN_VOICE, "ussr/win2.wav", 1, ATTN_NONE);
+		else sound (self, CHAN_VOICE, "ussr/win3.wav", 1, ATTN_NONE);
+	}
 	setmodel(self, "");
 	self.light_lev = 0;
 	self.nextthink = time + 0.03;
@@ -372,20 +376,39 @@ void(entity inflictor, entity attacker, float damage) T_BombRadiusDamage =
 
 void() bomb_think = 
 {
-	local float timer;
+	local float Timer;
 	local entity e;
-	timer = time - self.wait;
-	
-	if(timer >= 35)
+	Timer = time - self.wait;
+	local float maxTimer;
+	maxTimer = 35;
+	if (world.model == "maps/e1m8.bsp") maxTimer = 60;
+
+	if(self.lastTouch + ( 2 - ((2/maxTimer) * Timer) ) < time) //0.057 * 35 =2
 	{
-		T_BombRadiusDamage (self, self.owner, 1000);
+		if(Timer < (maxTimer -1)) sound (self, CHAN_BODY, "bomb/beep.wav", 1, ATTN_NORM);
+		else if(Timer > maxTimer) sound (self, CHAN_BODY, "misc/null.wav", 1, ATTN_NORM);
+		else sound (self, CHAN_BODY, "bomb/pizda.wav", 1, ATTN_NORM);
+		self.lastTouch = time;
+		self.light_lev = 200;
+	}
+	if(Timer < (maxTimer -1))self.light_lev = self.light_lev * 0.9;
+	if(Timer >= (maxTimer -1))
+	{
+		self.color_x = 0;
+		self.color_y = 1;
+		self.color_z = 0;
+	}
+	if(Timer >= maxTimer)
+	{
+		if (world.model == "maps/e1m8.bsp") T_BombRadiusDamage (self, self.owner, 999999);
+		else T_BombRadiusDamage (self, self.owner, 1000);
 		WriteByte (MSG_BROADCAST, SVC_TEMPENTITY);
 		WriteByte (MSG_BROADCAST, TE_EXPLOSION);
 		WriteCoord (MSG_BROADCAST, self.origin_x);
 		WriteCoord (MSG_BROADCAST, self.origin_y);
 		WriteCoord (MSG_BROADCAST, self.origin_z);
 		
-		setmodel (self, "models/explode.mdl");
+		setmodel (self, "models/explode.md3");
 		self.scale = 4;
 		bombexplode1();
 		for (e = findchain(classname, "player"); e; e = e.chain) 
@@ -395,23 +418,13 @@ void() bomb_think =
 		}
 	}
 
-	if(timer >= 34)
-	{
-		self.color_x = 0;
-		self.color_y = 1;
-		self.color_z = 0;
-	}
-	if(self.lasttouch + (2-(0.057 * timer)) < time) //0.057 * 35 =2
-	{
-		if(timer < 34) sound (self, CHAN_BODY, "bomb/c4beep.wav", 1, ATTN_NORM);
-		else if(timer > 35) sound (self, CHAN_BODY, "misc/null.wav", 1, ATTN_NORM);
-		else sound (self, CHAN_BODY, "bomb/c4pizda.wav", 1, ATTN_NORM);
-		self.lasttouch = time;
-		self.light_lev = 200;
-	}
-	if(timer < 34)self.light_lev = self.light_lev * 0.9;
-	self.nextthink = time + 0.1;
+
 	
+	
+	
+	
+	for (e = findchain(classname, "player"); e; e = e.chain) e.timer = Timer;
+	self.nextthink = time + 0.1;
 }
 
 void() bomb_side_defuse_touch = 
@@ -426,24 +439,24 @@ void() bomb_side_defuse_touch =
 			other.reload = 1;
 			other.velocity = '0 0 0';
 			
-			percent = ((self.lasttouch) / 5) * 100;
+			percent = ((self.lastTouch) / 5) * 100;
 			temp = ftos(percent);
 			temp = substring(temp,0,strstrofs(temp, ".", 0));
 			temp = strcat(temp, "%");
 			centerprint(other, temp);
 			
-			if(self.lasttouch > 5)
+			if(self.lastTouch > 5)
 			{
 				sound (self, CHAN_BODY, "bomb/c4disarmed.wav", 1, ATTN_NONE);
 				USA_Win();
 			}
-			if(self.lasttouch == 0) sound (self, CHAN_BODY, "bomb/c4disarm.wav", 1, ATTN_NORM);
-			self.lasttouch = self.lasttouch + 0.01;
+			if(self.lastTouch == 0) sound (self, CHAN_BODY, "bomb/c4disarm.wav", 1, ATTN_NORM);
+			self.lastTouch = self.lastTouch + 0.01;
 		}
 		else 
 		{
 			centerprint(other, "Hold E to defuse the bomb");
-			self.lasttouch = 0;
+			self.lastTouch = 0;
 			other.reload = 0;
 		}
 	}
@@ -454,29 +467,27 @@ void() bomb_side_touch =
 	local entity bomb;
 	local float percent;
 	local string temp;
-	if(other.classname == "player" && other.team == TEAM_USSR && other.items & IT_BOMB)
+	if(other.classname == "player" && ((other.team == TEAM_USSR && other.items & IT_BOMB) || world.model == "maps/e1m8.bsp"))
 	{
 		if(other.buttonuse)
 		{
 			other.reload = 1;
 			other.velocity = '0 0 0';
-			percent = ((self.lasttouch) / 3) * 100;
+			percent = ((self.lastTouch) / 3) * 100;
 			temp = ftos(percent);
 			temp = substring(temp,0,strstrofs(temp, ".", 0));
 			temp = strcat(temp, "%");
 			centerprint(other, temp);
 			
-			if(self.lasttouch == 0)
+			if(self.lastTouch == 0) sound (self, CHAN_BODY, "bomb/c4on.wav", 0.9, ATTN_NORM);
+			// if(self.lastTouch > 0.5 && self.lastTouch < 3 && self.timer + 0.5 < time) 
+			// {
+				// sound (self, CHAN_BODY, "bomb/click.wav", 0.9, ATTN_NORM);
+				// self.timer = time;
+			// }
+			if(self.lastTouch > 3)
 			{
-				sound (self, CHAN_BODY, "bomb/c4on.wav", 1, ATTN_NORM);
-			}
-			if(self.lasttouch  > 2.3)
-			{
-				sound (self, CHAN_BODY, "bomb/c4click.wav", 1, ATTN_NORM);
-			}
-			if(self.lasttouch > 3)
-			{
-				sound (self, CHAN_VOICE, "bomb/c4armed.wav", 1, ATTN_NONE);
+				sound (self, CHAN_VOICE, "bomb/armed.wav", 0.9, ATTN_NONE);
 				bomb = spawn ();
 				bomb.owner = self;
 				bomb.solid = SOLID_TRIGGER;
@@ -487,18 +498,21 @@ void() bomb_side_touch =
 				bomb.light_lev = 200;
 				bomb.color = '1 0 0';
 				setorigin (bomb, self.pos1);
-				self.lasttouch = 0;
+				bomb.angles = self.pos2;
+				self.lastTouch = 0;
 				bomb.wait = time;
 				bomb.think = bomb_think;
 				bomb.nextthink = time + 0.1;
 				
 				self.touch = bomb_side_defuse_touch;
 				self.wait = time;
+				self.timer = 1;
 				if(self.classname == "bomb_sideB")
 				{
 					bomb = find(world, classname, "bomb_side");
 					if(bomb)
 					{
+						bomb.timer = 1;
 						bomb.touch = SUB_Null;
 						bomb.wait = time;
 					}
@@ -508,21 +522,26 @@ void() bomb_side_touch =
 					bomb = find(world, classname, "bomb_sideB");
 					if(bomb)
 					{
+						bomb.timer = 1;
 						bomb.touch = SUB_Null;
 						bomb.wait = time;
 					}
 				}
+				
+				other.items = other.items - (other.items & IT_BOMB);
 				for (bomb = findchain(classname, "player"); bomb; bomb = bomb.chain) 
 				{
 					centerprint(bomb, "Bomb has been planted");
 				}
+				
+				SUB_UseTargets();
 			}
-			self.lasttouch = self.lasttouch + 0.01;
+			self.lastTouch = self.lastTouch + 0.01;
 		}
 		else 
 		{
 			centerprint(other, "Hold E to plant the bomb");
-			self.lasttouch = 0;
+			self.lastTouch = 0;
 			other.reload = 0;
 		}
 	}
@@ -536,6 +555,9 @@ void() bomb_side_think =
 	local float Players;
 	local float USSRPlayers;
 	local float USAPlayers;
+	local float maxTimer;
+	maxTimer = 35;
+	if (world.model == "maps/e1m8.bsp") maxTimer = 60;
 	
 	for (e = findchain(classname, "player"); e; e = e.chain) 
 	{
@@ -546,46 +568,38 @@ void() bomb_side_think =
 		Players = Players + 1;
 	}
 	
-	if(USAPlayersAllive == 0 && USAPlayers > 0) 
+	if(USAPlayersAllive == 0 && USAPlayers > 0 && Players > 1) USSR_Win();
+	if(USSRPlayersAllive == 0 && USSRPlayers > 0 && Players > 1) 
 	{
-		if(Players > 1) USSR_Win();
+		e = find(self, classname, "bomb");
+		if(!e) USA_Win();
 	}
-	if(USSRPlayersAllive == 0 && USSRPlayers > 0) 
+	if(USAPlayersAllive == 0 && USSRPlayersAllive == 0 && world.model != "maps/e1m8.bsp") 
 	{
-		if(Players > 1)
-		{
-			e = find(self, classname, "bomb");
-			if(!e) USA_Win();
-		}
-	}
-	if(USAPlayersAllive == 0 && USSRPlayersAllive == 0) 
-	{
-		//bprint("Round draw\n");
 		e = find(self, classname, "bomb");
 		if(!e) EndRound();
 	}
 	
 	if(self.wait + 150 < time) USA_Win();
 	
-	self.nextthink = time+0.1;
+	if(self.timer == 0) for (e = findchain(classname, "player"); e; e = e.chain) e.timer = (time + maxTimer) - (self.wait + 150);
+	self.nextthink = time + 0.1;
 }
 
 void() bomb_side =
 {
-	if(deathmatch != MODE_DE) return;
+	if(deathmatch != MODE_DE && world.model != "maps/e1m8.bsp") return;
 	precache_model2("models/w_bomb.md3");
 	precache_sound2("ussr/win1.wav");
 	precache_sound2("ussr/win2.wav");
 	precache_sound2("ussr/win3.wav");
 	precache_sound2("usa/win1.wav");
 	precache_sound2("usa/win2.wav");
-	precache_sound2("bomb/c4armed.wav");
-	precache_sound2("bomb/c4beep.wav");
-	precache_sound2("bomb/c4click.wav");
+	precache_sound2("bomb/armed.wav");
+	precache_sound2("bomb/beep.wav");
 	precache_sound2("bomb/c4on.wav");
-	precache_sound2("bomb/c4pizda.wav");
-	precache_sound2("bomb/c4explode.wav");
-	precache_sound2("bomb/c4plant.wav");
+	precache_sound2("bomb/pizda.wav");
+	precache_sound2("bomb/explosion.wav");
 	precache_sound2("bomb/c4disarm.wav");
 	precache_sound2("bomb/c4disarmed.wav");
 	precache_sound2("misc/null.wav");
@@ -600,6 +614,7 @@ void() bomb_side =
 	self.wait = time;
 
 	self.think = bomb_side_think;
+	if (world.model == "maps/e1m8.bsp") self.think = SUB_Null;
 	self.touch = bomb_side_touch;
 	self.nextthink = time + 0.1;
 }
@@ -607,7 +622,7 @@ void() bomb_side =
 void() bomb_sideB =
 {
 	if(deathmatch != MODE_DE) return;
-	if (self.angles != '0 0 0') SetMovedir ();
+	if (self.angles != '0 0 0') SetMovedir();
 	self.solid = SOLID_TRIGGER;
 	setorigin (self, self.origin);	
 	setmodel (self, self.model);

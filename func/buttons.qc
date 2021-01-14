@@ -35,17 +35,17 @@ void() button_blocked =
 void() button_fire =
 {
 	if (self.spawnflags & DOOR_SILVER_KEY) 
-	if(self.lasttouch +3 < self.ltime)
+	if(self.lastTouch +3 < self.ltime)
 	{
 		sound (self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
-		self.lasttouch = self.ltime;
+		self.lastTouch = self.ltime;
 		self.state = STATE_UP;
 		SUB_CalcMove (self.pos2, self.speed, button_wait);
 	}
 	if (self.state == STATE_UP || self.state == STATE_TOP) return;
 
 	sound (self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
-	self.lasttouch = self.ltime;
+	self.lastTouch = self.ltime;
 	self.state = STATE_UP;
 	SUB_CalcMove (self.pos2, self.speed, button_wait);
 };
@@ -113,13 +113,13 @@ void() func_button =
 	// }
 	if (self.sounds == 1)
 	{
-		precache_sound2 ("func/terminaldoor.wav");
-		self.noise = "func/terminaldoor.wav";
+		precache_sound2 ("func/button1.wav");
+		self.noise = "func/button1.wav";
 	}
 	if (self.sounds == 2)
 	{
-		precache_sound2("func/button1.wav");
-		self.noise = "func/button1.wav";
+		precache_sound2("func/button2.wav");
+		self.noise = "func/button2.wav";
 	}
 	if (self.sounds == 3)
 	{

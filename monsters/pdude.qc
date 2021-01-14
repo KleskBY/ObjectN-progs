@@ -77,66 +77,6 @@ SOLDIER CODE
 ==============================================================================
 */
 
-void() Laser_Touch =
-{
-	local vector org;
-	
-	if (other == self.owner)
-		return;		// don't explode on owner
-
-	if (pointcontents(self.origin) == CONTENT_SKY)
-	{
-		remove(self);
-		return;
-	}
-	
-	sound (self, CHAN_WEAPON, "enforcer/enfstop.wav", 1, ATTN_STATIC);
-	org = self.origin - 8*normalize(self.velocity);
-
-	if (other.health)
-	{
-		SpawnBlood (org, self.velocity*0.2, 15);
-		T_Damage (other, self, self.owner, 20);
-	}
-	else
-	{
-		WriteByte (MSG_BROADCAST, SVC_TEMPENTITY);
-		WriteByte (MSG_BROADCAST, TE_GUNSHOT);
-		WriteCoord (MSG_BROADCAST, org_x);
-		WriteCoord (MSG_BROADCAST, org_y);
-		WriteCoord (MSG_BROADCAST, org_z);
-	}
-	
-	remove(self);	
-};
-
-void(vector org, vector vec) LaunchLaser =
-{		
-	if (self.classname == "monster_heavy") sound (self, CHAN_WEAPON, "enforcer/enfire.wav", 1, ATTN_NORM);
-
-	vec = normalize(vec);
-	
-	newmis = spawn();
-	newmis.owner = self;
-	newmis.movetype = MOVETYPE_FLY;
-	newmis.solid = SOLID_BBOX;
-	newmis.effects = EF_DIMLIGHT;
-
-	setmodel (newmis, "progs/laser.mdl");
-	setsize (newmis, '0 0 0', '0 0 0');		
-
-	setorigin (newmis, org);
-
-	newmis.velocity = vec * 600;
-	newmis.angles = vectoangles(newmis.velocity);
-
-	newmis.nextthink = time + 5;
-	newmis.think = SUB_Remove;
-	newmis.touch = Laser_Touch;
-};
-
-
-
 void() pdude_fire;
 void() pdudeFireGrenade;
 
@@ -228,7 +168,7 @@ void()	pdude_run1	=[	$run1,		pdude_run2	]
 {
   self.duck = 0;
   setsize (self, '-9 -9 -24', '9 9 34');
-  //self.PMclip = 8;
+  //self.pistolClip = 8;
 };
 void()	pdude_run2	=[	$run2,		pdude_run3	] {ai_run(5);};
 void()	pdude_run3	=[	$run3,		pdude_run4	] {ai_run(3);};
@@ -239,10 +179,10 @@ void()	pdude_run7	=[	$run7,		pdude_run8	] {ai_run(7);};
 void()	pdude_run8	=[	$run8,		pdude_run9	] {ai_run(10);};
 void()	pdude_run9	=[	$run9,		pdude_run1	] {ai_run(7);};
 
-void()      pdude_load1   =[    $load1,      pdude_load2] {self.PMclip = 20;};
+void()      pdude_load1   =[    $load1,      pdude_load2] {self.pistolClip = 20;};
 void()      pdude_load2   =[    $load2,      pdude_load3] {};
 void()      pdude_load3   =[    $load3,      pdude_load4] {};
-void()      pdude_load4   =[    $load4,      pdude_load5] {sound(self,CHAN_WEAPON,"weapons/ak47/ak47_clipout.wav",1,ATTN_NORM);};
+void()      pdude_load4   =[    $load4,      pdude_load5] {sound(self,CHAN_WEAPON,"weapons/rifle/clipout.wav",1,ATTN_NORM);};
 void()      pdude_load5   =[    $load5,      pdude_load6] {};
 void()      pdude_load6   =[    $load6,      pdude_load7] {};
 void()      pdude_load7   =[    $load7,      pdude_load8] {};
@@ -252,7 +192,7 @@ void()      pdude_load10   =[    $load10,      pdude_load11] {};
 void()      pdude_load11   =[    $load11,      pdude_load12] {};
 void()      pdude_load12   =[    $load12,      pdude_load13] {};
 void()      pdude_load13   =[    $load13,      pdude_load14] {};
-void()      pdude_load14   =[    $load14,      pdude_run1] {sound(self,CHAN_WEAPON,"weapons/ak47/ak47_clipin.wav",1,ATTN_NORM);};
+void()      pdude_load14   =[    $load14,      pdude_run1] {sound(self,CHAN_WEAPON,"weapons/rifle/clipin.wav",1,ATTN_NORM);};
 
 
 void() pdude_drawa1;
@@ -332,7 +272,7 @@ void()      pdude_roll27 = [ $roll27 , pdude_straferight1 ] {ai_moveforeward(-0.
 // { 
  // ai_face();
  // SUB_CheckRefire (pdude_fired1);
- // if (self.PMclip <= 0)
+ // if (self.pistolClip <= 0)
    // {
      // self.think = pdude_load1;
    // }
@@ -354,7 +294,7 @@ void()      pdude_firea3 = [ $firea3 , pdude_run1 ]
 { 
 	ai_face();
 	SUB_CheckRefire (pdude_firea1);
-	if (self.PMclip <= 0) self.think = pdude_load1;
+	if (self.pistolClip <= 0) self.think = pdude_load1;
 	else pdude_fire();
 };
 
@@ -403,7 +343,7 @@ void()      pdude_drawa1   =[    $drawa1,     pdude_drawa2   ]
 	}
 
 	/*** Check to see if reload is necessary ***/
-	if (self.PMclip <= 0) self.think = pdude_load1;
+	if (self.pistolClip <= 0) self.think = pdude_load1;
 
 	/*** Check to see if someone is in front of me ***/
 	traceline(self.origin,self.enemy.origin,0,self);
@@ -442,7 +382,7 @@ void()      pdude_fireb3         =[    $fireb1,     pdude_run1     ]
 	ai_face();
 	self.nextthink = time + 0.02;
 	SUB_CheckRefire (pdude_fireb1);
-	if (self.PMclip <= 0) self.think = pdude_load1;
+	if (self.pistolClip <= 0) self.think = pdude_load1;
 	else pdude_fire();
 };
 
@@ -514,7 +454,7 @@ void()	pdude_Melee =
 	if (vlen(delta) > 100) return;
 	if (!CanDamage (self.enemy, self)) return;
 		
-    sound (self, CHAN_WEAPON, "weapons/knife/knife_hit1.wav", 1, ATTN_NORM);
+    sound (self, CHAN_WEAPON, "weapons/knife/hit.wav", 1, ATTN_NORM);
 	ldmg = 10 + 5*random();
 	T_Damage (self.enemy, self, self, ldmg);	
 
@@ -606,7 +546,7 @@ void() pdude_fire =
 	dir = normalize (dir - self.origin);
 	
 	//guardFire(17,dir);
-	sound (self, CHAN_WEAPON, "npc/soldier_scorpion.wav", 1, ATTN_NORM);
+	sound (self, CHAN_WEAPON, "weapons/pistol/pm.wav", 1, ATTN_NORM);
 	if(self.duck == 1) pointparticles(particleeffectnum("shotgun_muzzleflash"), self.origin + self.view_ofs + v_up * -24 , self.velocity*50, 1);
 	else pointparticles(particleeffectnum("shotgun_muzzleflash"), self.origin + self.view_ofs + v_up * -13, self.velocity*50, 1);
 
@@ -619,17 +559,17 @@ void() pdude_fire =
 		if (trace_ent.takedamage) T_Damage (trace_ent, self, self, 8);
 		else
 		{
-			// WriteByte (MSG_BROADCAST,SVC_TEMPENTITY);
-			// WriteByte (MSG_BROADCAST,TE_GUNSHOT);
-			// WriteCoord (MSG_BROADCAST,trace_ent.origin_x);
-			// WriteCoord (MSG_BROADCAST,trace_ent.origin_y);
-			// WriteCoord (MSG_BROADCAST,trace_ent.origin_z);
-			particle (trace_endpos,'3.000 2.000 7.000',192.000,TE_WIZSPIKE);
-			particle (trace_endpos,'7.000 6.000 8.000',192.000,TE_WIZSPIKE);
+			WriteByte (MSG_BROADCAST,SVC_TEMPENTITY);
+			WriteByte (MSG_BROADCAST,TE_GUNSHOT);
+			WriteCoord (MSG_BROADCAST,trace_endpos_x);
+			WriteCoord (MSG_BROADCAST,trace_endpos_y);
+			WriteCoord (MSG_BROADCAST,trace_endpos_z);
+			// particle (trace_endpos,'3 2 7',192,TE_WIZSPIKE);
+			// particle (trace_endpos,'7 6 8',192,TE_WIZSPIKE);
 						
 		}    
 	}
-    self.PMclip = self.PMclip - 1;
+    self.pistolClip = self.pistolClip - 1;
 };
 
 void()      pdude_melee1 = [   $melee1,   pdude_melee2 ] {ai_face();};
@@ -659,7 +599,7 @@ void()	pdude_diea7	=[	$deatha7,	pdude_diea8	] {self.nextthink = time + 0.02;ai_m
 void()	pdude_diea8	=[	$deatha8,	pdude_diea9	] {self.nextthink = time + 0.02;ai_moveforeward(-4);};
 void()	pdude_diea9	=[	$deatha9,	pdude_diea10	] {self.nextthink = time + 0.02;ai_moveforeward(-2);};
 void()	pdude_diea10	=[	$deatha10,	pdude_diea10	] {self.nextthink = time + 0.02;};
-void()	pdude_diea11	=[	$deatha11,	pdude_diea11	] {/*self.nextthink = time + 0.02;*/};
+//void()	pdude_diea11	=[	$deatha11,	pdude_diea11	] {/*self.nextthink = time + 0.02;*/};
 // void()	pdude_diea12	=[	$deatha12,	pdude_diea13	] {self.nextthink = time + 0.02;};
 // void()	pdude_diea13	=[	$deatha13,	pdude_diea14	] {self.nextthink = time + 0.02;};
 // void()	pdude_diea14	=[	$deatha14,	pdude_diea14	] {};
@@ -746,7 +686,7 @@ void()	pdude_diec12	=[	$deathc12,	pdude_diec12	] {self.nextthink = time + 0.03;}
 void() pdude_die =
 {
 	local float temp;
-	self.ammo_9x18= self.PMclip;
+	self.ammoPistol= self.pistolClip;
 	DropClip19x18();
 	
 	temp = random();
@@ -834,8 +774,8 @@ void() monster_light =
     setmodel(self, "models/npc/light.md3");
 
 	setsize (self, '-9 -9 -24', '9 9 34');
-	self.health = 100;
-    self.PMclip = 20;
+	self.health = 75;
+    self.pistolClip = 20;
 	self.th_stand = pdude_stand1;
 	self.th_walk = pdude_walk1;
 	self.th_run = pdude_run1;
@@ -847,5 +787,3 @@ void() monster_light =
 	walkmonster_start ();
 };
 
-
- 

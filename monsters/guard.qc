@@ -219,10 +219,10 @@ void()	guard_run7	=[	$run7,		guard_run8	] {ai_run(7);};
 void()	guard_run8	=[	$run8,		guard_run9	] {ai_run(7);};
 void()	guard_run9	=[	$run9,		guard_run1	] {ai_run(11);};
 
-void()      guard_load1   =[    $load1,      guard_load2] {self.AKMclip = 30;};
+void()      guard_load1   =[    $load1,      guard_load2] {self.rifleClip = 30;};
 void()      guard_load2   =[    $load2,      guard_load3] {};
 void()      guard_load3   =[    $load3,      guard_load4] {};
-void()      guard_load4   =[    $load4,      guard_load5] {sound(self,CHAN_WEAPON,"weapons/ak47/ak47_clipout.wav",1,ATTN_NORM);};
+void()      guard_load4   =[    $load4,      guard_load5] {sound(self,CHAN_WEAPON,"weapons/rifle/clipout.wav",1,ATTN_NORM);};
 void()      guard_load5   =[    $load5,      guard_load6] {};
 void()      guard_load6   =[    $load6,      guard_load7] {};
 void()      guard_load7   =[    $load7,      guard_load8] {};
@@ -232,13 +232,13 @@ void()      guard_load10   =[    $load10,      guard_load11] {};
 void()      guard_load11   =[    $load11,      guard_load12] {};
 void()      guard_load12   =[    $load12,      guard_load13] {};
 void()      guard_load13   =[    $load13,      guard_load14] {};
-void()      guard_load14   =[    $load14,      guard_run1] {sound(self,CHAN_WEAPON,"weapons/ak47/ak47_clipin.wav",1,ATTN_NORM);};
+void()      guard_load14   =[    $load14,      guard_run1] {sound(self,CHAN_WEAPON,"weapons/rifle/clipin.wav",1,ATTN_NORM);};
 
 void()      guard_firea1 = [ $firea1 , guard_firea2 ] 
 { 
  ai_face();
  guard_fire();
- if (self.AKMclip <= 0)
+ if (self.rifleClip <= 0)
    {
      self.think = guard_load1;
    }
@@ -249,7 +249,7 @@ void()      guard_firea2 = [ $firea2 , guard_firea3 ]
 { 
  ai_face();
  guard_fire();
- if (self.AKMclip <= 0)
+ if (self.rifleClip <= 0)
    {
      self.think = guard_load1;
    }
@@ -260,7 +260,7 @@ void()      guard_firea3 = [ $firea3 , guard_firea4 ]
 { 
  ai_face();
  guard_fire();
- if (self.AKMclip <= 0)
+ if (self.rifleClip <= 0)
    {
      self.think = guard_load1;
    }
@@ -271,7 +271,7 @@ void()      guard_firea4 = [ $firea4 , guard_firea5 ]
 { 
  ai_face();
  guard_fire();
- if (self.AKMclip <= 0)
+ if (self.rifleClip <= 0)
    {
      self.think = guard_load1;
    }
@@ -282,7 +282,7 @@ void()      guard_firea5 = [ $firea5 , guard_firea6 ]
 { 
  ai_face();
  guard_fire();
- if (self.AKMclip <= 0)
+ if (self.rifleClip <= 0)
    {
      self.think = guard_load1;
    }
@@ -293,7 +293,7 @@ void()      guard_firea6 = [ $firea6 , guard_firea7 ]
 { 
  ai_face();
  guard_fire();
- if (self.AKMclip <= 0)
+ if (self.rifleClip <= 0)
    {
      self.think = guard_load1;
    }
@@ -304,7 +304,7 @@ void()      guard_firea7 = [ $firea7 , guard_firea8 ]
 { 
  ai_face();
  guard_fire();
- if (self.AKMclip <= 0)
+ if (self.rifleClip <= 0)
    {
      self.think = guard_load1;
    }
@@ -315,7 +315,7 @@ void()      guard_firea8 = [ $firea8 , guard_run1 ]
 { 
  ai_face();
  guard_fire();
- if (self.AKMclip <= 0)
+ if (self.rifleClip <= 0)
    {
      self.think = guard_load1;
    }
@@ -384,7 +384,7 @@ if (self.health <= 30)
      }
    }
  }
-if (self.AKMclip <= 0)
+if (self.rifleClip <= 0)
  { 
   self.think = guard_load1;
  }
@@ -410,7 +410,7 @@ void()      guard_fireb1         =[    $fireb1,     guard_fireb2   ]
 { 
  ai_face();
  guard_fire();
- if (self.AKMclip <= 0)
+ if (self.rifleClip <= 0)
    {
      self.think = guard_load1;
    }
@@ -421,7 +421,7 @@ void()      guard_fireb2         =[    $fireb2,     guard_run1     ]
 { 
  ai_face();
  guard_fire();
- if (self.AKMclip <= 0)
+ if (self.rifleClip <= 0)
    {
      self.think = guard_load1;
    }
@@ -454,7 +454,7 @@ void()      guard_drawb9   =[    $drawb9,     guard_fireb1   ]
    }
 }   
 
-if (self.AKMclip <= 0)
+if (self.rifleClip <= 0)
  { 
   self.think = guard_load1;
  }
@@ -467,7 +467,7 @@ void()      guard_firec1         =[    $firec1,     guard_firec2   ]
 { 
  ai_face();
  guard_fire();
- if (self.AKMclip <= 0)
+ if (self.rifleClip <= 0)
    {
      self.think = guard_load1;
    }
@@ -478,7 +478,7 @@ void()      guard_firec2         =[    $firec2,     guard_firec3   ]
 { 
  ai_face();
  guard_fire();
- if (self.AKMclip <= 0)
+ if (self.rifleClip <= 0)
    {
      self.think = guard_load1;
    }
@@ -489,7 +489,7 @@ void()      guard_firec3         =[    $firec3,     guard_firec4   ]
 { 
  ai_face();
  guard_fire();
- if (self.AKMclip <= 0)
+ if (self.rifleClip <= 0)
    {
      self.think = guard_load1;
    }
@@ -500,7 +500,7 @@ void()      guard_firec4         =[    $firec4,     guard_firec5   ]
 { 
  ai_face();
  guard_fire();
- if (self.AKMclip <= 0)
+ if (self.rifleClip <= 0)
    {
      self.think = guard_load1;
    }
@@ -511,7 +511,7 @@ void()      guard_firec5         =[    $firec5,     guard_firec6   ]
 { 
  ai_face();
  guard_fire();
- if (self.AKMclip <= 0)
+ if (self.rifleClip <= 0)
    {
      self.think = guard_load1;
    }
@@ -522,7 +522,7 @@ void()      guard_firec6         =[    $firec6,     guard_firec7   ]
 { 
  ai_face();
  guard_fire();
- if (self.AKMclip <= 0)
+ if (self.rifleClip <= 0)
    {
      self.think = guard_load1;
    }
@@ -533,7 +533,7 @@ void()      guard_firec7         =[    $firec7,     guard_firec8   ]
 { 
  ai_face();
  guard_fire();
- if (self.AKMclip <= 0)
+ if (self.rifleClip <= 0)
    {
      self.think = guard_load1;
    }
@@ -544,7 +544,7 @@ void()      guard_firec8         =[    $firec8,     guard_firec9   ]
 { 
  ai_face();
  guard_fire();
- if (self.AKMclip <= 0)
+ if (self.rifleClip <= 0)
    {
      self.think = guard_load1;
    }
@@ -555,7 +555,7 @@ void()      guard_firec9         =[    $firec9,     guard_firec10   ]
 { 
  ai_face();
  guard_fire();
- if (self.AKMclip <= 0)
+ if (self.rifleClip <= 0)
    {
      self.think = guard_load1;
    }
@@ -566,7 +566,7 @@ void()      guard_firec10         =[    $firec10,     guard_firec11   ]
 { 
  ai_face();
  guard_fire();
- if (self.AKMclip <= 0)
+ if (self.rifleClip <= 0)
    {
      self.think = guard_load1;
    }
@@ -577,7 +577,7 @@ void()      guard_firec11         =[    $firec11,     guard_firec12   ]
 { 
  ai_face();
  guard_fire();
- if (self.AKMclip <= 0)
+ if (self.rifleClip <= 0)
    {
      self.think = guard_load1;
    }
@@ -588,7 +588,7 @@ void()      guard_firec12         =[    $firec12,     guard_firec13   ]
 { 
  ai_face();
  guard_fire();
- if (self.AKMclip <= 0)
+ if (self.rifleClip <= 0)
    {
      self.think = guard_load1;
    }
@@ -599,7 +599,7 @@ void()      guard_firec13         =[    $firec13,     guard_run1   ]
 { 
  ai_face();
  guard_fire();
- if (self.AKMclip <= 0)
+ if (self.rifleClip <= 0)
    {
      self.think = guard_load1;
    }
@@ -636,7 +636,7 @@ void()      guard_drawc9   =[    $drawc9,     guard_firec1   ]
    }
 }   
 
-if (self.AKMclip <= 0)
+if (self.rifleClip <= 0)
  { 
   self.think = guard_load1;
  }
@@ -701,7 +701,7 @@ void()	Guard_Melee =
 	if (vlen(delta) > 90) return;
 	if (!CanDamage (self.enemy, self)) return;
 		
-    sound (self, CHAN_WEAPON, "weapons/knife/knife_hit1.wav", 1, ATTN_NORM);
+    sound (self, CHAN_WEAPON, "weapons/knife/hit.wav", 1, ATTN_NORM);
 	ldmg = 10 + 5*random();
 	T_Damage (self.enemy, self, self, ldmg);	
 
@@ -818,7 +818,6 @@ void(float damage, vector dir) guardFire =
 {
 	if(self.duck == 1) pointparticles(particleeffectnum("double_shotgun_muzzleflash"), self.origin + self.view_ofs + v_up * -21 , self.velocity*50, 1);
 	else pointparticles(particleeffectnum("double_shotgun_muzzleflash"), self.origin + self.view_ofs + v_up * -10, self.velocity*50, 1);
-
 	local	vector	src;
 
 	makevectors(self.v_angle);
@@ -833,13 +832,13 @@ void(float damage, vector dir) guardFire =
 		{
 			WriteByte (MSG_BROADCAST,SVC_TEMPENTITY);
 			WriteByte (MSG_BROADCAST,TE_GUNSHOT);
-			WriteCoord (MSG_BROADCAST,trace_ent.origin_x);
-			WriteCoord (MSG_BROADCAST,trace_ent.origin_y);
-			WriteCoord (MSG_BROADCAST,trace_ent.origin_z);
-			particle (trace_endpos,'3.000 2.000 7.000',192.000,TE_WIZSPIKE);
-			particle (trace_endpos,'7.000 6.000 8.000',192.000,TE_WIZSPIKE);
+			WriteCoord (MSG_BROADCAST,trace_endpos_x);
+			WriteCoord (MSG_BROADCAST,trace_endpos_y);
+			WriteCoord (MSG_BROADCAST,trace_endpos_z);
+			//particle (trace_endpos,'3 2 7',192,TE_WIZSPIKE);
+			//particle (trace_endpos,'7 6 8',192,TE_WIZSPIKE);
 			//sound (self.enemy,CHAN_AUTO,"weapons/mp5ric1.wav",TRUE,ATTN_NORM);   
-			sound (self, CHAN_WEAPON, "weapons/ak47/m4.wav", 1, ATTN_NORM);		
+				
 		}    
 	}
 };
@@ -851,7 +850,7 @@ void() guard_fire =
 	
 	ai_face();
 	
-	sound (self, CHAN_WEAPON, "weapons/ak47/m4.wav", 1, ATTN_NORM);	
+	sound (self, CHAN_WEAPON, "weapons/rifle/m4.wav", 1, ATTN_NORM);	
 
 // fire somewhat behind the player, so a dodging player is harder to hit
 	en = self.enemy;
@@ -860,7 +859,7 @@ void() guard_fire =
 	dir = normalize (dir - self.origin);
 	
 	guardFire(12,dir);
-    self.AKMclip = self.AKMclip - 1;
+    self.rifleClip = self.rifleClip - 1;
 };
 
 void()      guard_melee1 = [   $melee1,   guard_melee2 ] {ai_face();};
@@ -880,7 +879,7 @@ void()	guard_died3	=[	$deathd3,	guard_died4	]
 {
   self.nextthink = time + 0.03;
   self.solid = SOLID_NOT;
-  self.ammo545x39 = ceil(self.AKMclip * 0.5);
+  self.ammoRifle = ceil(self.rifleClip * 0.5);
 //  Drop_Clip();
 };
 void()	guard_died4	=[	$deathd4,	guard_died5	] 
@@ -905,7 +904,7 @@ void()	guard_diea3	=[	$deatha3,	guard_diea4	]
 {
   self.nextthink = time + 0.03;
   self.solid = SOLID_NOT;
-  self.ammo545x39 = ceil(self.AKMclip * 0.5);
+  self.ammoRifle = ceil(self.rifleClip * 0.5);
   //Drop_Clip();
 };
 void()	guard_diea4	=[	$deatha4,	guard_diea5	] {self.nextthink = time + 0.03;};
@@ -927,7 +926,7 @@ void()	guard_dieb3	=[	$deathb3,	guard_dieb4	]
 {
   self.nextthink = time + 0.03;
   self.solid = SOLID_NOT;
-  self.ammo545x39 = ceil(self.AKMclip * 0.5);
+  self.ammoRifle = ceil(self.rifleClip * 0.5);
  // Drop_Clip();
 };
 void()	guard_dieb4	=[	$deathb4,	guard_dieb5	] {self.nextthink = time + 0.03;};
@@ -949,7 +948,7 @@ void()	guard_diec3	=[	$deathc3,	guard_diec4	]
 {
   self.nextthink = time + 0.03;
   self.solid = SOLID_NOT;
-  self.ammo545x39 = ceil(self.AKMclip * 0.5);
+  self.ammoRifle = ceil(self.rifleClip * 0.5);
  // Drop_Clip();
   ai_back(4);
 };
@@ -974,9 +973,9 @@ void() guard_die =
 	// {
             // sound (self,CHAN_VOICE,"player/death3.wav",TRUE,ATTN_NORM);
             // ThrowHead ("progs/h_guard.mdl",self.health);
-            // ThrowGib ("progs/gib1.mdl",self.health);
-            // ThrowGib ("progs/gib2.mdl",self.health);
-            // ThrowGib ("progs/gib3.mdl",self.health);
+            // ThrowGib ("models/gib1.bsp",self.health);
+            // ThrowGib ("models/gib2.bsp",self.health);
+            // ThrowGib ("models/gib3.bsp",self.health);
             // return ;
 	// }
 
@@ -1026,7 +1025,7 @@ void() monster_heavy =
 		return;
 	}
 	precache_model2 ("models/npc/heavy.md3");
-    precache_sound2 ("weapons/ak47/m4.wav");
+    precache_sound2 ("weapons/rifle/m4.wav");
 	precache_sound2 ("npc/grenade1.wav");
 	precache_sound2 ("npc/grenade2.wav");
 	precache_sound2 ("npc/grenade3.wav");
@@ -1039,8 +1038,8 @@ void() monster_heavy =
 	setmodel (self, "models/npc/heavy.md3");
 
 	setsize (self, '-9 -9 -24', '9 9 34');
-	self.health = 80;
-    self.AKMclip = 30;
+	self.health = 75;
+    self.rifleClip = 30;
 	self.th_stand = guard_stand1;
 	self.th_walk = guard_walk1;
 	self.th_run = guard_run1;

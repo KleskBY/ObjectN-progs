@@ -94,15 +94,15 @@ void()	zombie_run1	=[	$runb1,		zombie_run2	]
 		else if (rsnd == 3) sound (self, CHAN_VOICE, "zombie/idle3.wav", 1, ATTN_NORM); 
 		else sound (self, CHAN_VOICE, "zombie/idle4.wav", 1, ATTN_NORM); 
 	}
-	ai_run(16);
+	ai_run(20);
 };
-void()	zombie_run2	=[	$runb2,		zombie_run3	] {ai_run(20);};
-void()	zombie_run3	=[	$runb3,		zombie_run4	] {ai_run(13);};
-void()	zombie_run4	=[	$runb4,		zombie_run5	] {ai_run(7);};
-void()	zombie_run5	=[	$runb5,		zombie_run6	] {ai_run(16);};
-void()	zombie_run6	=[	$runb6,		zombie_run7	] {ai_run(20);};
-void()	zombie_run7	=[	$runb7,		zombie_run8	] {ai_run(14);};
-void()	zombie_run8	=[	$runb8,		zombie_run1	] {ai_run(6);};
+void()	zombie_run2	=[	$runb2,		zombie_run3	] {ai_run(22);};
+void()	zombie_run3	=[	$runb3,		zombie_run4	] {ai_run(15);};
+void()	zombie_run4	=[	$runb4,		zombie_run5	] {ai_run(8);};
+void()	zombie_run5	=[	$runb5,		zombie_run6	] {ai_run(18);};
+void()	zombie_run6	=[	$runb6,		zombie_run7	] {ai_run(22);};
+void()	zombie_run7	=[	$runb7,		zombie_run8	] {ai_run(15);};
+void()	zombie_run8	=[	$runb8,		zombie_run1	] {ai_run(8);};
 
 
 void()	zombie_runatk1	=[	$runattack1,		zombie_runatk2	]
@@ -225,19 +225,36 @@ void()	zombie_dieb12 = [	$deathb12,	zombie_dieb12] {};
 
 void() zombie_die =
 {
-// check for gib
+	local float rsnd;
+	// check for gib
 	if (self.health < -40)
 	{
 		sound (self, CHAN_VOICE, "player/death3.wav", 1, ATTN_NORM);
 		ThrowHead ("", self.health);
-		ThrowGib ("progs/gib1.mdl", self.health);
-		ThrowGib ("progs/gib2.mdl", self.health);
-		ThrowGib ("progs/gib3.mdl", self.health);
+		ThrowGib ("models/gib1.bsp", self.health);
+		ThrowGib ("models/gib2.bsp", self.health);
+		ThrowGib ("models/gib3.bsp", self.health);
 		return;
 	}
 
 // regular death
-	// sound (self, CHAN_VOICE, "zombie/kdeath.wav", 1, ATTN_NORM);
+	rsnd = rint(random() * 5);
+	switch (rsnd)
+	{
+		case 1:
+			sound (self, CHAN_VOICE, "zombie/death1.wav", 1, ATTN_NORM);
+			break;
+		case 2:
+			sound (self, CHAN_VOICE, "zombie/death2.wav", 1, ATTN_NORM);
+			break;
+		case 3:
+			sound (self, CHAN_VOICE, "zombie/death3.wav", 1, ATTN_NORM);
+			break;
+		default:
+			sound (self, CHAN_VOICE, "zombie/death4.wav", 1, ATTN_NORM);
+			break;
+	}
+	
 	if (random() < 0.5) zombie_die1 ();
 	else
 	{
@@ -252,39 +269,34 @@ void() zombie_die =
 
 void() monster_zombie =
 {
-	local float rsnd;
-	rsnd = rint(random() * 3);	
 	if (deathmatch)
 	{
 		remove(self);
 		return;
 	}
-	precache_model ("models/npc/zombie1.md3");
-	precache_model ("models/npc/zombie2.md3");
-	precache_model ("models/npc/zombie3.md3");
+	precache_model2("models/npc/zombie1.md3");
+	precache_model2("models/npc/zombie2.md3");
 
-	// precache_sound ("zombie/kdeath.wav");
-	// precache_sound ("zombie/khurt.wav");
-	// precache_sound ("zombie/ksight.wav");
-	// precache_sound ("zombie/sword1.wav");
-	// precache_sound ("zombie/sword2.wav");
-	precache_sound ("zombie/idle1.wav");
-	precache_sound ("zombie/idle2.wav");
-	precache_sound ("zombie/idle3.wav");
-	precache_sound ("zombie/idle4.wav");
-	precache_sound ("zombie/sight1.wav");
-	precache_sound ("zombie/sight2.wav");
-	precache_sound ("zombie/sight3.wav");
-	precache_sound ("zombie/attack1.wav");
-	precache_sound ("zombie/attack2.wav");
-	precache_sound ("zombie/attack3.wav");
+	precache_sound2("zombie/death1.wav");
+	precache_sound2("zombie/death2.wav");
+	precache_sound2("zombie/death3.wav");
+	precache_sound2("zombie/death4.wav");
+	precache_sound2("zombie/idle1.wav");
+	precache_sound2("zombie/idle2.wav");
+	precache_sound2("zombie/idle3.wav");
+	precache_sound2("zombie/idle4.wav");
+	precache_sound2("zombie/sight1.wav");
+	precache_sound2("zombie/sight2.wav");
+	precache_sound2("zombie/sight3.wav");
+	precache_sound2("zombie/attack1.wav");
+	precache_sound2("zombie/attack2.wav");
+	precache_sound2("zombie/attack3.wav");
 
 	self.solid = SOLID_SLIDEBOX;
 	self.movetype = MOVETYPE_STEP;
 
-	if(rsnd == 1) setmodel (self, "models/npc/zombie1.md3");
-	else if(rsnd == 2) setmodel (self, "models/npc/zombie2.md3");
-	else setmodel (self, "models/npc/zombie3.md3");
+	if(random() >= 0.5) setmodel (self, "models/npc/zombie1.md3");
+	else setmodel (self, "models/npc/zombie2.md3");
 	setsize (self, '-9 -9 -24', '9 9 34');
 	self.health = 80;
 

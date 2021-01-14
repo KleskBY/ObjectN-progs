@@ -6,11 +6,8 @@ float () crandom;
 
 void() BeamThink =
 {
-	if(!self.owner.hooking)
-	{
-		self.think = SUB_Remove;
-	}
-	self.nextthink = time+0.2;
+	if(!self.owner.hooking) self.think = SUB_Remove;
+	self.nextthink = time + 0.2;
 }
 
 void() DrawBeam = 
@@ -49,10 +46,11 @@ void() DrawBeam =
 			newlink = spawn();
 			newlink.movetype = MOVETYPE_NOCLIP;
 			newlink.solid = SOLID_NOT;
-			setmodel (newlink, "models/chain.mdl");
+			setmodel (newlink, "models/chain.bsp");
 			setsize (newlink, '0 0 0', '0 0 0');
 			newlink.goalentity = world;
 			currlink.goalentity = newlink;
+			newlink.angles = self.angles;
 			newlink.owner = self.owner;
 			newlink.think = BeamThink;
 			newlink.nextthink = time+0.2;
@@ -60,15 +58,16 @@ void() DrawBeam =
 		currlink = currlink.goalentity;
 		currpos = currpos + 1;
 		
+		currlink.angles = self.angles;
 		// set angles 
-		currlink.angles = vectoangles(chainvec);
+		// currlink.angles = vectoangles(chainvec);
 
-		// fixes vectoangles round off error
-		if ((currlink.angles_y > 0) && (currlink.angles_y < 180))
-			currlink.angles = currlink.angles + '0 1 0';
+		//fixes vectoangles round off error
+		// if ((currlink.angles_y > 0) && (currlink.angles_y < 180))
+			// currlink.angles = currlink.angles + '0 1 0';
 
-		// vibrates chain links on the z axis
-		currlink.angles_z = currlink.angles_z + crandom() * 30;
+		//vibrates chain links on the z axis
+		// currlink.angles_z = currlink.angles_z + crandom() * 30;
 
 		// set position and frames 
 		linkstart = (currpos - 1) * CHAIN_LINK_LEN;
@@ -104,14 +103,14 @@ void() pull =
 		self.owner.velocity = self.owner.velocity * 500;
 		self.think = pull;
 		self.nextthink = time + 0.1;
-		if(random() > 0.5) sound (self.owner, CHAN_WEAPON, "hook/chain1.wav", 1, ATTN_NORM);	
-		else sound (self.owner, CHAN_WEAPON, "hook/chain2.wav", 1, ATTN_NORM);	
+		if(random() > 0.5) sound (self.owner, CHAN_WEAPON, "weapons/hook/chain1.wav", 1, ATTN_NORM);	
+		else sound (self.owner, CHAN_WEAPON, "weapons/hook/chain2.wav", 1, ATTN_NORM);	
 	}
 	else
 	{
 		self.owner.hooking = 0;
 		remove(self);
-		sound (self.owner, CHAN_WEAPON, "hook/retract.wav", 1, ATTN_NORM);
+		sound (self.owner, CHAN_WEAPON, "weapons/hook/retract.wav", 1, ATTN_NORM);
 	}	
 };
 
@@ -122,7 +121,7 @@ void() hookdamage =
 		self.owner.velocity = normalize(self.origin - self.owner.origin);
 		self.owner.velocity = self.owner.velocity * 500;
 		
-		T_Damage(self.enemy, self, self.owner, 2);
+		T_Damage(self.enemy, self, self.owner, 5);
 
 		self.origin = self.enemy.origin;
 		self.think = hookdamage;
@@ -132,7 +131,7 @@ void() hookdamage =
 	{
 		self.owner.hooking = 0;
 		remove(self);
-		sound (self.owner, CHAN_WEAPON, "hook/retract.wav", 1, ATTN_NORM);	
+		sound (self.owner, CHAN_WEAPON, "weapons/hook/retract.wav", 1, ATTN_NORM);	
 	}
 };
 
@@ -153,7 +152,7 @@ void() PullHook =
 		self.solid = SOLID_NOT;
 		self.nextthink = time;
 	}
-	sound (self.owner, CHAN_WEAPON, "weapons/knife/knife_hit2.wav", 1, ATTN_NORM);	
+	sound (self.owner, CHAN_WEAPON, "weapons/knife/miss.wav", 1, ATTN_NORM);	
 	
 };
 
@@ -164,27 +163,28 @@ void() BreakHook =
 	{
 		remove(self.hook);
 		self.hooking = 0;
-		sound (self.owner, CHAN_WEAPON, "hook/retract.wav", 1, ATTN_NORM);	
+		sound (self.owner, CHAN_WEAPON, "weapons/hook/retract.wav", 1, ATTN_NORM);	
 	}
 };
 
 void() HookThink =
 {
 	DrawBeam();
-	sound (self, CHAN_WEAPON, "hook/fire.wav", 1, ATTN_NORM);	
+	sound (self, CHAN_WEAPON, "weapons/hook/fire.wav", 1, ATTN_NORM);	
 	self.nextthink = time + 0.2;
 }
 
-void () FireHook =
+void() FireHook =
 {
 	local entity hooky;
 	hooky = spawn();
 	setorigin(hooky, self.origin + self.view_ofs);
-	setmodel(hooky, "models/hook.mdl");
+	setmodel(hooky, "models/hook.bsp");
 	setsize (hooky, '0 0 0', '0 0 0');
 	hooky.solid = SOLID_BBOX;
 	hooky.movetype = MOVETYPE_FLYMISSILE;
 	makevectors(self.v_angle);
+	hooky.angles = self.v_angle;
 	self.aiment = hooky;
 	hooky.velocity = v_forward * 1500;
 	hooky.owner = self;
@@ -195,5 +195,5 @@ void () FireHook =
 	hooky.think = HookThink;
 	hooky.nextthink = time+0.2;
 	//hooky.cansplash = 1; // If my splash tutorial is installed, uncomment this line
-	sound (self, CHAN_WEAPON, "hook/fire.wav", 1, ATTN_NORM);	
+	sound (self, CHAN_WEAPON, "weapons/hook/fire.wav", 1, ATTN_NORM);	
 };

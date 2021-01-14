@@ -102,59 +102,26 @@ rot you down to your maximum health limit,
 one point per second.
 */
 
-float	H_ROTTEN = 1;
-float	H_MEGA = 2;
-.float	healamount, healtype;
 void() health_touch;
-void() item_megahealth_rot;
-
 void() item_health =
 {	
-	self.touch = health_touch;
-
-	if (self.spawnflags & H_ROTTEN)
-	{
-		precache_model("maps/b_bh10.bsp");
-
-		precache_sound("items/r_item1.wav");
-		setmodel(self, "maps/b_bh10.bsp");
-		self.noise = "items/r_item1.wav";
-		self.healamount = 15;
-		self.healtype = 0;
-	}
-	else
-	{
-		precache_model2("models/w_medkit.md3");
-		setmodel(self, "models/w_medkit.md3");
-		precache_sound("player/heal.wav");
-		self.noise = "player/heal.wav";
-		self.healamount = 25;
-		self.healtype = 1;
-	}
-	setsize (self, '0 0 0', '32 32 56');
+	self.touch = health_touch;	
+	precache_model2("models/items/medkit.bsp");
+	setmodel(self, "models/items/medkit.bsp");
+	precache_sound("player/heal.wav");
+	self.noise = "player/heal.wav";
+	
+	setsize (self, '-18 -18 0', '18 18 56');
 	StartItem ();
 };
 
 
 void() health_touch =
 {
-	local	string	s;
 	if (other.classname != "player") return;
+	if (!T_Heal(other, 25, 0)) return;
 	
-	if (self.healtype == 2) // Megahealth?  Ignore max_health...
-	{
-		if (other.health >= 250) return;
-		if (!T_Heal(other, self.healamount, 1)) return;
-	}
-	else
-	{
-		if (!T_Heal(other, self.healamount, 0)) return;
-	}
-	
-	sprint(other, "You receive ");
-	s = ftos(self.healamount);
-	sprint(other, s);
-	sprint(other, " health\n");
+	sprint(other, "You receive 25 health\n");
 	
 // health touch sound
 	sound(other, CHAN_ITEM, self.noise, 1, ATTN_NORM);
@@ -164,22 +131,10 @@ void() health_touch =
 	self.model = string_null;
 	self.solid = SOLID_NOT;
 
-	// Megahealth = rot down the player's super health
-	if (self.healtype == 2)
+	if (deathmatch != 2)
 	{
-		other.items = other.items | IT_SUPERHEALTH;
-		self.nextthink = time + 5;
-		self.think = item_megahealth_rot;
-		self.owner = other;
-	}
-	else
-	{
-		if (deathmatch != 2)		// deathmatch 2 is the silly old rules
-		{
-			if (deathmatch)
-				self.nextthink = time + 20;
-			self.think = SUB_regen;
-		}
+		if (deathmatch) self.nextthink = time + 20;
+		self.think = SUB_regen;
 	}
 	
 	activator = other;
@@ -225,11 +180,11 @@ WEAPONS
 
 void() bound_other_ammo =
 {
-	if (other.ammo_9x18 > 100) other.ammo_9x18 = 100;
-	if (other.ammo_shells > 100) other.ammo_shells = 100;
-	if (other.ammo545x39 > 200) other.ammo545x39 = 200;
-	if (other.ammo_rockets > 100) other.ammo_rockets = 100;		
-	if (other.ammo_762x54 > 100) other.ammo_762x54 = 100;		
+	if (other.ammoPistol > 100) other.ammoPistol = 100;
+	if (other.ammoShells > 100) other.ammoShells = 100;
+	if (other.ammoRifle > 200) other.ammoRifle = 200;
+	if (other.ammoGrenades > 100) other.ammoGrenades = 100;		
+	if (other.ammoSniper > 100) other.ammoSniper = 100;		
 };
 
 
@@ -249,7 +204,7 @@ Deathmatch_Weapon
 
 Deathmatch weapon change rules for picking up a weapon
 
-.float		ammo_shells, ammo545x39, ammo_rockets, ammo_762x54;
+.float		ammoShells, ammoRifle, ammoGrenades, ammoSniper;
 =============
 */
 void(float old, float new) Deathmatch_Weapon =
@@ -259,8 +214,7 @@ void(float old, float new) Deathmatch_Weapon =
 // change self.weapon if desired
 	or = RankForWeapon (self.weapon);
 	nr = RankForWeapon (new);
-	if ( nr < or )
-		self.weapon = new;
+	if (nr < or) self.weapon = new;
 };
 
 /*
@@ -275,7 +229,7 @@ void() weapon_touch =
 	local	float	hadammo, new, old;
 	local	entity	stemp;
 	local	float	leave;
-	if (self.classname == "weapon_bomb" && other.team != TEAM_USSR) return;
+	if (self.classname == "weapon_bomb" && other.team != TEAM_USSR && world.model != "maps/e1m8.bsp") return;
 	if(other.classname == "useprefab") other = other.owner;
 	if (!(other.flags & FL_CLIENT)) return;
 
@@ -287,40 +241,40 @@ void() weapon_touch =
 	if (coop) leave = 1;
 	else leave = 0;
 	
-	if (self.classname == "weapon_AK74")
+	if (self.classname == "weapon_rifle")
 	{
 		if (leave && (other.items & IT_AKM) ) return;
-		hadammo = other.ammo545x39;			
+		hadammo = other.ammoRifle;			
 		new = IT_AKM;
-		other.ammo545x39 = other.ammo545x39 + 30;
+		other.ammoRifle = other.ammoRifle + 30;
 	}
 	else if (self.classname == "weapon_grenade")
 	{
-		if (leave && (other.items & IT_GRENADE))return;
-		hadammo = other.ammo_rockets;			
+		leave = 0;
+		hadammo = other.ammoGrenades;			
 		new = IT_GRENADE;
-		other.ammo_rockets = other.ammo_rockets + 1;
+		other.ammoGrenades = other.ammoGrenades + 1;
 	}
-	else if (self.classname == "weapon_TOZ")
+	else if (self.classname == "weapon_shotgun")
 	{
 		if (leave && (other.items & IT_TOZ)) return;
-		hadammo = other.ammo_rockets;			
+		hadammo = other.ammoGrenades;			
 		new = IT_TOZ;
-		other.ammo_shells = other.ammo_shells + 5;
+		other.ammoShells = other.ammoShells + 5;
 	}
-	else if (self.classname == "weapon_mosin")
+	else if (self.classname == "weapon_sniper")
 	{
 		if (leave && (other.items & IT_MOSIN) ) return;
-		hadammo = other.ammo_762x54;			
+		hadammo = other.ammoSniper;			
 		new = IT_MOSIN;
-		other.ammo_762x54 = other.ammo_762x54 + 5;
+		other.ammoSniper = other.ammoSniper + 10;
 	}
 	else if (self.classname == "weapon_bomb")
 	{
 		if (leave && (other.items & IT_BOMB)) return;
-		//hadammo = other.ammo_rockets;			
+		//hadammo = other.ammoGrenades;			
 		new = IT_BOMB;
-		//other.ammo_762x54 = other.ammo_762x54 + 15;
+		//other.ammoSniper = other.ammoSniper + 15;
 	}
 	else
 		objerror ("weapon_touch: unknown classname");
@@ -347,13 +301,14 @@ void() weapon_touch =
 		{
 			//if (!deathmatch) self.weapon = new;
 			//else Deathmatch_Weapon (old, new);
-			if(new == WP_AKM) self.impulse =4;
-			else if(new == WP_TOZ) self.impulse =3;
+			if(new == WP_RIFLE) self.impulse =4;
+			else if(new == WP_SHOTGUN) self.impulse = 3;
+			else if(new == WP_SNIPER) self.impulse = 5;
 			W_SetCurrentAmmo();
 		}
 		else
 		{
-			self.currentammo = self.ammo_rockets;
+			self.currentammo = self.ammoGrenades;
 		}
 	}
 
@@ -376,12 +331,12 @@ void() weapon_touch =
 /*QUAKED weapon_supershotgun (0 .5 .8) (-16 -16 0) (16 16 32)
 */
 
-void() weapon_TOZ =
+void() weapon_shotgun =
 {
-	precache_model ("models/w_toz.md3");
-	setmodel (self, "models/w_toz.md3");
+	precache_model ("models/w_shot.md3");
+	setmodel (self, "models/w_shot.md3");
 	self.weapon = IT_TOZ;
-	self.netname = "TOZ-194";
+	self.netname = "shotgun";
 	self.touch = weapon_touch;
 	setsize (self, '-16 -16 0', '16 16 56');
 	StartItem ();
@@ -389,7 +344,7 @@ void() weapon_TOZ =
 
 void() weapon_bomb =
 {
-	if(deathmatch != 2) return;
+	if(deathmatch != MODE_DE && world.model != "maps/e1m8.bsp") return;
 	precache_model ("models/w_bomb.md3");
 	setmodel (self, "models/w_bomb.md3");
 	self.weapon = IT_BOMB;
@@ -403,13 +358,13 @@ void() weapon_bomb =
 	StartItem ();
 };
 
-/*QUAKED weapon_AK74 (0 .5 .8) (-16 -16 0) (16 16 32)
+/*QUAKED weapon_rifle (0 .5 .8) (-16 -16 0) (16 16 32)
 */
 
-void() weapon_AK74 =
+void() weapon_rifle =
 {
-	precache_model ("models/w_ak74.md3");
-	setmodel (self, "models/w_ak74.md3");
+	precache_model ("models/w_ak.md3");
+	setmodel (self, "models/w_ak.md3");
 	self.weapon = IT_AKM;
 	self.netname = "AK-74";
 	self.touch = weapon_touch;
@@ -435,12 +390,12 @@ void() weapon_grenade =
 /*QUAKED weapon_rocketlauncher (0 .5 .8) (-16 -16 0) (16 16 32)
 */
 
-void() weapon_mosin =
+void() weapon_sniper =
 {
-	precache_model ("models/w_mosin.md3");
-	setmodel (self, "models/w_mosin.md3");
+	precache_model ("models/w_svd.md3");
+	setmodel (self, "models/w_svd.md3");
 	self.weapon = 3;
-	self.netname = "Mosin-Nagant";
+	self.netname = "SVD";
 	self.touch = weapon_touch;
 	setsize (self, '-16 -16 0', '16 16 56');
 	StartItem ();
@@ -488,23 +443,23 @@ void() ammo_touch =
 	
 	if (self.weapon == 1) // Makarov
 	{
-		if (other.ammo_9x18 >= 100) return;
-		other.ammo_9x18 = other.ammo_9x18 + self.aflag;
+		if (other.ammoPistol >= 100) return;
+		other.ammoPistol = other.ammoPistol + self.aflag;
 	}
 	if (self.weapon == 2) // TOZ
 	{
-		if (other.ammo_shells >= 100) return;
-		other.ammo_shells = other.ammo_shells + self.aflag;
+		if (other.ammoShells >= 100) return;
+		other.ammoShells = other.ammoShells + self.aflag;
 	}
 	if (self.weapon == 3) // Ak
 	{
-		if (other.ammo545x39 >= 200) return;
-		other.ammo545x39 = other.ammo545x39 + self.aflag;
+		if (other.ammoRifle >= 200) return;
+		other.ammoRifle = other.ammoRifle + self.aflag;
 	}
 	if (self.weapon == 4) //	Mosin
 	{
-		if (other.ammo_762x54 >= 100) return;
-		other.ammo_762x54 = other.ammo_762x54 + self.aflag;
+		if (other.ammoSniper >= 100) return;
+		other.ammoSniper = other.ammoSniper + self.aflag;
 	}
 
 	bound_other_ammo ();
@@ -547,8 +502,8 @@ void() item_9x18 =
 {
 	self.touch = ammo_touch;
 
-	precache_model2("models/w_apsammo.md3");
-	setmodel (self,"models/w_apsammo.md3");
+	precache_model2("models/w_pmammo.md3");
+	setmodel (self,"models/w_pmammo.md3");
 	self.aflag = 20;
 	
 	self.weapon = 1;
@@ -563,13 +518,13 @@ void() item_shells =
 {
 	self.touch = ammo_touch;
 
-	precache_model ("models/w_shotgunammo.md3");
-	setmodel (self, "models/w_shotgunammo.md3");
+	precache_model ("models/w_shotgunammo.bsp");
+	setmodel (self, "models/w_shotgunammo.bsp");
 	self.aflag = 20;
 	
 	self.weapon = 2;
 	self.netname = "shells";
-	setsize (self, '0 0 0', '32 32 56');
+	setsize (self, '-18 -18 0', '18 18 56');
 	StartItem ();
 };
 
@@ -580,21 +535,13 @@ void() item_545x39 =
 {
 	self.touch = ammo_touch;
 
-	if (self.spawnflags & WEAPON_BIG2)
-	{
-		precache_model ("models/w_ak74ammo2.md3");
-		setmodel (self,"models/w_ak74ammo2.md3");
-		self.aflag = 60;
-	}
-	else
-	{
-		precache_model ("models/w_ak74ammo.md3");
-		setmodel (self, "models/w_ak74ammo.md3");
-		self.aflag = 30;
-	}
+	precache_model("models/w_akammo.md3");
+	setmodel(self, "models/w_akammo.md3");
+	self.aflag = 30;
+	
 	self.weapon = 3;
 	self.netname = "5.45x39";
-	setsize (self, '0 0 0', '32 32 56');
+	setsize (self, '-18 -18 0', '18 18 56');
 	StartItem ();
 };
 
@@ -619,7 +566,7 @@ void() item_545x39 =
 	// }
 	// self.weapon = 3;
 	// self.netname = "rockets";
-	// setsize (self, '0 0 0', '32 32 56');
+	// setsize (self, '-18 -18 0', '18 18 56');
 	// StartItem ();
 // };
 
@@ -630,12 +577,12 @@ void() item_545x39 =
 void() item_762x54 =
 {
 	self.touch = ammo_touch;
-	precache_model ("models/w_mosinammo.md3");
-	setmodel (self, "models/w_mosinammo.md3");
-	self.aflag = 5;
+	precache_model ("models/w_svdammo.md3");
+	setmodel (self, "models/w_svdammo.md3");
+	self.aflag = 10;
 	self.weapon = 4;
 	self.netname = "7.62x54";
-	setsize (self, '0 0 0', '32 32 56');
+	setsize (self, '-18 -18 0', '18 18 56');
 	StartItem ();
 };
 
@@ -706,7 +653,7 @@ void() item_weapon =
 		self.netname = "rockets";
 	}
 	
-	setsize (self, '0 0 0', '32 32 56');
+	setsize (self, '-16 -16 -28', '16 16 28');
 	StartItem ();
 };
 
@@ -759,8 +706,8 @@ following:
 
 void() item_key1 =
 {
-	precache_model ("models/keycard.bsp");
-	setmodel (self, "models/keycard.bsp");
+	precache_model ("models/items/keycard.bsp");
+	setmodel (self, "models/items/keycard.bsp");
 	self.netname = "blue keycard";
 
 	precache_sound ("misc/key.wav");
@@ -901,7 +848,7 @@ void() BackpackTouch =
 	if (other.classname == "useprefab") other = other.owner;
 	if (other.classname != "player") return;
 	if (other.health <= 0) return;
-	if(deathmatch && self.items & IT_BOMB && other.team != 1) return;
+	if(deathmatch && self.items & IT_BOMB && other.team != TEAM_USSR) return;
 
 	acount = 0;
 	sprint (other, "You get ");
@@ -921,11 +868,11 @@ void() BackpackTouch =
 	self = stemp;
 
 // change weapons
-	other.ammo_9x18 = other.ammo_9x18 + self.ammo_9x18;
-	other.ammo_shells = other.ammo_shells + self.ammo_shells;
-	other.ammo545x39 = other.ammo545x39 + self.ammo545x39;
-	other.ammo_rockets = other.ammo_rockets + self.ammo_rockets;
-	other.ammo_762x54 = other.ammo_762x54 + self.ammo_762x54;
+	other.ammoPistol = other.ammoPistol + self.ammoPistol;
+	other.ammoShells = other.ammoShells + self.ammoShells;
+	other.ammoRifle = other.ammoRifle + self.ammoRifle;
+	other.ammoGrenades = other.ammoGrenades + self.ammoGrenades;
+	other.ammoSniper = other.ammoSniper + self.ammoSniper;
 
 	new = self.items;
 	if (!new)
@@ -935,47 +882,47 @@ void() BackpackTouch =
 	
 	bound_other_ammo ();
 
-	if (self.ammo_9x18)
+	if (self.ammoPistol)
 	{
 		if (acount) sprint(other, ", ");
 		acount = 1;
-		s = ftos(self.ammo_9x18);
+		s = ftos(self.ammoPistol);
 		sprint (other, s);
 		sprint (other, " 9x18 ammo");
 	}
-	if (self.ammo_shells)
+	if (self.ammoShells)
 	{
 		if (acount)
 			sprint(other, ", ");
 		acount = 1;
-		s = ftos(self.ammo_shells);
+		s = ftos(self.ammoShells);
 		sprint (other, s);
 		sprint (other, " shells");
 	}
-	if (self.ammo545x39)
+	if (self.ammoRifle)
 	{
 		if (acount) sprint(other, ", ");
 		acount = 1;
-		s = ftos(self.ammo545x39);
+		s = ftos(self.ammoRifle);
 		sprint (other, s);
 		sprint (other, " AK-74 ammo");
 	}
-	if (self.ammo_rockets)
+	if (self.ammoGrenades)
 	{
 		if (acount)
 			sprint(other, ", ");
 		acount = 1;
-		s = ftos(self.ammo_rockets);
+		s = ftos(self.ammoGrenades);
 		sprint (other, s);
 		sprint (other, " rockets");
 	}
-	if (self.ammo_762x54)
+	if (self.ammoSniper)
 	{
 		if (acount) sprint(other, ", ");
 		acount = 1;
-		s = ftos(self.ammo_762x54);
+		s = ftos(self.ammoSniper);
 		sprint (other, s);
-		sprint (other, " cells");
+		sprint (other, " sniper ammo");
 	}
 	
 	sprint (other, "\n");
@@ -1000,12 +947,12 @@ void() DropClip19x18 =
 {
 	local entity item;
 
-	if (self.ammo_9x18 < 1) return;
+	if (self.ammoPistol < 1) return;
 
 	item = spawn();
 	item.origin = self.origin - '0 0 24';
 	
-	item.ammo_9x18 = self.ammo_9x18;
+	item.ammoPistol = self.ammoPistol;
 
 	item.velocity_z = 300;
 	item.velocity_x = -100 + (random() * 200);
@@ -1014,7 +961,7 @@ void() DropClip19x18 =
 	item.flags = FL_ITEM;
 	item.solid = SOLID_TRIGGER;
 	item.movetype = MOVETYPE_TOSS;
-	setmodel (item, "models/w_apsammo.md3");
+	setmodel (item, "models/w_pmammo.md3");
 	setsize (item, '-16 -16 0', '16 16 56');
 	item.touch = BackpackTouch;
 	
@@ -1026,12 +973,12 @@ void() DropShells =
 {
 	local entity item;
 
-	if (self.ammo_shells < 1) return;
+	if (self.ammoShells < 1) return;
 
 	item = spawn();
 	item.origin = self.origin - '0 0 24';
 	
-	item.ammo_shells = self.ammo_shells;
+	item.ammoShells = self.ammoShells;
 
 	item.velocity_z = 300;
 	item.velocity_x = -100 + (random() * 200);
@@ -1040,7 +987,7 @@ void() DropShells =
 	item.flags = FL_ITEM;
 	item.solid = SOLID_TRIGGER;
 	item.movetype = MOVETYPE_TOSS;
-	setmodel (item, "models/w_shotgunammo.md3");
+	setmodel (item, "models/w_shotgunammo.bsp");
 	setsize (item, '-16 -16 0', '16 16 56');
 	item.touch = BackpackTouch;
 	

@@ -2,13 +2,8 @@
 /*         		KNIFE                     */
 /******************************************/
 
-void() W_FireKnife =
+void W_FireKnifeSplash =
 {
-	local	vector	source;
-	local	vector	org;
-	local vector      meatdir;
-	local float damage;
-	local entity nearest;
 	local entity e;
 	damage = 50;
 	for (e = findchain(classname, "player"); e; e = e.chain) 
@@ -24,7 +19,17 @@ void() W_FireKnife =
 		T_Damage (nearest, self, self, damage);
 		trace_ent.headshot = 0;
 	}
-	else
+}
+
+void() W_FireKnife =
+{
+	local	vector	source;
+	local	vector	org;
+	local vector      meatdir;
+	local float damage;
+	local entity nearest;
+	local entity e;
+
 	{
 		damage = 16;
 
@@ -58,15 +63,15 @@ void() W_FireKnife =
 				meatdir_x = ((random () * 300.000) + source_x);
 				meatdir_y = ((random () * 300.000) + source_y);
 				meatdir_z = ((random () * 300.000) + source_z);
-				ShootGlass (org,meatdir);
+				shootGib (org,meatdir,trace_ent.sounds);
 				meatdir_x = ((random () * 300.000) + source_x);
 				meatdir_y = ((random () * 300.000) + source_y);
 				meatdir_z = ((random () * 300.000) + source_z);
-				ShootGlass (org,meatdir);
+				shootGib (org,meatdir,trace_ent.sounds);
 				meatdir_x = ((random () * 300.000) + source_x);
 				meatdir_y = ((random () * 300.000) + source_y);
 				meatdir_z = ((random () * 300.000) + source_z);
-				ShootGlass (org,meatdir);
+				shootGib (org,meatdir,trace_ent.sounds);
 				trace_ent.axhitme = 1;
 				T_Damage (trace_ent, self, self, 15);
 				sound(trace_ent, CHAN_AUTO,"weapons/knife/knife_hit1.wav",TRUE,ATTN_NORM);

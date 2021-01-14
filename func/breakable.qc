@@ -1,36 +1,28 @@
-
-void(vector position, vector direction) Shoot_Parts
+void(vector orig, float type) shootParts =
 {
-   local entity blood;
-
-   blood = spawn ();
-   blood.owner = self;
-   blood.movetype = MOVETYPE_FLYMISSILE;
-   blood.solid = SOLID_NOT;
-   makevectors (self.angles);
-   blood.velocity = direction;
-   blood.nextthink = (time + 0.250);
-   blood.think = SUB_Remove;
-   blood.touch = SUB_Remove;
-   setmodel (blood,"models/blood.mdl");
-   setsize (blood,VEC_ORIGIN,VEC_ORIGIN);
-   setorigin (blood,position);
-   
+	local vector dir;
+	local float i;
+	for (i = 0; i < 11; i = i+1)	
+	{
+		dir_x = 0 - (random(-1,1) * 100);
+		dir_y = 0 - (random(-1,1) * 100);
+		dir_z = (random(-1,1) * 100);
+		
+		shootGib(orig, dir, type);
+	}
 }
 
 void() breakable_use =
 {
-	// pointparticles(particleeffectnum("double_shotgun_muzzleflash"), self.origin + v_up * 20, self.velocity*50, 1);
-	// local vector meatdir;
-	// meatdir_x = ((random () * 300.000) );
-	// meatdir_y = ((random () * 300.000) );
-	// meatdir_z = ((random () * 300.000) );
-	// Shoot_Parts(self.origin,meatdir);
-	// self.think = SUB_Remove;
-	// self.nextthink = self.ltime + 0.01;
-	
+	//shootParts(self.pos1, self.sounds);
+	if(!self.pos1)
+	{
+		local vector center;
+		center = (self.absmin + self.absmax) * 0.5;
+		shootParts(center, self.sounds);
+	}
+	else shootParts(self.pos1, self.sounds);
 
-	
 	if(random() > 0.5) sound(self, CHAN_VOICE, self.noise1, 1, ATTN_NORM);
 	else sound(self, CHAN_VOICE, self.noise2, 1, ATTN_NORM);
 
@@ -41,15 +33,12 @@ void() breakable_use =
 };
 
 void() breakable_touch =
-{
-	local vector meatdir;
-	local float i;
-	
-	if (self.health) return;
+{	
+	if(self.health && self.sounds != 2) return;
 	if (other.classname != "player") return;
 	//if (self.owner.attack_finished > time) return;
 	//self.owner.attack_finished = time + 2;
-
+	
 	if (self.owner.message != "")
 	{
 		centerprint (other, self.owner.message);
@@ -58,18 +47,21 @@ void() breakable_touch =
 	
 	self.touch = SUB_Null;
 	
-	for(i = 0; i < 10; ++i)
-	{
-		meatdir_x = ((random () * 300.000) + other.velocity_x);
-		meatdir_y = ((random () * 300.000) + other.velocity_y);
-		meatdir_z = ((random () * 300.000) + other.velocity_z);
-		ShootGlass(other.origin, meatdir);
-	}
+	shootParts(other.origin, self.sounds);
 	breakable_use();
 }
 
 void() func_breakable =
 {
+	precache_model2("models/wood1.bsp");
+	precache_model2("models/wood2.bsp");
+	precache_model2("models/wood3.bsp");
+	precache_model2("models/wood4.bsp");
+	precache_model2("models/metal1.bsp");
+	precache_model2("models/metal2.bsp");
+	precache_model2("models/metal3.bsp");
+	precache_model2("models/metal4.bsp");
+	
 	if (self.sounds == 0)
 	{
 		precache_sound ("misc/null.wav");
@@ -78,10 +70,10 @@ void() func_breakable =
 	}
 	if (self.sounds == 1)
 	{
-		precache_sound2("func/doorstop1.wav");
-		precache_sound2("func/doormove1.wav");
-		self.noise1 = "func/doorstop1.wav";
-		self.noise2 = "func/doormove1.wav";
+		precache_sound2("func/wood1.wav");
+		precache_sound2("func/wood2.wav");
+		self.noise1 = "func/wood1.wav";
+		self.noise2 = "func/wood2.wav";
 	}
 	if (self.sounds == 2)
 	{
@@ -101,18 +93,13 @@ void() func_breakable =
 	self.max_health = self.health;
 	self.solid = SOLID_BSP;
 	self.movetype = MOVETYPE_NONE;
-	setorigin (self, self.origin);	
 	setmodel (self, self.model);
 	self.classname = "breakable";
-	
 	if (self.health)
 	{
 		self.takedamage = DAMAGE_AIM;
 		self.th_die = breakable_use;
 	}
-	
 	self.use = breakable_use;
 	self.touch = breakable_touch;
-	//self.think = LinkDoors;
-	//self.nextthink = self.ltime + 0.1;
 }

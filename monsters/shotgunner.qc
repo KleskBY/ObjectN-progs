@@ -200,10 +200,10 @@ void()	shotgunner_run7 = [$run7, shotgunner_run8] {ai_run(7); };
 void()	shotgunner_run8 = [$run8, shotgunner_run9] {ai_run(7); };
 void()	shotgunner_run9 = [$run9, shotgunner_run1] {ai_run(11); };
 
-void()      shotgunner_load1 = [$load1, shotgunner_load2] {self.mossclip = 7; };
+void()      shotgunner_load1 = [$load1, shotgunner_load2] {self.shotgunClip = 7; };
 void()      shotgunner_load2 = [$load2, shotgunner_load3] {};
 void()      shotgunner_load3 = [$load3, shotgunner_load4] {};
-void()      shotgunner_load4 = [$load4, shotgunner_load5] {sound(self, CHAN_WEAPON, "weapons/ak47/ak47_clipout.wav", 1, ATTN_NORM); };
+void()      shotgunner_load4 = [$load4, shotgunner_load5] {sound(self, CHAN_WEAPON, "weapons/rifle/clipout.wav", 1, ATTN_NORM); };
 void()      shotgunner_load5 = [$load5, shotgunner_load6] {};
 void()      shotgunner_load6 = [$load6, shotgunner_load7] {};
 void()      shotgunner_load7 = [$load7, shotgunner_load8] {};
@@ -213,13 +213,13 @@ void()      shotgunner_load10 = [$load10, shotgunner_load11] {};
 void()      shotgunner_load11 = [$load11, shotgunner_load12] {};
 void()      shotgunner_load12 = [$load12, shotgunner_load13] {};
 void()      shotgunner_load13 = [$load13, shotgunner_load14] {};
-void()      shotgunner_load14 = [$load14, shotgunner_run1] {sound(self, CHAN_WEAPON, "weapons/ak47/ak47_clipin.wav", 1, ATTN_NORM); };
+void()      shotgunner_load14 = [$load14, shotgunner_run1] {sound(self, CHAN_WEAPON, "weapons/rifle/clipin.wav", 1, ATTN_NORM); };
 
 void()      shotgunner_firea1 = [$firea1, shotgunner_firea2]
 {
 	ai_face();
 	shotgunner_fire();
-	if (self.mossclip <= 0)
+	if (self.shotgunClip <= 0)
 	{
 		self.think = shotgunner_load1;
 	}
@@ -235,7 +235,7 @@ void()      shotgunner_firea3 = [$firea3, shotgunner_firea4]
 {
 	ai_face();
 	shotgunner_fire();
-	if (self.mossclip <= 0)
+	if (self.shotgunClip <= 0)
 	{
 		self.think = shotgunner_load1;
 	}
@@ -251,7 +251,7 @@ void()      shotgunner_firea5 = [$firea5, shotgunner_firea6]
 {
 	ai_face();
 	shotgunner_fire();
-	if (self.mossclip <= 0)
+	if (self.shotgunClip <= 0)
 	{
 		self.think = shotgunner_load1;
 	}
@@ -267,7 +267,7 @@ void()      shotgunner_firea7 = [$firea7, shotgunner_firea8]
 {
 	ai_face();
 	shotgunner_fire();
-	if (self.mossclip <= 0)
+	if (self.shotgunClip <= 0)
 	{
 		self.think = shotgunner_load1;
 	}
@@ -341,7 +341,7 @@ void()      shotgunner_drawa7 = [$drawa7, shotgunner_firea1]
 			}
 		}
 	}
-	if (self.mossclip <= 0)
+	if (self.shotgunClip <= 0)
 	{
 		self.think = shotgunner_load1;
 	}
@@ -367,7 +367,7 @@ void()      shotgunner_fireb1 = [$fireb1, shotgunner_fireb2]
 {
 	ai_face();
 	shotgunner_fire();
-	if (self.mossclip <= 0)
+	if (self.shotgunClip <= 0)
 	{
 		self.think = shotgunner_load1;
 	}
@@ -404,7 +404,7 @@ void()      shotgunner_drawb9 = [$drawb9, shotgunner_fireb1]
 		}
 	}
 
-	if (self.mossclip <= 0)
+	if (self.shotgunClip <= 0)
 	{
 		self.think = shotgunner_load1;
 	}
@@ -417,7 +417,7 @@ void()      shotgunner_firec1 = [$firec1, shotgunner_firec2]
 {
 	ai_face();
 	shotgunner_fire();
-	if (self.mossclip <= 0)
+	if (self.shotgunClip <= 0)
 	{
 		self.think = shotgunner_load1;
 	}
@@ -432,7 +432,7 @@ void()      shotgunner_firec3 = [$firec3, shotgunner_firec4]
 {
 	ai_face();
 	shotgunner_fire();
-	if (self.mossclip <= 0)
+	if (self.shotgunClip <= 0)
 	{
 		self.think = shotgunner_load1;
 	}
@@ -452,7 +452,7 @@ void()      shotgunner_firec6 = [$firec6, shotgunner_firec7]
 {
 	ai_face();
 	shotgunner_fire();
-	if (self.mossclip <= 0)
+	if (self.shotgunClip <= 0)
 	{
 		self.think = shotgunner_load1;
 	}
@@ -467,7 +467,7 @@ void()      shotgunner_firec8 = [$firec8, shotgunner_firec9]
 {
 	ai_face();
 	shotgunner_fire();
-	if (self.mossclip <= 0)
+	if (self.shotgunClip <= 0)
 	{
 		self.think = shotgunner_load1;
 	}
@@ -483,7 +483,7 @@ void()      shotgunner_firec10 = [$firec10, shotgunner_firec11]
 {
 	ai_face();
 	shotgunner_fire();
-	if (self.mossclip <= 0)
+	if (self.shotgunClip <= 0)
 	{
 		self.think = shotgunner_load1;
 	}
@@ -499,7 +499,7 @@ void()      shotgunner_firec12 = [$firec12, shotgunner_firec13]
 {
 	ai_face();
 	shotgunner_fire();
-	if (self.mossclip <= 0)
+	if (self.shotgunClip <= 0)
 	{
 		self.think = shotgunner_load1;
 	}
@@ -541,7 +541,7 @@ void()      shotgunner_drawc9 = [$drawc9, shotgunner_firec1]
 		}
 	}
 
-	if (self.mossclip <= 0)
+	if (self.shotgunClip <= 0)
 	{
 		self.think = shotgunner_load1;
 	}
@@ -606,7 +606,7 @@ void()	shotgunner_Melee =
 	if (vlen(delta) > 90) return;
 	if (!CanDamage(self.enemy, self)) return;
 
-	sound(self, CHAN_WEAPON, "weapons/knife/knife_hit1.wav", 1, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "weapons/knife/hit.wav", 1, ATTN_NORM);
 	ldmg = 10 + 5 * random();
 	T_Damage(self.enemy, self, self, ldmg);
 
@@ -706,10 +706,10 @@ void(float damage, vector dir) shotgunnerFire =
 			WriteCoord(MSG_BROADCAST,trace_ent.origin_x);
 			WriteCoord(MSG_BROADCAST,trace_ent.origin_y);
 			WriteCoord(MSG_BROADCAST,trace_ent.origin_z);
-			particle(trace_endpos,'3.000 2.000 7.000',192.000,TE_WIZSPIKE);
-			particle(trace_endpos,'7.000 6.000 8.000',192.000,TE_WIZSPIKE);
+			particle(trace_endpos,'3 2 7',192,TE_WIZSPIKE);
+			particle(trace_endpos,'7 6 8',192,TE_WIZSPIKE);
 			//sound (self.enemy,CHAN_AUTO,"weapons/mp5ric1.wav",TRUE,ATTN_NORM);   
-			sound(self, CHAN_WEAPON, "weapons/ak47/m4.wav", 1, ATTN_NORM);
+			sound(self, CHAN_WEAPON, "weapons/rifle/m4.wav", 1, ATTN_NORM);
 		}
 	}
 };
@@ -721,15 +721,15 @@ void() shotgunner_fire =
 
 	ai_face();
 
-	sound(self, CHAN_WEAPON, "weapons/toz/toz-1.wav", 1, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "weapons/shotgun/shot.wav", 1, ATTN_NORM);
 	// fire somewhat behind the player, so a dodging player is harder to hit
 	en = self.enemy;
 	dir = (en.origin + '0 0 -8') - en.velocity * 0.2;
 	dir = normalize(dir - self.origin);
 
 	//guardFire(17,dir);
-	FireMossberg(16, dir, '0.08 0.06 0.0');
-	self.mossclip = self.mossclip - 1;
+	FireShotgun(16, dir, '0.08 0.06 0.0');
+	self.shotgunClip = self.shotgunClip - 1;
 };
 
 void()      shotgunner_melee1 = [$melee1, shotgunner_melee2] {ai_face(); };
@@ -749,7 +749,7 @@ void()	shotgunner_died3 = [$deathd3, shotgunner_died4]
 {
 	self.nextthink = time + 0.03;
 	self.solid = SOLID_NOT;
-	self.ammo545x39 = ceil(self.mossclip * 0.5);
+	self.ammoRifle = ceil(self.shotgunClip * 0.5);
 	//  Drop_Clip();
 };
 void()	shotgunner_died4 = [$deathd4, shotgunner_died5]
@@ -774,7 +774,7 @@ void()	shotgunner_diea3 = [$deatha3, shotgunner_diea4]
 {
 	self.nextthink = time + 0.03;
 	self.solid = SOLID_NOT;
-	self.ammo545x39 = ceil(self.mossclip * 0.5);
+	self.ammoRifle = ceil(self.shotgunClip * 0.5);
 	//Drop_Clip();
 };
 void()	shotgunner_diea4 = [$deatha4, shotgunner_diea5] {self.nextthink = time + 0.03; };
@@ -796,7 +796,7 @@ void()	shotgunner_dieb3 = [$deathb3, shotgunner_dieb4]
 {
 	self.nextthink = time + 0.03;
 	self.solid = SOLID_NOT;
-	self.ammo545x39 = ceil(self.mossclip * 0.5);
+	self.ammoRifle = ceil(self.shotgunClip * 0.5);
 	// Drop_Clip();
 };
 void()	shotgunner_dieb4 = [$deathb4, shotgunner_dieb5] {self.nextthink = time + 0.03; };
@@ -818,7 +818,7 @@ void()	shotgunner_diec3 = [$deathc3, shotgunner_diec4]
 {
 	self.nextthink = time + 0.03;
 	self.solid = SOLID_NOT;
-	self.ammo545x39 = ceil(self.mossclip * 0.5);
+	self.ammoRifle = ceil(self.shotgunClip * 0.5);
 	// Drop_Clip();
 	ai_back(4);
 };
@@ -837,7 +837,7 @@ void() shotgunner_die =
 {
 	local float temp;
 	temp = random();
-	self.ammo_shells = self.mossclip;
+	self.ammoShells = self.shotgunClip;
 	DropShells();
 	
 	if (self.duck == 1)
@@ -882,6 +882,7 @@ void() monster_shotguner =
 		return;
 	}
 	precache_model2("models/npc/medium.md3");
+	precache_model2("models/w_shotgunammo.bsp");
 	precache_sound2("npc/grenade1.wav");
 	precache_sound2("npc/grenade2.wav");
 	precache_sound2("npc/grenade3.wav");
@@ -889,12 +890,11 @@ void() monster_shotguner =
 	self.solid = SOLID_SLIDEBOX;
 	self.movetype = MOVETYPE_STEP;
 
-
 	setmodel(self, "models/npc/medium.md3");
 
 	setsize(self, '-9 -9 -24', '9 9 34');
-	self.health = 80;
-	self.mossclip = 7;
+	self.health = 75;
+	self.shotgunClip = 7;
 	self.th_stand = shotgunner_stand1;
 	self.th_walk = shotgunner_walk1;
 	self.th_run = shotgunner_run1;

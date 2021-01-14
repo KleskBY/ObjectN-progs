@@ -539,8 +539,7 @@ void() hurt_touch =
 	if(other.classname == "monster_zombie") return;
 	if (other.takedamage)
 	{
-		if(random() > 0.5) sound (other, CHAN_BODY, "misc/electrichit1.wav", 1, ATTN_NORM);
-		else sound (other, CHAN_BODY, "misc/electrichit2.wav", 1, ATTN_NORM);
+		sound (other, CHAN_BODY, "misc/electrichit1.wav", 1, ATTN_NORM);
 		self.solid = SOLID_NOT;
 		T_Damage (other, self, self, self.dmg);
 		self.think = hurt_on;
@@ -558,7 +557,6 @@ defalt dmg = 5
 void() trigger_hurt =
 {
 	precache_sound ("misc/electrichit1.wav");
-	precache_sound ("misc/electrichit2.wav");
 	InitTrigger ();
 	self.touch = hurt_touch;
 	if (!self.dmg) self.dmg = 5;

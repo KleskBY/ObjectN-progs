@@ -11,35 +11,50 @@ $origin 0 -6 24
 $base base		
 $skin skin
 
-// running
-$frame run1 run2 run3 run4 run5 run6 run7 run8 run9 run10 run11 run12 run13 //11 + 1 fake
-
-// standing
-$frame stand1 //13
-$frame axstnd1 //14
-
-// pain
-$frame axpain1 axpain2 axpain3 axpain4 axpain5  //15-19
-$frame pain1 pain2 pain3 pain4 pain5 //20-24
-
-
-// death
-$frame deatha1 deatha2 deatha3 deatha4 deatha5 deatha6 deatha7 deatha8 deatha9 deatha10 deatha11	//35				
-$frame deathb1 deathb2 deathb3 deathb4 deathb5 deathb6 deathb7 deathb8 deathb9 deathb10 deathb11	//46
+$frame stand1 // 0
+$frame run1 run2 run3 run4 run5 run6 run7 run8 run9 run10 run11 run12 run13 run14 run15 run16 run17 run18	//1-18
+$frame crouch1 //19
+$frame crouchrun1 crouchrun2 crouchrun3 crouchrun4 crouchrun5 crouchrun6 crouchrun7 crouchrun8 crouchrun9
+$frame crouchrun10 crouchrun11 crouchrun12 crouchrun13 crouchrun14 crouchrun15 crouchrun16 crouchrun17
+$frame crouchrun18 crouchrun19 crouchrun20 crouchrun21 crouchrun22 crouchrun23 crouchrun24 crouchrun25 //20-42
+$frame deatha1 deatha2 deatha3 deatha4 deatha5 deatha6 deatha7 deatha8 deatha9 deatha10 deatha11	//43-53				
+$frame deathb1 deathb2 deathb3 deathb4 deathb5 deathb6 deathb7 deathb8 deathb9 deathb10 deathb11	//54-64
 $frame deathc1 deathc2 deathc3 deathc4 deathc5 deathc6 deathc7 deathc8 deathc9 deathc10 deathc11	//57
-$frame crouch1																						//58
-$frame crouchrun1 crouchrun2 crouchrun3 crouchrun4 crouchrun5 crouchrun6 crouchrun7 crouchrun8 crouchrun9 crouchrun10 crouchrun11 crouchrun12 crouchrun13
-
-// attacks
-$frame knifeattack1 knifeattack2 knifeattack3 knifeattack4
 
 /*
 	==============================================================================
 	PLAYER
 	==============================================================================
 */
+void() playerAnim =
+{
+	if (self.velocity_x || self.velocity_y)
+	{
+		if(self.anim_finished + 0.06 < time)
+		{
+			if(self.duck)
+			{
+				if (self.walkframe >= $crouchrun25 || self.walkframe < $crouchrun1) self.walkframe = $crouchrun1;
+				self.walkframe = self.walkframe + 1;
+			}
+			else
+			{
+				if (self.walkframe >= 17) self.walkframe = 1;
+				if(self.button3) self.walkframe = self.walkframe + 1;	//walk
+				else self.walkframe = self.walkframe + 1.5;
+			}
+			self.anim_finished = time;
+		}
+		self.frame = self.walkframe;
+	}
+	else
+	{
+		if(self.duck == 1) self.frame = $crouch1;
+		else self.frame = $stand1;
+	}
+}
 
-void () shell_touch = 
+void() shell_touch = 
 {
 	//bprint("debug shell_touch()\n");
 	if ((other.classname == "door")) 
@@ -48,8 +63,8 @@ void () shell_touch =
 		return ;
 	}
 	
-	if (self.owner.weaponmodel == "models/v_toz.md3" || self.weaponmodel == "models/v_xm.md3") sound (self,CHAN_WEAPON,"weapons/shellhit2.wav",0.5,ATTN_NORM);
-	else sound (self,CHAN_WEAPON,"weapons/shellhit3.wav",0.5,ATTN_NORM);
+	if (self.owner.weaponmodel == "models/v_shot.md3" || self.weaponmodel == "models/v_shot_usa.md3") sound (self,CHAN_WEAPON,"weapons/shell2.wav",0.5,ATTN_NORM);
+	else sound (self,CHAN_WEAPON,"weapons/shell1.wav",0.5,ATTN_NORM);
 };
 
 void (vector org, vector dir) eject_shell = 
@@ -69,124 +84,73 @@ void (vector org, vector dir) eject_shell =
 	newmis.touch = shell_touch;
 	newmis.think = SUB_Remove;
 	newmis.owner = self;
-	newmis.nextthink = (time + 1);
+	newmis.nextthink = time + 1.5;
 	
-	if (self.weaponmodel == "models/v_toz.md3" || self.weaponmodel == "models/v_xm.md3") setmodel (newmis,"models/shells/shotgun_shell.md3");
-	else if (self.weaponmodel == "models/v_pm.md3" || self.weaponmodel == "models/v_glock.md3") setmodel (newmis,"models/shells/aps_shell.md3");
-	else setmodel (newmis,"models/shells/shell.md3");
+	if (self.weapon == WP_SHOTGUN) setmodel (newmis,"models/shells/shotgunShell.md3");
+	else if (self.weapon == WP_PISTOL) setmodel (newmis,"models/shells/pistolShell.md3");
+	else if (self.weapon == WP_SNIPER) setmodel (newmis,"models/shells/sniperShell.md3");
+	else setmodel (newmis,"models/shells/rifleShell.md3");
 	
 	setsize (newmis,VEC_ORIGIN,VEC_ORIGIN);
 	setorigin (newmis,org);
-	newmis.avelocity_x = (r * 6000.000);
-	newmis.avelocity_y = (r * 6000.000);
+	newmis.avelocity_x = (r * 6000);
+	newmis.avelocity_y = (r * 6000);
 	
-	if (r < 0.100 && r >= MSG_BROADCAST) newmis.velocity = (((v_forward * 20.000) + (v_right * 60.000)) + (v_up * 80.000));
-	if (r < 0.200 && r >= 0.100) newmis.velocity = (((v_forward * SVC_INTERMISSION) + (v_right * 65.000)) + (v_up * 90.000));
-	if (r < 0.300 && r >= 0.200) newmis.velocity = (((v_forward * 25.000) + (v_right * 70.000)) + (v_up * 100.000));
-	if (r < 0.400 && r >= 0.300) newmis.velocity = (((v_forward * 15.000) + (v_right * 75.000)) + (v_up * 110.000));
-	if (r < 0.500 && r >= 0.400) newmis.velocity = (((v_forward * 25.000) + (v_right * 80.000)) + (v_up * 130.000));
-	if (r < 0.600 && r >= 0.500) newmis.velocity = (((v_forward * 20.000) + (v_right * 85.000)) + (v_up * 150.000));
-	if (r < 0.700 && r >= 0.600) newmis.velocity = (((v_forward * TE_LAVASPLASH) + (v_right * 90.000)) + (v_up * 120.000));
-	if (r < 0.800 && r >= 0.700) newmis.velocity = (((v_forward * 20.000) + (v_right * 100.000)) + (v_up * 200.000));
-	if (r < 0.900 && r >= 0.800) newmis.velocity = (((v_forward * SVC_INTERMISSION) + (v_right * 110.000)) + (v_up * 130.000));
-	if (r <= WEAPON_SHOTGUN && r >= 0.900)newmis.velocity = (((v_forward * 25.000) + (v_right * 105.000)) + (v_up * 175.000));
+	if (r < 0.100 && r >= MSG_BROADCAST) newmis.velocity = (((v_forward * 20) + (v_right * 60)) + (v_up * 80));
+	if (r < 0.200 && r >= 0.100) newmis.velocity = (((v_forward * SVC_INTERMISSION) + (v_right * 65)) + (v_up * 90));
+	if (r < 0.300 && r >= 0.200) newmis.velocity = (((v_forward * 25) + (v_right * 70)) + (v_up * 100));
+	if (r < 0.400 && r >= 0.300) newmis.velocity = (((v_forward * 15) + (v_right * 75)) + (v_up * 110));
+	if (r < 0.500 && r >= 0.400) newmis.velocity = (((v_forward * 25) + (v_right * 80)) + (v_up * 130));
+	if (r < 0.600 && r >= 0.500) newmis.velocity = (((v_forward * 20) + (v_right * 85)) + (v_up * 150));
+	if (r < 0.700 && r >= 0.600) newmis.velocity = (((v_forward * TE_LAVASPLASH) + (v_right * 90)) + (v_up * 120));
+	if (r < 0.800 && r >= 0.700) newmis.velocity = (((v_forward * 20) + (v_right * 100)) + (v_up * 200));
+	if (r < 0.900 && r >= 0.800) newmis.velocity = (((v_forward * SVC_INTERMISSION) + (v_right * 110)) + (v_up * 130));
+	if (r <= WEAPON_SHOTGUN && r >= 0.900)newmis.velocity = (((v_forward * 25) + (v_right * 105)) + (v_up * 175));
 };
 
 
 
 
 void() player_run;
-void()	player_stand1 =[	$axstnd1,	player_stand1	]
+void() player_stand1 =[ $run1, player_stand1 ]
 {
-	if(fabs(self.punchangle_x) < 1) self.ShootsFired = 0;
-	
-	self.weaponframe=0;
-	if (self.velocity_x || self.velocity_y)
+	if(fabs(self.punchangle_x) < 1 && !self.button0) self.ShootsFired = 0;
+	if (vlen(self.velocity) >= 20)
 	{
-		self.walkframe=0;
+		self.walkframe = 0;
 		player_run();
 		return;
 	}
-	if (self.zoomlevel == 1 && self.weapon != WP_MOSIN)
-	{
-		stuffcmd(self,"fov 90 \n");
-		self.zoomlevel = 0;
-	}
-	
-	self.walkframe = 1;
-	if(self.duck ==1) self.frame = $crouch1;
-	else self.frame = $stand1 /*+ self.walkframe*/;
+	if (self.zoomlevel == 1 && self.weapon != WP_SNIPER) self.zoomlevel = 0;
+	self.weaponframe = 0;
+	self.walkframe = 0;
+	if(self.duck == 1) self.frame = $crouch1;
+	else self.frame = $stand1;
 	
 };
 
-void()	player_run =[	$run1,	player_run	]
+void()	player_run =[ $run1, player_run ]
 {
-	if(fabs(self.punchangle_x) < 1) self.ShootsFired = 0;
-
-	self.weaponframe=0;
-	if (self.zoomlevel == 1 && self.weapon != WP_MOSIN)
-	{
-		stuffcmd(self,"fov 90 \n");
-		self.zoomlevel = 0;
-	}
-	
+	if(fabs(self.punchangle_x) < 1 && !self.button0) self.ShootsFired = 0;
+	if (self.zoomlevel == 1 && self.weapon != WP_SNIPER) self.zoomlevel = 0;
+	self.weaponframe = 0;
 	self.reload = 0;
-	if (!self.velocity_x && !self.velocity_y)
+	if (vlen(self.velocity) < 20)
 	{
-		self.walkframe=0;
+		self.walkframe = 0;
 		player_stand1();
 		return;
 	}
 	
-	if (self.walkframe >= 11) self.walkframe = 0;
-	if(self.duck ==1) self.frame = $crouchrun1 + self.walkframe;
-	else self.frame = $run1 + self.walkframe;
-	
-	self.walkframe = self.walkframe + 1;
+	playerAnim();
 };
 	
 void (vector position, vector direction) Shoot_Blood = 
 {
-	//bprint("debug Shoot_Blood()\n");
-	local entity blood;
-	
-	blood = spawn ();
-	blood.owner = self;
-	blood.movetype = MOVETYPE_FLYMISSILE;
-	blood.solid = SOLID_NOT;
-	makevectors (self.angles);
-	blood.velocity = direction;
-	blood.nextthink = (time + 0.250);
-	blood.think = SUB_Remove;
-	blood.touch = SUB_Remove;
-	setmodel (blood,"models/blood.mdl");
-	setsize (blood,VEC_ORIGIN,VEC_ORIGIN);
-	setorigin (blood,position);
+	SpawnBlood(position, direction, 10);
 };
 	
-void (vector position, vector direction) ShootGlass = 
-{
-	//bprint("debug ShootGlass()\n");
-	local entity blood;
-	
-	blood = spawn ();
-	blood.owner = self;
-	blood.movetype = MOVETYPE_BOUNCE;
-	blood.solid = SOLID_NOT;
-	makevectors (self.angles);
-	blood.velocity = direction;
-	blood.avelocity = '300 300 300';
-	blood.angles = vectoangles(blood.velocity);
-	blood.nextthink = (time + 2);
-	blood.think = SUB_Remove;
-	blood.touch = SUB_Remove;
-	blood.alpha = 0.5;
-	setmodel (blood,"models/gib.md3");
-	setsize (blood,VEC_ORIGIN,VEC_ORIGIN);
-	setorigin (blood,position);
-};
-	
-	
+
 void() PainSound =
 {
 	//bprint("debug PainSound()\n");
@@ -198,82 +162,70 @@ void() PainSound =
 		sound (self, CHAN_VOICE, "player/death3.wav", 1, ATTN_NORM);
 		return;
 	}
-	
-	// water pain sounds
-	// if (self.watertype == CONTENT_WATER && self.waterlevel == 3)
-	// {
-		// DeathBubbles(1);
-		// if (random() > 0.5) sound (self, CHAN_VOICE, "player/drown1.wav", 1, ATTN_NORM);
-		// else sound (self, CHAN_VOICE, "player/drown2.wav", 1, ATTN_NORM);
-		// return;
-	// }
-	
-	// slime pain sounds
-	// if (self.watertype == CONTENT_SLIME)
-	// {
-		// FIX ME	put in some steam here
-		// if (random() > 0.5) sound (self, CHAN_VOICE, "player/lburn1.wav", 1, ATTN_NORM);
-		// else sound (self, CHAN_VOICE, "player/lburn2.wav", 1, ATTN_NORM);
-		// return;
-	// }
-	
-	// if (self.watertype == CONTENT_LAVA)
-	// {
-		// if (random() > 0.5) sound (self, CHAN_VOICE, "player/lburn1.wav", 1, ATTN_NORM);
-		// else sound (self, CHAN_VOICE, "player/lburn2.wav", 1, ATTN_NORM);
-		// return;
-	// }
-	
 	if (self.pain_finished > time)
 	{
 		self.axhitme = 0;
 		return;
 	}
-	self.pain_finished = time + 0.5;
-	
-	// don't make multiple pain sounds right after each other
-	
+	self.pain_finished = time + 0.1; // don't make multiple pain sounds right after each other
+		
 	// ax pain sound
 	if (self.axhitme == 1)
 	{
 		self.axhitme = 0;
-		sound (self, CHAN_VOICE, "weapons/knife/knife_hit1.wav", 1, ATTN_NORM);
+		sound (self, CHAN_VOICE, "weapons/knife/hit.wav", 1, ATTN_NORM);
 		return;
 	}
 	
-	
-	rs = rint((random() * 4) + 1);
-	
-	self.noise = "";
-	if (rs == 1) self.noise = "player/pain1.wav";
-	else if (rs == 2) self.noise = "player/pain2.wav";
-	else if (rs == 3) self.noise = "player/pain3.wav";
-	else if (rs == 4) self.noise = "player/pain4.wav";
-	else self.noise = "player/pain5.wav";
-	//else self.noise = "player/pain6.wav";
-	
+	rs = rint((random() * 7) + 1);
+	switch(rs)
+	{
+		case 1:
+			self.noise = "player/pain1.wav";
+			break;
+		case 2:
+			self.noise = "player/pain2.wav";
+			break;
+		case 3:
+			self.noise = "player/pain3.wav";
+			break;
+		case 4:
+			self.noise = "player/pain4.wav";
+			break;
+		case 5:
+			self.noise = "player/pain5.wav";
+			break;
+		case 6:
+			self.noise = "player/pain6.wav";
+			break;
+		default:
+			self.noise = "player/pain7.wav";
+			break;
+	}
+			
 	sound (self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
-	return;
 };
 
-void()	player_pain1 =	[	$pain1,	player_pain2	] {PainSound();self.weaponframe=0;};
-void()	player_pain2 =	[	$pain2,	player_pain3	] {};
-void()	player_pain3 =	[	$pain3,	player_pain4	] {};
-void()	player_pain4 =	[	$pain4,	player_pain5	] {};
-void()	player_pain5 =	[	$pain5,	player_run		] {};
+// void()	player_pain1 =	[	$pain1,	player_pain2	] {};
+// void()	player_pain2 =	[	$pain2,	player_pain3	] {};
+// void()	player_pain3 =	[	$pain3,	player_pain4	] {};
+// void()	player_pain4 =	[	$pain4,	player_pain5	] {};
+// void()	player_pain5 =	[	$pain5,	player_run		] {};
 
-void()	player_axpain1 =	[	$axpain1,	player_axpain2	] {PainSound();self.weaponframe=0;};
-void()	player_axpain2 =	[	$axpain2,	player_axpain3	] {};
-void()	player_axpain3 =	[	$axpain3,	player_axpain4	] {};
-void()	player_axpain4 =	[	$axpain4,	player_axpain5	] {};
-void()	player_axpain5 =	[	$axpain5,	player_run	] {};
+// void()	player_axpain1 =	[	$axpain1,	player_axpain2	] {PainSound();};
+// void()	player_axpain2 =	[	$axpain2,	player_axpain3	] {};
+// void()	player_axpain3 =	[	$axpain3,	player_axpain4	] {};
+// void()	player_axpain4 =	[	$axpain4,	player_axpain5	] {};
+// void()	player_axpain5 =	[	$axpain5,	player_run	] {};
 
 void() player_pain =
 {
+	//bprint("debug player_pain()\n");
+	PainSound();
 	if (self.weaponframe) return;
 	//if (self.invisible_finished > time) return;		// eyes don't have pain frames
-	if (self.weapon == WP_ONE) player_axpain1 ();
-	else player_pain1 ();
+	//if (self.weapon == WP_ONE) player_axpain1 ();
+	//else player_pain1 ();
 };
 	
 void() player_diea1;
@@ -284,20 +236,11 @@ void() DeathSound =
 {
 	//bprint("debug DeathSound()\n");
 	local float		rs;
-	// water death sounds
-	// if (self.waterlevel == 3)
-	// {
-		// sound (self, CHAN_VOICE, "player/h2odeath.wav", 1, ATTN_NONE);
-		// return;
-	// }
-
 	rs = rint ((random() * 2) + 1);
 	if (rs == 1) self.noise = "player/death1.wav";
 	else if (rs == 2) self.noise = "player/death2.wav";
 	else self.noise = "player/death3.wav";
-	
 	sound (self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
-	return;
 };
 
 
@@ -341,6 +284,7 @@ void(string gibname, float dm) ThrowGib =
 	new.origin = self.origin;
 	setmodel (new, gibname);
 	setsize (new, '0 0 0', '0 0 0');
+	new.scale = 0.8;
 	new.velocity = VelocityForDamage (dm);
 	new.movetype = MOVETYPE_BOUNCE;
 	new.solid = SOLID_NOT;
@@ -408,11 +352,11 @@ void(string gibname, float dm) ThrowHeadlessCorpse =
 void()	blasted_corpse1	=	[0,		blasted_corpse2] 
 {
 	self.nextthink = time + 0.03;
-	particle ((self.origin),'0.000 0.000 3.000',72.000,38.000);
-	particle ((self.origin),'0.000 3.000 3.000',72.000,38.000);
-	particle ((self.origin),'0.000 -3.000 3.000',72.000,38.000);
-	particle ((self.origin),'3.000 0.000 3.000',72.000,38.000);
-	particle ((self.origin),'-3.000 0.000 3.000',72.000,38.000);
+	particle ((self.origin),'0 0 3',72,38);
+	particle ((self.origin),'0 3 3',72,38);
+	particle ((self.origin),'0 -3 3',72,38);
+	particle ((self.origin),'3 0 3',72,38);
+	particle ((self.origin),'-3 0 3',72,38);
 };
 void()	blasted_corpse2	=	[1,		blasted_corpse3] {self.nextthink = time + 0.035;};
 void()	blasted_corpse3	=	[2,		blasted_corpse4] {self.nextthink = time + 0.035;};
@@ -463,10 +407,10 @@ void(string gibname, float dm) ThrowChunk =
 void() GibPlayer =
 {
 	//bprint("debug GibPlayer()\n");
-	ThrowHead ("progs/gib1.mdl", self.health);
-	ThrowGib ("progs/gib1.mdl", self.health);
-	ThrowGib ("progs/gib2.mdl", self.health);
-	ThrowGib ("progs/gib3.mdl", self.health);
+	ThrowHead ("models/gib1.bsp", self.health);
+	ThrowGib ("models/gib1.bsp", self.health);
+	ThrowGib ("models/gib2.bsp", self.health);
+	ThrowGib ("models/gib3.bsp", self.health);
 
 	self.deadflag = DEAD_DEAD;
 
@@ -513,7 +457,8 @@ void() DropBomb =
 	item.nextthink = time + 120;	// remove after 2 minutes
 	item.think = SUB_Remove;
 };
-	
+
+void() W_FireHandGrenade;
 void() PlayerDie =
 {
 	//bprint("debug PlayerDie()\n");
@@ -524,12 +469,12 @@ void() PlayerDie =
 	self.invincible_finished = 0;
 	self.super_damage_finished = 0;
 	self.radsuit_finished = 0;
-	self.modelindex = modelindex_ussr_aps;	// don't use eyes
 	
 	//if (deathmatch || coop) DropBackpack();
 	if(deathmatch && self.items & IT_BOMB)  DropBomb();
+	if(self.grenadetime > 10) { self.grenadetime = 1; W_FireHandGrenade (); }
 	
-	self.weaponmodel="";
+	self.weaponmodel = "";
 	self.view_ofs = '0 0 -8';
 	self.deadflag = DEAD_DYING;
 	self.solid = SOLID_NOT;
@@ -557,9 +502,9 @@ void() PlayerDie =
 	i = cvar("temp1");
 	//if (!i) i = 1 + floor(random()*2);
 	i = random();
-	if (i <= 0.3) player_diea1();
-	else if (i <= 0.6) player_dieb1();
-	else if (i <= 1) player_diec1();
+	if (i <= 0.5) player_diea1();
+	else player_dieb1();
+	// else if (i <= 1) player_diec1();
 
 };
 	

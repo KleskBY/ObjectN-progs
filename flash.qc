@@ -56,7 +56,7 @@ void() flash_on =
 };
 
 
-void () flash_toggle =
+void() flash_toggle =
 {
 	if (self.flash_flag == FALSE)
 	{       

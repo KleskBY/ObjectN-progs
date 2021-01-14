@@ -298,7 +298,7 @@ float (string dst, string src) strcpy =
 //
 //  I N T E R N A L  I N I T
 //
-void () InternalInit = 
+void() InternalInit = 
 {
 	local float p, p2;
 
@@ -393,7 +393,7 @@ entity lasth, currh;
 string hunkname = "00000000";
 string prevname = "00000001";
 
-void () InitHunkSearch = 
+void() InitHunkSearch = 
 {
 	lasth = currh = *AddInt(&progs, %-16);
 };
@@ -446,7 +446,7 @@ float (float h) PrintHunk =
 	}
 };
 
-void () SearchHunk = 
+void() SearchHunk = 
 {
 	local float i;
 	local string hname = "XXXXXXXX";

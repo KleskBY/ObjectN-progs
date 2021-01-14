@@ -5,8 +5,6 @@ void() player_stand1;
 void (vector org) spawn_tfog;
 void (vector org, entity death_owner) spawn_tdeath;
 
-float	modelindex_ussr_knife, modelindex_ussr_aps, modelindex_ussr_toz, modelindex_ussr_ak74,modelindex_ussr_mosin;
-
 /*
 =============================================================================
 
@@ -46,18 +44,20 @@ void() SetChangeParms =
 	parm1 = self.items;
 	parm2 = self.health;
 	parm3 = self.armorvalue;
-	parm4 = self.ammo_9x18;
-	parm5 = self.ammo545x39;
-	parm6 = self.ammo_rockets;
-	parm7 = self.ammo_shells;
+	parm4 = self.ammoPistol;
+	parm5 = self.ammoRifle;
+	parm6 = self.ammoGrenades;
+	parm7 = self.ammoShells;
+	parm17 = self.ammoSniper;
 	parm8 = self.weapon;
 	parm9 = self.armortype * 100;
 	parm10 = self.weapons;
-	parm11 = self.PMclip;
-    parm12 = self.mossclip;
-    parm13 = self.AKMclip;
-	parm15 = self.psg1clip;
+	parm11 = self.pistolClip;
+    parm12 = self.shotgunClip;
+    parm13 = self.rifleClip;
+	parm15 = self.sniperClip;
 	parm16 = self.m60clip;
+	
 };
 
 void() SetNewParms =
@@ -70,14 +70,14 @@ void() SetNewParms =
 	parm5 = 0;
         parm6 = 3;
 	parm7 = 0;
-        parm8 = WP_PM;
+        parm8 = WP_PISTOL;
 	parm9 = 0;
-        parm10 = WP_ONE | WP_PM | WP_GRENADE;
-        parm11 = 20;
+        parm10 = WP_ONE | WP_PISTOL | WP_GRENADE;
+        parm11 = CLIP_PISTOL;
         parm12 = 7;
         parm13 = 30;
         parm14 = 0;
-        parm15 = 5;
+        parm15 = CLIP_SNIPER;
         parm16 = 0;
 };
 
@@ -115,11 +115,11 @@ void() SetNewParmsKZ =
         parm8 = 0;
 	parm9 = 0;
         parm10 = 0;
-        parm11 = 20;
+        parm11 = CLIP_PISTOL;
         parm12 = 7;
         parm13 = 30;
         parm14 = 0;
-        parm15 = 5;
+        parm15 = CLIP_SNIPER;
         parm16 = 0;
 };
 
@@ -136,11 +136,11 @@ void() SetNewParmsSeeker =
         parm8 = WP_ONE;
 	parm9 = 0;
         parm10 = WP_ONE;
-        parm11 = 20;
+        parm11 = CLIP_PISTOL;
         parm12 = 7;
         parm13 = 30;
         parm14 = 0;
-        parm15 = 5;
+        parm15 = CLIP_SNIPER;
         parm16 = 0;
 };
 
@@ -155,10 +155,10 @@ void() SetNewParmsStormtrooper =
 	parm5 = 90;
         parm6 = 1;
 	parm7 = 0;
-        parm8 = WP_AKM;
+        parm8 = WP_RIFLE;
 	parm9 = 0;
-        parm10 = WP_ONE | WP_PM | WP_AKM | WP_GRENADE;
-        parm11 = 20;
+        parm10 = WP_ONE | WP_PISTOL | WP_RIFLE | WP_GRENADE;
+        parm11 = CLIP_PISTOL;
         parm12 = 7;
         parm13 = 30;
         parm14 = 0;
@@ -176,10 +176,10 @@ void() SetNewParmsBreacher =
 	parm5 = 0;
         parm6 = 3;
 	parm7 = 25;
-        parm8 = WP_TOZ;
+        parm8 = WP_SHOTGUN;
 	parm9 = 0;
-        parm10 = WP_ONE | WP_PM | WP_TOZ | WP_GRENADE;
-        parm11 = 20;
+        parm10 = WP_ONE | WP_PISTOL | WP_SHOTGUN | WP_GRENADE;
+        parm11 = CLIP_PISTOL;
         parm12 = 7;
         parm13 = 30;
         parm14 = 0;
@@ -197,11 +197,11 @@ void() SetNewParmsEngineer =
 	parm5 = 0;
     parm6 = 1;
 	parm7 = 25;
-	parm18 = 3;
-        parm8 = WP_PM;
+	parm18 = 4;
+        parm8 = WP_PISTOL;
 	parm9 = 0;
-        parm10 = WP_ONE | WP_PM | WP_HAMMER | WP_GRENADE;
-        parm11 = 20;
+        parm10 = WP_ONE | WP_PISTOL | WP_HAMMER | WP_GRENADE;
+        parm11 = CLIP_PISTOL;
         parm12 = 7;
         parm13 = 30;
         parm14 = 0;
@@ -221,14 +221,14 @@ void() SetNewParmsMarksman =
     parm6 = 2;
 	parm7 = 0;
 	parm17 = 25;
-    parm8 = WP_MOSIN;
+    parm8 = WP_SNIPER;
 	parm9 = 0;
-        parm10 = WP_ONE | WP_PM | WP_MOSIN | WP_GRENADE;
-        parm11 = 20;
+        parm10 = WP_ONE | WP_PISTOL | WP_SNIPER | WP_GRENADE;
+        parm11 = CLIP_PISTOL;
         parm12 = 7;
         parm13 = 30;
         parm14 = 0;
-        parm15 = 5;
+        parm15 = CLIP_SNIPER;
         parm16 = 0;
 };
 
@@ -260,7 +260,7 @@ void() DecodeLevelParms =
 	{
 		if (world.model == "maps/start.bsp" || world.model == "maps/e1m1.bsp") SetNewParms();		// take away all stuff on starting new episode
 	}
-	if (deathmatch == MODE_KZ) { SetNewParmsKZ(); self.weaponmodel = ""; self.health = 1000; } //strstrofs(world.model,"kz_",0)
+	if (deathmatch == MODE_KZ || (strstrofs(world.model,"kz_",0) != -1)) { SetNewParmsKZ(); self.weaponmodel = ""; self.health = 1000; } //strstrofs(world.model,"kz_",0)
 	if (deathmatch == MODE_HNS) 
 	{ 
 		if(self.team == TEAM_USSR)
@@ -273,22 +273,23 @@ void() DecodeLevelParms =
 			SetNewParmsSeeker();
 		}
 	}
+	if(!parm2) SetNewParms();
 	self.items = parm1;
 	self.health = parm2;
 	self.armorvalue = parm3;
-	self.ammo_9x18 = parm4;
-	self.ammo545x39 = parm5;
-	self.ammo_rockets = parm6;
-	self.ammo_shells = parm7;
-	self.ammo_762x54 = parm17;
-	self.ammo_barricades = parm18;
+	self.ammoPistol = parm4;
+	self.ammoRifle = parm5;
+	self.ammoGrenades = parm6;
+	self.ammoShells = parm7;
+	self.ammoSniper = parm17;
+	self.ammoBarricades = parm18;
 	self.weapon = parm8;
 	self.armortype = parm9 * 0.01;
 	self.weapons = parm10;
-	self.PMclip = parm11;
-	self.mossclip = parm12;
-	self.AKMclip = parm13;
-	self.psg1clip = parm15;
+	self.pistolClip = parm11;
+	self.shotgunClip = parm12;
+	self.rifleClip = parm13;
+	self.sniperClip = parm15;
 	self.m60clip = parm16;
 };
 
@@ -342,7 +343,6 @@ void() GotoNextMap =
 	else changelevel (nextmap);
 };
 
-
 void() ExitIntermission =
 {
 	//bprint("debug ExitIntermission()\n");
@@ -357,76 +357,21 @@ void() ExitIntermission =
 	intermission_running = intermission_running + 1;
 
 //
-// run some text if at the end of an episode
+// run some text if at the end of an episode //message example
 //
 	if (intermission_running == 2)
 	{
-		// if (world.model == "maps/e1m7.bsp")
-		// {
-			// WriteByte (MSG_ALL, SVC_CDTRACK);
-			// WriteByte (MSG_ALL, 2);
-			// WriteByte (MSG_ALL, 3);
-			// if (!cvar("registered"))
-			// {
-				// WriteByte (MSG_ALL, SVC_FINALE);
-				// WriteString (MSG_ALL, "As the corpse of the monstrous entity\nChthon sinks back into the lava whence\nit rose, you grip the Rune of Earth\nMagic tightly. Now that you have\nconquered the Dimension of the Doomed,\nrealm of Earth Magic, you are ready to\ncomplete your task in the other three\nhaunted lands of Quake. Or are you? If\nyou don't register Quake, you'll never\nknow what awaits you in the Realm of\nBlack Magic, the Netherworld, and the\nElder World!");
-			// }
-			// else
-			// {
-				// WriteByte (MSG_ALL, SVC_FINALE);
-				// WriteString (MSG_ALL, "As the corpse of the monstrous entity\nChthon sinks back into the lava whence\nit rose, you grip the Rune of Earth\nMagic tightly. Now that you have\nconquered the Dimension of the Doomed,\nrealm of Earth Magic, you are ready to\ncomplete your task. A Rune of magic\npower lies at the end of each haunted\nland of Quake. Go forth, seek the\ntotality of the four Runes!");
-			// }
-			// return;
-		// }
-		// else if (world.model == "maps/e2m6.bsp")
-		// {
-			// WriteByte (MSG_ALL, SVC_CDTRACK);
-			// WriteByte (MSG_ALL, 2);
-			// WriteByte (MSG_ALL, 3);
-
-			// WriteByte (MSG_ALL, SVC_FINALE);
-			// WriteString (MSG_ALL, "The Rune of Black Magic throbs evilly in\nyour hand and whispers dark thoughts\ninto your brain. You learn the inmost\nlore of the Hell-Mother; Shub-Niggurath!\nYou now know that she is behind all the\nterrible plotting which has led to so\nmuch death and horror. But she is not\ninviolate! Armed with this Rune, you\nrealize that once all four Runes are\ncombined, the gate to Shub-Niggurath's\nPit will open, and you can face the\nWitch-Goddess herself in her frightful\notherworld cathedral.");
-			// return;
-		// }
-		// else if (world.model == "maps/e3m6.bsp")
-		// {
-			// WriteByte (MSG_ALL, SVC_CDTRACK);
-			// WriteByte (MSG_ALL, 2);
-			// WriteByte (MSG_ALL, 3);
-
-			// WriteByte (MSG_ALL, SVC_FINALE);
-			// WriteString (MSG_ALL, "The charred viscera of diabolic horrors\nbubble viscously as you seize the Rune\nof Hell Magic. Its heat scorches your\nhand, and its terrible secrets blight\nyour mind. Gathering the shreds of your\ncourage, you shake the devil's shackles\nfrom your soul, and become ever more\nhard and determined to destroy the\nhideous creatures whose mere existence\nthreatens the souls and psyches of all\nthe population of Earth.");
-			// return;
-		// }
-		// else if (world.model == "maps/e4m7.bsp")
-		// {
-			// WriteByte (MSG_ALL, SVC_CDTRACK);
-			// WriteByte (MSG_ALL, 2);
-			// WriteByte (MSG_ALL, 3);
-
-			// WriteByte (MSG_ALL, SVC_FINALE);
-			// WriteString (MSG_ALL, "Despite the awful might of the Elder\nWorld, you have achieved the Rune of\nElder Magic, capstone of all types of\narcane wisdom. Beyond good and evil,\nbeyond life and death, the Rune\npulsates, heavy with import. Patient and\npotent, the Elder Being Shub-Niggurath\nweaves her dire plans to clear off all\nlife from the Earth, and bring her own\nfoul offspring to our world! For all the\ndwellers in these nightmare dimensions\nare her descendants! Once all Runes of\nmagic power are united, the energy\nbehind them will blast open the Gateway\nto Shub-Niggurath, and you can travel\nthere to foil the Hell-Mother's plots\nin person.");
-			// return;
-		// }
+		if (world.model == "maps/e1m8.bsp")
+		{
+			WriteByte (MSG_ALL, SVC_CDTRACK);
+			WriteByte (MSG_ALL, 2);
+			WriteByte (MSG_ALL, 3);
+			WriteByte (MSG_ALL, SVC_FINALE);
+			WriteString (MSG_ALL, "You have passed all 8 levels and escaped.\nI hope you enjoyed the game.\nYou have no idea how dreary it was to make this product.\nGame seems short and a little bit unfinished,\nbut I am still working on it.\nYou can support me by joining my discord or just texting me.\nDon't forget to try bonus levels and multiplayer.\nLeave a review! Feedback welcome!");
+			return;
+		}
 
 		GotoNextMap();
-	}
-	
-	if (intermission_running == 3)
-	{
-		if (!cvar("registered"))
-		{	// shareware episode has been completed, go to sell screen
-			WriteByte (MSG_ALL, SVC_SELLSCREEN);
-			return;
-		}
-		
-		if ( (serverflags&15) == 15)
-		{
-			WriteByte (MSG_ALL, SVC_FINALE);
-			WriteString (MSG_ALL, "Now, you have all four Runes. You sense\ntremendous invisible forces moving to\nunseal ancient barriers. Shub-Niggurath\nhad hoped to use the Runes Herself to\nclear off the Earth, but now instead,\nyou will use them to enter her home and\nconfront her as an avatar of avenging\nEarth-life. If you defeat her, you will\nbe remembered forever as the savior of\nthe planet. If she conquers, it will be\nas if you had never been born.");
-			return;
-		}
-		
 	}
 
 	GotoNextMap();
@@ -505,8 +450,8 @@ void() changelevel_touch =
 
 	SUB_UseTargets ();
 
-	if ( (self.spawnflags & 1) && (deathmatch == 0) )
-	{	// NO_INTERMISSION
+	if (self.spawnflags & 1 && deathmatch == 0) // NO_INTERMISSION
+	{	
 		GotoNextMap();
 		return;
 	}
@@ -541,8 +486,7 @@ void() trigger_changelevel =
 
 void() set_suicide_frame;
 void() PutObserverInServer;
-// called by ClientKill and DeadThink
-void() respawn =
+void() respawn = // called by ClientKill and DeadThink
 {
 	//bprint("debug respawn()\n");
 	if (coop)
@@ -563,7 +507,7 @@ void() respawn =
 		// }
 		// else 
 		{
-			if (deathmatch == MODE_KZ) SetNewParmsKZ();
+			if (deathmatch == MODE_KZ || (strstrofs(world.model,"kz_",0) != -1)) SetNewParmsKZ();
 			else		// set default spawn parms
 			{
 				if(self.class == CLASS_SHTORMTROOPER) SetNewParmsStormtrooper();
@@ -622,11 +566,9 @@ entity() SelectSpawnPoint =
 	local	entity thing;
 	local	float  pcount;
 	
-// testinfo_player_start is only found in regioned levels
 	spot = find (world, classname, "testplayerstart");
 	if (spot) return spot;
 		
-// choose a info_player_deathmatch point
 	if (coop)
 	{
 		lastspawn = find(lastspawn, classname, "info_player_coop");
@@ -664,8 +606,8 @@ entity() SelectSpawnPoint =
 		}
 	}
 
-	if (serverflags)
-	{	// return with a rune to start
+	if (serverflags) // return with a rune to start
+	{	
 		spot = find (world, classname, "info_player_start2");
 		if (spot) return spot;
 	}
@@ -692,9 +634,41 @@ void() DecodeLevelParms;
 void() PlayerDie;
 void() PutObserverInServer;
 
+void() DemoCameraThink =
+{
+	local entity	pos;
+	self.velocity = '0 0 0';
+	pos = FindIntermission ();
+	self.angles = pos.mangle;
+	self.v_angle = pos.mangle;
+	setorigin (self, pos.origin);
+}
 void() PutClientInServer =
 {
 	stuffcmd (self, "r_ambient 1\n");
+	stuffcmd (self, strcat("teamplay ", ftos(teamplay), "\n"));
+	if(world.model == "maps/demo.bsp")
+	{
+		local entity	pos;
+		pos = FindIntermission ();
+		self.health = 666;
+		self.view_ofs = '0 0 0';
+		self.angles = self.v_angle = pos.mangle;
+		self.fixangle = TRUE;		// turn this way immediately
+		self.nextthink = time + 0.5;
+		self.think = DemoCameraThink;
+		self.takedamage = DAMAGE_NO;
+		self.solid = SOLID_NOT;
+		self.movetype = MOVETYPE_NONE;
+		self.modelindex = 0;
+		setorigin (self, pos.origin);
+		self.weapon = WP_SNIPER;
+		stuffcmd (self, "crosshair 5\n");
+		stuffcmd (self, "togglemenu\n");
+		return;
+	}
+	
+	 
 	if(deathmatch)
 	{
 		if (self.team == NO_TEAM && self.class == NO_TEAM) // if you don't have a team selected 
@@ -731,32 +705,17 @@ void() PutClientInServer =
 	self.th_pain = player_pain;
 	self.th_die = PlayerDie;
 	self.deadflag = DEAD_NO;
-// paustime is set by teleporters to keep the player from moving a while
-	self.pausetime = 0;
+	self.pausetime = 0; // paustime is set by teleporters to keep the player from moving a while
 	
-//	spot = SelectSpawnPoint ();
-
-//	self.origin = spot.origin + '0 0 1';
 	self.origin = self.oldorigin = spot.origin + '0 0 1';	// 1998-07-21 Respawning where player died fix by Robert Field
 	self.angles = spot.angles;
 	self.fixangle = TRUE;		// turn this way immediately
 
-// oh, this is a hack!
-	// setmodel (self, "progs/eyes.mdl");
-	// modelindex_eyes = self.modelindex;
-	// if(deathmatch)
-	// {
-		// if(self.team == TEAM_USA) setmodel (self, "models/usa_m4.md3");
-		// else setmodel (self, "models/ussr_ak74.md3");
-	// }
-	// else setmodel (self, "models/ussr_ak74.md3");
-
-	if(self.weapon == WP_PM) 
+	if(self.weapon == WP_PISTOL) 
 	{
-		if(self.team == TEAM_USA) setmodel (self, "models/usa_glock.md3");
-		else setmodel (self, "models/ussr_aps.md3");
-		modelindex_ussr_aps = self.modelindex;
-		player_ApsSwitch();
+		if(self.team == TEAM_USA) setmodel (self, "models/usa_pistol.md3");
+		else setmodel (self, "models/ussr_pistol.md3");
+		playerPistolSwitch();
 	}
 	else if(self.weapon == WP_ONE) 
 	{
@@ -765,46 +724,34 @@ void() PutClientInServer =
 		{
 			if(self.team == TEAM_USA) setmodel (self, "models/usa_knife.md3");
 			else setmodel (self, "models/ussr_knife.md3");
-			modelindex_ussr_knife = self.modelindex;
-			player_KnifeSwitch();
+			playerKnifeSwitch();
 		}
 	}
-	else if(self.weapon == WP_TOZ)
+	else if(self.weapon == WP_SHOTGUN)
 	{
-		if(self.team == TEAM_USA) setmodel (self, "models/usa_xm.md3");
-		else setmodel (self, "models/ussr_toz.md3");
-		modelindex_ussr_toz = self.modelindex;
+		if(self.team == TEAM_USA) setmodel (self, "models/usa_shot.md3");
+		else setmodel (self, "models/ussr_shot.md3");
 		player_TozSwitch();
 	}
-	else if(self.weapon == WP_AKM)
+	else if(self.weapon == WP_RIFLE)
 	{
-		if(self.team == TEAM_USA) setmodel (self, "models/usa_m4.md3");
-		else setmodel (self, "models/ussr_ak74.md3");
-		modelindex_ussr_ak74 = self.modelindex;
-		player_AK74Switch();
+		if(self.team == TEAM_USA) setmodel (self, "models/usa_rifle.md3");
+		else setmodel (self, "models/ussr_rifle.md3");
+		playerRifleSwitch();
 	}
-	else if(self.weapon == WP_MOSIN)
+	else if(self.weapon == WP_SNIPER)
 	{
-		if(self.team == TEAM_USA) setmodel (self, "models/usa_awp.md3");
-		else setmodel (self, "models/ussr_mosin.md3");
-		modelindex_ussr_mosin = self.modelindex;
+		if(self.team == TEAM_USA) setmodel (self, "models/usa_sniper.md3");
+		else setmodel (self, "models/ussr_sniper.md3");
+		playerSniperSwitch();
 	}
 	else if(self.weapon == WP_GRENADE) player_HESwitch();
 	else setmodel (self, "models/runner_red.md3");
 	
-	// if(strstrofs(world.model,"hns_",0) != -1)
-	// {
-		// if(self.team == TEAM_USA) setmodel (self, "models/runner_blue.md3");
-		// else setmodel (self, "models/runner_red.md3");
-	// }
-	modelindex_ussr_aps = self.modelindex;
-
 	setsize (self, VEC_HULL_MIN, VEC_HULL_MAX);
-	
-	self.view_ofs = '0 0 22';
-	
+	self.view_ofs = '0 0 24';
 	self.velocity = '0 0 0';	// 1998-07-21 Player moves after respawn fix by Xian
-
+	
 	player_stand1 ();
 	
 	if (deathmatch || coop)
@@ -813,8 +760,6 @@ void() PutClientInServer =
 		spawn_tfog (self.origin + v_forward*20);
 	}
 	spawn_tdeath (self.origin, self);
-	
-	DrawLaser();
 };
 
 
@@ -835,8 +780,36 @@ void() PutClientInServer =
 /*QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 24)
 The normal starting point for a level.
 */
+void() global_think =
+{
+	//if(world.lastTouch  + 1 < time)
+	if(deathmatch && AUTOBOTS)
+	{
+		local entity e;
+		local float players;
+		for (e = findchain(classname, "player"); e; e = e.chain) players = players + 1;
+		for (e = findchain(classname, "observer"); e; e = e.chain) players = players + 1;
+		if(players < AUTOBOTS) SpawnBot();
+		if(players > AUTOBOTS)
+		{
+			e = find(world, classname, "player");
+			while (e)
+			{
+				if (clienttype(e) == CLIENTTYPE_BOT) 
+				{
+					dropclient(e);
+					return;
+				}
+			}
+		}
+	}
+	self.nextthink = time + 5;
+}
+
 void() info_player_start =
 {
+	self.think = global_think;
+	self.nextthink = time + 1;
 };
 
 
@@ -892,26 +865,23 @@ void() NextLevel =
 	local float r;
 	if(deathmatch == 1)
 	{
-		r = rint(random() * 7);
-		if(r == 1) nextmap = "hns_multiply";
-		else if(r == 2) nextmap = "fy_snow";
-		else if(r == 3) nextmap = "e1m4";
-		else if(r == 4) nextmap = "e1m5";
-		else if(r == 5) nextmap = "e1m6";
-		else if(r == 6) nextmap = "terrain";
-		else if(r == 7) nextmap = "de_train";
+		r = rint(random() * 6);
+		if(r == 1) nextmap = "multiply";
+		else if(r == 2) nextmap = "snowy";
+		else if(r == 3) nextmap = "factory";
+		else if(r == 4) nextmap = "terrain";
+		else if(r == 5) nextmap = "trains";
 		else nextmap = "dusty";
 		
 		if(mapname == nextmap)
+		//while(mapname == nextmap)
 		{
-			r = rint(random() * 7);
-			if(r == 1) nextmap = "hns_multiply";
-			else if(r == 2) nextmap = "fy_snow";
-			else if(r == 3) nextmap = "e1m4";
-			else if(r == 4) nextmap = "e1m5";
-			else if(r == 5) nextmap = "e1m6";
-			else if(r == 6) nextmap = "terrain";
-			else if(r == 7) nextmap = "de_train";
+			r = rint(random() * 6);
+			if(r == 1) nextmap = "multiply";
+			else if(r == 2) nextmap = "snowy";
+			else if(r == 3) nextmap = "factory";
+			else if(r == 4) nextmap = "terrain";
+			else if(r == 5) nextmap = "trains";
 			else nextmap = "dusty";
 		}
 		
@@ -1086,6 +1056,7 @@ void() PlayerDeathThink =
 	}
 	if(deathmatch == MODE_DE) return;
 // wait for any button down
+	if (clienttype(self) == CLIENTTYPE_BOT) respawn();
 	if (!self.button2 && !self.button1 && !self.button0) return;
 
 	self.button0 = 0;
@@ -1098,7 +1069,7 @@ void() PlayerDeathThink =
 void() PlayerJump =
 {	
 	if (self.flags & FL_WATERJUMP) return;
-	if((!deathmatch && (strstrofs(world.model,"kz_",0) == -1)) && (self.lasttouch +0.85 > time)) return;
+	if((!deathmatch && (strstrofs(world.model,"kz_",0) == -1)) && (self.lastTouch + 0.72 > time)) return;
 	if (self.waterlevel >= 2)
 	{
 		if (self.watertype == CONTENT_WATER) self.velocity_z = 100;
@@ -1124,11 +1095,10 @@ void() PlayerJump =
 	
 	self.button2 = 0;
 // player jumping sound
-	self.lasttouch = time;
+	self.lastTouch = time;
 	local float rand;
 	rand = random();
-	if(rand >0.5) sound (self, CHAN_BODY, "player/jump1.wav", 1, ATTN_NORM);
-	else sound (self, CHAN_BODY, "player/jump2.wav", 1, ATTN_NORM);
+	sound (self, CHAN_BODY, "player/jump1.wav", 1, ATTN_NORM);
 	self.velocity_z = self.velocity_z + 270;
 	if(self.class == CLASS_ASSASSIN && deathmatch < 3) self.velocity_z = self.velocity_z + 100;
 };
@@ -1256,7 +1226,7 @@ Called every frame before physics are run
 */
 void() UseTouch =
 {
-	if (other.classname != "worldspawn" && other.message)
+	if (other.classname != "worldspawn" && (strstrofs(other.classname,"trigger", 0) == -1) && other.message)
 	{
 		centerprint(self.owner, other.message);
 		sound (other, CHAN_BODY, "misc/talk.wav", 1, ATTN_NORM);
@@ -1287,18 +1257,36 @@ void() UseSmth =
 		missile.nextthink = time + 0.07;
 		missile.think = SUB_Remove;
 		
-	
 		missile.angles = vectoangles(missile.velocity);
-		//setmodel (missile, "models/w_grenade.md3");
-		setsize (missile, '0 0 0', '1 1 1');
+		setsize (missile, '-1 -1 -1', '1 1 1');
 		setorigin (missile, self.origin + (v_up * 20));
 	}
 }
 
-
-
+void() Nametags =
+{
+	local vector src;
+	makevectors (self.v_angle);
+	src = (self.origin + self.view_ofs + (v_forward * TE_LAVASPLASH)); 
+	src_y = (self.absmin_y + (self.size_y * 0.500));
+	traceline (src, (src + v_forward * 1024) - (v_right) - (v_up), FALSE, self);
+	if (trace_ent.classname != "player") return;
+	centerprint(self, trace_ent.netname);
+}
+void() BotPreThink;
 void() PlayerPreThink =
 {
+	if (clienttype(self) == CLIENTTYPE_BOT) 
+	{
+		BotPreThink();
+	}
+	// bprint(ftos(self.origin_x));
+	// bprint(" | ");
+	// bprint(ftos(self.origin_y));
+	// bprint(" | ");
+	// bprint(ftos(self.origin_z));
+	// bprint("\n");
+		
 	// bprint(ftos(self.angles_x));
 	// bprint(" | ");
 	// bprint(ftos(self.angles_y));
@@ -1312,9 +1300,9 @@ void() PlayerPreThink =
 	// if(self.flags & FL_LADDERJUMP) bprint("1 ");
 	// else bprint("0 ");
 	// bprint("\n");
+	//bprint(ftos(self.zoomlevel));
+	//bprint("\n");
 
-
-	local float crosshaircvar;
 	if (intermission_running)
 	{
 		IntermissionThink ();	// otherwise a button could be missed between
@@ -1326,91 +1314,13 @@ void() PlayerPreThink =
 		if (self.team == NO_TEAM && self.class == NO_TEAM && self.classname != "observer") PutObserverInServer(); //Make me an observer
 		if (self.team != NO_TEAM && self.class != NO_TEAM && self.classname != "player") PutClientInServer();
 	}
-	if (self.view_ofs == '0 0 0') return;		// intermission or finale
-
-	if(deathmatch)
+	if (self.view_ofs == '0 0 0') // intermission or finale
 	{
-		if (self.impulse == 20) 
-		{
-			self.team = TEAM_USSR;
-			self.class = CLASS_SHTORMTROOPER;
-			SetNewParmsStormtrooper();
-			SelectTeamUSSR();
-			self.impulse = 0;
-		}
-		else if (self.impulse == 21)
-		{
-			self.team = TEAM_USSR;
-			self.class = CLASS_BREACHER;
-			SetNewParmsBreacher();
-			SelectTeamUSSR();
-			self.impulse = 0;
-		}
-		else if (self.impulse == 22)
-		{
-			self.team = TEAM_USSR;
-			self.class = CLASS_MARKSMAN;
-			SetNewParmsMarksman();
-			SelectTeamUSSR();
-			self.impulse = 0;
-		}
-		else if(self.impulse == 23)
-		{
-			self.team = TEAM_USSR;
-			self.class = CLASS_ENGINEER;
-			SetNewParmsEngineer();
-			SelectTeamUSSR();
-			self.impulse = 0;
-		}
-		else if(self.impulse == 24)
-		{
-			self.team = TEAM_USSR;
-			self.class = CLASS_ASSASSIN;
-			SetNewParmsAssassin();
-			SelectTeamUSSR();
-			self.impulse = 0;
-		}
-		else if (self.impulse == 25) 
-		{
-			self.team = TEAM_USA;
-			self.class = CLASS_SHTORMTROOPER;
-			SetNewParmsStormtrooper();
-			SelectTeamUSA();
-			self.impulse = 0;
-		}
-		else if (self.impulse == 26)
-		{
-			self.team = TEAM_USA;
-			self.class = CLASS_BREACHER;
-			SetNewParmsBreacher();
-			SelectTeamUSA();
-			self.impulse = 0;
-		}
-		else if (self.impulse == 27)
-		{
-			self.team = TEAM_USA;
-			self.class = CLASS_MARKSMAN;
-			SetNewParmsMarksman();
-			SelectTeamUSA();
-			self.impulse = 0;
-		}
-		else if(self.impulse == 28)
-		{
-			self.team = TEAM_USA;
-			self.class = CLASS_ENGINEER;
-			SetNewParmsEngineer();
-			SelectTeamUSA();
-			self.impulse = 0;
-		}
-		else if(self.impulse == 29)
-		{
-			self.team = TEAM_USA;
-			self.class = CLASS_ASSASSIN;
-			SetNewParmsAssassin();
-			SelectTeamUSA();
-			self.impulse = 0;
-		}
+		self.zoomlevel = 0;
+		return;		
 	}
+
+	SelectClass();
 
 	makevectors (self.v_angle);		// is this still used
 
@@ -1430,61 +1340,49 @@ void() PlayerPreThink =
 	if(self.flags & FL_ONGROUND) self.flags = self.flags - (self.flags & FL_LADDERJUMP);
 	if (self.button2) PlayerJump ();
 	else self.flags = self.flags | FL_JUMPRELEASED;
-	// if(self.weapon == WP_AKM) stuffcmd (self, "cl_forwardspeed 185;cl_backspeed 185;cl_sidespeed 185;\n");
-	// else if(self.weapon == WP_TOZ) stuffcmd (self, "cl_forwardspeed 175;cl_backspeed 175;cl_sidespeed 175;\n");
+	// if(self.weapon == WP_RIFLE) stuffcmd (self, "cl_forwardspeed 185;cl_backspeed 185;cl_sidespeed 185;\n");
+	// else if(self.weapon == WP_SHOTGUN) stuffcmd (self, "cl_forwardspeed 175;cl_backspeed 175;cl_sidespeed 175;\n");
 	// else stuffcmd (self, "cl_forwardspeed 200;cl_backspeed 200;cl_sidespeed 200;\n");
 
-	
-	crosshaircvar = cvar("crosshair");
-	if(crosshaircvar > 0 && crosshaircvar <= 5 )
-	{
-		if(self.weapon == WP_MOSIN) stuffcmd (self, "crosshair 5\n");
-		else
-		{
-			if(fabs(self.punchangle_x) > 1) stuffcmd (self, "crosshair 4\n");
-			else if(fabs(self.punchangle_x) > 0.666) stuffcmd (self, "crosshair 3\n");
-			else if(fabs(self.punchangle_x) > 0.333) stuffcmd (self, "crosshair 2\n");
-			else stuffcmd (self, "crosshair 1\n");
-		}
-	}
-	else if(crosshaircvar > 5  )
-	{
-		if(self.weapon == WP_MOSIN) stuffcmd (self, "crosshair 5\n");
-		else
-		{
-			if(fabs(self.punchangle_x) > 1) stuffcmd (self, "crosshair 9\n");
-			else if(fabs(self.punchangle_x) > 0.666) stuffcmd (self, "crosshair 8\n");
-			else if(fabs(self.punchangle_x) > 0.333) stuffcmd (self, "crosshair 7\n");
-			else stuffcmd (self, "crosshair 6\n");
-		}
-	}
-
 	if(self.buttonuse && self.class == CLASS_ASSASSIN && deathmatch < 3)
-	{
+	{		
 		if(!self.hooking) FireHook ();
 	}
 	else BreakHook();
 	
 	if(self.buttonuse) UseSmth();
+	if(deathmatch || coop) Nametags();
+
+	if (self.impulse == 14) //flashlight
+	{
+		flash_toggle ();
+		self.impulse = 0;
+	}
+	if (clienttype(self) != CLIENTTYPE_BOT)
+	{
+		if(self.button3)
+		{
+			if(!self.duck)
+			{
+				self.duck = 1;
+				setsize (self, '-15 -15 -24', '15 15 18');
+				self.view_ofs = '0 0 11';
+			}
+		}
+		else
+		{
+			if(self.duck)
+			{
+				self.duck = 0;
+				setsize (self, '-16 -16 -24', '16 16 35');
+				self.view_ofs = '0 0 23';
+			}
+		}
+	}
 	
-	if(self.button3)
-	{
-		if(!self.duck)
-		{
-			self.duck = 1;
-			setsize (self, '-15 -15 -24', '15 15 1');
-			self.view_ofs = '0 0 10';
-		}
-	}
-	else
-	{
-		if(self.duck)
-		{
-			self.duck = 0;
-			setsize (self, '-16 -16 -24', '16 16 35');
-			self.view_ofs = '0 0 22';
-		}
-	}
+
+
+
 	if(self.movetype == MOVETYPE_NOCLIP && !self.button2 && !self.button3)
 	{
 		local float sv_accelerate;
@@ -1515,18 +1413,17 @@ void() PlayerPreThink =
 		}
 	}
 	
-	if (time < self.pausetime) self.velocity = '0 0 0'; // teleporters can force a non-moving pause time	
+	if (time < self.pausetime) self.velocity = '0 0 0'; // teleporters can force a non-moving pause time
+	
 	if(time > self.attack_finished && self.currentammo == 0 && self.weapon != IT_KNIFE)
 	{
 		//if(self.weapon == WP_GRENADE && self.attack_finished == 0) CycleWeaponReverseCommand();
-		if(self.weapon == WP_AKM && self.AKMclip < 1) CycleWeaponReverseCommand();
-		if(self.weapon == WP_TOZ && self.mossclip < 1) CycleWeaponReverseCommand();
-		if(self.weapon == WP_PM && self.PMclip < 1) CycleWeaponReverseCommand();
+		if(self.weapon == WP_RIFLE && self.rifleClip < 1) CycleWeaponReverseCommand();
+		if(self.weapon == WP_SHOTGUN && self.shotgunClip < 1) CycleWeaponReverseCommand();
+		if(self.weapon == WP_PISTOL && self.pistolClip < 1) CycleWeaponReverseCommand();
 		//self.weapon = W_BestWeapon ();
 		//W_SetCurrentAmmo ();
 	}
-	
-
 };
 
 
@@ -1543,7 +1440,6 @@ void() PlayerPostThink =
 {
 	if (self.view_ofs == '0 0 0') return;		// intermission or finale
 	if (self.deadflag) return;
-	
 	if(fabs(self.velocity_x + self.velocity_y + self.velocity_z) > 60) footsteps();
 	
 // do weapon stuff
@@ -1556,10 +1452,10 @@ void() PlayerPostThink =
 		if (self.jump_flag < -500)
 		{
 			if(self.class != CLASS_ASSASSIN) T_Damage (self, world, world, -self.jump_flag *0.05); 
-			sound (self, CHAN_VOICE, "player/land2.wav", 1, ATTN_NORM);
+			sound (self, CHAN_VOICE, "player/land2.wav", 0.6, ATTN_NORM);
 			self.deathtype = "falling";
 		}
-		else sound (self, CHAN_VOICE, "player/land.wav", 1, ATTN_NORM);
+		else sound (self, CHAN_VOICE, "player/land1.wav", 0.6, ATTN_NORM);
 
 		self.jump_flag = 0;
 		self.punchangle_x = 3;
@@ -1580,13 +1476,8 @@ void() ClientConnect =
 {
 	bprint (self.netname);
 	bprint (" entered the game\n");
-	
-	self.team = NO_TEAM;//Koolio, you're teamless on connecting
-
-
-// a client connecting during an intermission can cause problems
-	if (intermission_running)
-		ExitIntermission ();
+	self.team = NO_TEAM; //Koolio, you're teamless on connecting
+	if (intermission_running) ExitIntermission (); // a client connecting during an intermission can cause problems
 };
 
 
@@ -1764,4 +1655,3 @@ void(entity targ, entity attacker) ClientObituary =
 		}
 	}
 };
- 

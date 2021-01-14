@@ -38,13 +38,13 @@ void() ladder_touch =
 		other.flags = other.flags - (other.flags & FL_LADDERJUMP);
 	}
 	
-	if(other.lasttouch > time) return;
+	if(other.lastTouch > time) return;
 	if(other.button2 && !(other.flags & FL_LADDERJUMP) && !(other.flags & FL_ONGROUND)) 
 	{ 
 		makevectors(self.angles);
 		other.velocity = other.velocity + (v_forward * 200);
 		other.velocity_z = other.velocity_z + 100;
-		other.lasttouch = time + 0.2;
+		other.lastTouch = time + 0.2;
 		return;
 	}
 
@@ -101,7 +101,7 @@ void() ladder_touch =
 		// other.origin_z = other.origin_z+0.076;
 		// setorigin (other, other.origin);
 	// }
-	// other.lasttouch = time+0.3;
+	// other.lastTouch = time+0.3;
 	
 };
 
