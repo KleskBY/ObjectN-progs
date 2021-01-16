@@ -227,7 +227,7 @@ void() BotPreThink =
 	local entity e, nearest;
 	for (e = findchain(classname, "player"); e; e = e.chain) 
 	{
-		if(e != self && e.deadflag != DEAD_DEAD && e.deadflag != DEAD_DYING)
+		if(e != self && e.deadflag != DEAD_DEAD && e.deadflag != DEAD_DYING && e.deadflag != DEAD_RESPAWNABLE)
 		{
 			if (!nearest || !visible(nearest)) nearest = e;
 			if(visible(e))

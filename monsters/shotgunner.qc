@@ -67,6 +67,30 @@ $frame deathd9
 
 
 
+void(float shotcount, vector dir, vector spread) FireShotgun =
+{
+	local	vector direction;
+	local	vector	src;
+	
+	makevectors(self.v_angle);
+
+
+	src = (self.origin + (v_forward * TE_LAVASPLASH));
+	src_z = (self.absmin_z + (self.size_z * 0.800)); //0.800
+	if(self.duck) src_z = (self.absmin_z + self.size_z);
+	src_y = (self.absmin_y + (self.size_y * 0.5)); //0.400
+    ClearMultiDamage ();
+	while (shotcount > 0)
+	{
+		direction = dir + crandom()*spread_x*v_right + crandom()*spread_y*v_up;
+		traceline (src, src + direction * 2048 + (v_up * 50), FALSE, self);
+		//particle(src + (v_forward * 100),src + direction * 2048,192,random() * 10);
+		if (trace_fraction != 1.0) TraceAttack (8, direction);
+		shotcount = shotcount - 1;
+	}
+    ApplyMultiDamage ();
+};
+
 
 
 

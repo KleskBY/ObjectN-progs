@@ -67,7 +67,7 @@ void() shell_touch =
 	else sound (self,CHAN_WEAPON,"weapons/shell1.wav",0.5,ATTN_NORM);
 };
 
-void (vector org, vector dir) eject_shell = 
+void (vector org) eject_shell = 
 {
 	//bprint("debug eject_shell()\n");
 	local float r;
@@ -392,10 +392,10 @@ void(string gibname, float dm) ThrowChunk =
 	new.origin = self.origin;
 	setmodel (new, gibname);
 	new.view_ofs = '0 0 8';
-	setsize (new, '-16 -16 0', '16 16 56');
-	new.velocity = VelocityForDamage (dm);
+	setsize (new, '0 0 0', '1 1 1');
+	new.velocity = VelocityForDamage (dm) * 0.5;
 	new.movetype = MOVETYPE_BOUNCE;
-	new.solid = SOLID_NOT;
+	new.solid = SOLID_BBOX;
 	new.avelocity = crandom() * '0 600 0';
 	new.think = SUB_Remove;
 	new.ltime = time;

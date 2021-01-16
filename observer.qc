@@ -2,13 +2,12 @@
 //Observer mode, you start out as this if you don't have a team
 //Basically modified PutClientInServer to be more like an observer mode
 
-void() PutObserverInServer =		//Koolio, Just like PutClientInServer
+void() PutObserverInServer =
 {
 	if (self.team != NO_TEAM && self.class != NO_TEAM) // if you already have a team 
 	{ 
-		PutClientInServer(); // And run the normal PutClientInServer
-		centerprint (self, "You have a team");
-		return; // and forget the rest 
+		PutClientInServer();
+		return;
 	}
 	//bprint("shit\n");
 	local entity spot;
@@ -16,11 +15,11 @@ void() PutObserverInServer =		//Koolio, Just like PutClientInServer
 	spot = SelectSpawnPoint ();
 
 	self.classname = "observer";
-	self.health = 666;				//Heh, just for fun
-	self.takedamage = DAMAGE_NO;  	//You can't take damage
-	self.solid = SOLID_NOT;       	//You're not solid (so you can't (be) telefrag(ged)
-	self.movetype = MOVETYPE_NOCLIP;//You can move just like in noclipping mode
-	self.show_hostile = 0;			//The rest is pretty much the same as in PutClientInServer
+	self.health = 666;			
+	self.takedamage = DAMAGE_NO;  
+	self.solid = SOLID_NOT;       	
+	self.movetype = MOVETYPE_NOCLIP;
+	self.show_hostile = 0;			
 	self.max_health = 666;
 	self.flags = FL_CLIENT;
 	self.super_damage_finished = 0;
@@ -54,11 +53,12 @@ void() PutObserverInServer =		//Koolio, Just like PutClientInServer
 
 	player_stand1 ();
 	
-	if (deathmatch || coop)
-	{
-		makevectors(self.angles);
-		spawn_tfog (self.origin + v_forward*20); //You can uncomment this if you want the normal fog to apear
-	}
+	// if (deathmatch || coop)
+	// {
+		// makevectors(self.angles);
+		// spawn_tfog (self.origin + v_forward*20); //You can uncomment this if you want the normal fog to apear
+	// }
 
-	spawn_tdeath (self.origin, self);
+	//spawn_tdeath (self.origin, self);
+	if(!coop) centerprint(self, "PRESS M TO SELECT TEAM");
 };

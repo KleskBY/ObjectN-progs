@@ -253,6 +253,40 @@ void() SetNewParmsAssassin =
         parm16 = 0;
 };
 
+void() PrintLevelParms =
+{
+	bprint("Items: ");
+	bprint(ftos(parm1));
+	bprint("\n");
+	bprint("Health: ");
+	bprint(ftos(parm2));
+	bprint("\n");
+	bprint("armor: ");
+	bprint(ftos(parm3));
+	bprint("\n");
+	bprint("Pistol: ");
+	bprint(ftos(parm4));
+	bprint("\n");
+	bprint("Rifle: ");
+	bprint(ftos(parm5));
+	bprint("\n");
+	bprint("Grenades: ");
+	bprint(ftos(parm6));
+	bprint("\n");
+	bprint("Shells: ");
+	bprint(ftos(parm7));
+	bprint("\n");
+	bprint("Weapon: ");
+	bprint(ftos(parm8));
+	bprint("\n");
+	bprint("ArmorType: ");
+	bprint(ftos(parm9));
+	bprint("\n");
+	bprint("Weapops: ");
+	bprint(ftos(parm10));
+	bprint("\n");
+};
+
 void() DecodeLevelParms =
 {
 	//bprint("debug DecodeLevelParms()\n");
@@ -273,7 +307,7 @@ void() DecodeLevelParms =
 			SetNewParmsSeeker();
 		}
 	}
-	if(!parm2) SetNewParms();
+	if(!parm2 || parm2 > 600) SetNewParms();
 	self.items = parm1;
 	self.health = parm2;
 	self.armorvalue = parm3;
@@ -492,9 +526,16 @@ void() respawn = // called by ClientKill and DeadThink
 	if (coop)
 	{
 		CopyToBodyQue (self);	// make a copy of the dead body for appearances sake
-		setspawnparms (self);	// get the spawn parms as they were at level start
+		//setspawnparms (self);	// get the spawn parms as they were at level start
 		//PutClientInServer ();	// respawn	
-		PutObserverInServer();
+		
+		local entity e;
+		local float players;
+		for (e = findchain(classname, "player"); e; e = e.chain) if(e.deadflag != DEAD_DEAD && e.deadflag != DEAD_DYING && e.deadflag != DEAD_RESPAWNABLE) players = players + 1;
+		// bprint(ftos(players));
+		// bprint("\n");
+		if(players) PutObserverInServer();
+		else localcmd ("restart\n");
 	}
 	else if (deathmatch)
 	{
@@ -645,6 +686,8 @@ void() DemoCameraThink =
 }
 void() PutClientInServer =
 {
+	//PrintLevelParms();
+	//bprint("PutClientInServer\n");
 	stuffcmd (self, "r_ambient 1\n");
 	stuffcmd (self, strcat("teamplay ", ftos(teamplay), "\n"));
 	if(world.model == "maps/demo.bsp")
@@ -697,9 +740,12 @@ void() PutClientInServer =
 	self.invincible_finished = 0;
 	self.effects = 0;
 	self.invincible_time = 0;
+	if(coop) self.team = 1;
 
-	DecodeLevelParms ();
-	W_SetCurrentAmmo ();
+	if(coop && parm8 == 0) SetNewParms();
+	DecodeLevelParms();
+	
+	W_SetCurrentAmmo();
 
 	self.attack_finished = time;
 	self.th_pain = player_pain;
@@ -750,7 +796,7 @@ void() PutClientInServer =
 	
 	setsize (self, VEC_HULL_MIN, VEC_HULL_MAX);
 	self.view_ofs = '0 0 24';
-	self.velocity = '0 0 0';	// 1998-07-21 Player moves after respawn fix by Xian
+	self.velocity = '0 0 0';
 	
 	player_stand1 ();
 	
@@ -759,7 +805,7 @@ void() PutClientInServer =
 		makevectors(self.angles);
 		spawn_tfog (self.origin + v_forward*20);
 	}
-	spawn_tdeath (self.origin, self);
+	if(deathmatch) spawn_tdeath (self.origin, self);
 };
 
 
@@ -1039,7 +1085,7 @@ void() PlayerDeathThink =
 		}
 	}
 
-	if ((self.flags & FL_ONGROUND))
+	if (self.flags & FL_ONGROUND)
 	{
 		forward = vlen (self.velocity);
 		forward = forward - 20;

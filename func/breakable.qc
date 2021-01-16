@@ -2,13 +2,17 @@ void(vector orig, float type) shootParts =
 {
 	local vector dir;
 	local float i;
-	for (i = 0; i < 11; i = i+1)	
+	if(self.lastTouch + 0.3 < time)
 	{
-		dir_x = 0 - (random(-1,1) * 100);
-		dir_y = 0 - (random(-1,1) * 100);
-		dir_z = (random(-1,1) * 100);
-		
-		shootGib(orig, dir, type);
+		for (i = 0; i < 11; i = i+1)	
+		{
+			dir_x = 0 - (random(-1,1) * 100);
+			dir_y = 0 - (random(-1,1) * 100);
+			dir_z = (random(-1,1) * 100);
+			
+			shootGib(orig, dir, type);
+		}
+		self.lastTouch = time;
 	}
 }
 
@@ -39,11 +43,11 @@ void() breakable_touch =
 	//if (self.owner.attack_finished > time) return;
 	//self.owner.attack_finished = time + 2;
 	
-	if (self.owner.message != "")
-	{
-		centerprint (other, self.owner.message);
-		sound (other, CHAN_VOICE, "misc/talk.wav", 1, ATTN_NORM);
-	}
+	// if (self.owner.message != "")
+	// {
+		// centerprint (other, self.owner.message);
+		// sound (other, CHAN_VOICE, "misc/talk.wav", 1, ATTN_NORM);
+	// }
 	
 	self.touch = SUB_Null;
 	

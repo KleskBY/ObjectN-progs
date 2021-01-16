@@ -105,8 +105,7 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage=
 	local	float	save;
 	local	float	take;
 
-	if (!targ.takedamage)
-		return;
+	if (!targ.takedamage) return;
 
 // used by buttons and triggers to set activator for target firing
 	damage_attacker = attacker;
@@ -159,8 +158,10 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage=
 	}
 
 // team play damage avoidance
-//	if ( (teamplay == 1) && (targ.team > 0)&&(targ.team == attacker.team) )
+	if ( (teamplay == 1) && (targ.team > 0) && (targ.team == attacker.team) )
 	if(coop && targ != attacker	&& attacker.classname == "player" && inflictor.classname != "door") return;
+
+
 	if (teamplay && targ.team && targ.team == attacker.team && targ != attacker	
 	&& attacker.classname == "player" && inflictor.classname != "door")	return;// because squishing a teammate is still possible
 		

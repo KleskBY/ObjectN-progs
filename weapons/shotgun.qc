@@ -1,85 +1,21 @@
 
-float(entity hit, float damage) shotgunAddMultiDamage =
-{
-	if (!hit) return 0;
-	if (hit != multi_ent)
-	{
-		ApplyMultiDamage ();
-		multi_damage = damage;
-		multi_ent = hit;
-	}
-	else multi_damage = multi_damage + damage;                     
-    return multi_damage;
-};
-
-void (float damage, vector dir) shotgunTraceAttack = 
-{
-	local vector vel;
-	local vector org;
-	local vector meatdir;
-	local float rand;
-
-	vel = normalize (((dir + (v_up * crandom ())) + (v_right * crandom ())));
-	vel = (vel + (FL_SWIM * trace_plane_normal));
-	vel = (vel * 200);
-	org = (trace_endpos - (dir * MOVETYPE_STEP));
-	meatdir_x = ((random () * 300) + dir_x);
-	meatdir_y = ((random () * 300) + dir_y);
-	meatdir_z = ((random () * 300) + dir_z);
-	makevectors(self.v_angle);
-	if (trace_ent.takedamage) 
-	{
-		if(DetectObject(damage, org, dir)) return;
-		damage = DetectHitbox(damage);
-		if (rand < 0.5) Shoot_Blood (org,meatdir);
-		rand=shotgunAddMultiDamage (trace_ent,damage);
-	} 
-	else 
-	{
-		WriteByte (MSG_BROADCAST,SVC_TEMPENTITY);
-		WriteByte (MSG_BROADCAST,TE_GUNSHOT);
-		WriteCoord (MSG_BROADCAST,org_x);
-		WriteCoord (MSG_BROADCAST,org_y);
-		WriteCoord (MSG_BROADCAST,org_z);
-	}
-};
-
-void(float shotcount, vector dir, vector spread) FireShotgun =
-{
-	local	vector direction;
-	local	vector	src;
-	
-	makevectors(self.v_angle);
-
-
-	src = (self.origin + (v_forward * TE_LAVASPLASH));
-	src_z = (self.absmin_z + (self.size_z * 0.800)); //0.800
-	if(self.duck) src_z = (self.absmin_z + self.size_z);
-	src_y = (self.absmin_y + (self.size_y * 0.5)); //0.400
-    ClearMultiDamage ();
-	while (shotcount > 0)
-	{
-		direction = dir + crandom()*spread_x*v_right + crandom()*spread_y*v_up;
-		traceline (src, src + direction * 2048 + (v_up * 50), FALSE, self);
-		//particle(src + (v_forward * 100),src + direction * 2048,192,random() * 10);
-		if (trace_fraction != 1.0) shotgunTraceAttack (8, direction);
-		shotcount = shotcount - 1;
-	}
-    ApplyMultiDamage ();
-};
-
 void() W_FireShotgun =
 {
-	local vector dir;
-	self.punchangle_x = -2;
 	self.shotgunClip = self.shotgunClip - 1;
-    dir = aim (self, 100000);
-    FireShotgun (16, dir, '0.08 0.06 0.0');
-	
-	local float temp;
-	temp = random (2,6);
-	self.punchangle_x = temp;
+	self.punchangle_x = random (2,6);
 	self.punchangle_z = -2;
+	local float i;
+	i = 16;
+	while (i > 0)
+	{
+		fireBullet('120 120 0', IT_9x18 * 2, 8);
+		i = i -1;
+	}
+	sound(self,CHAN_WEAPON,"weapons/shotgun/shot.wav", 1, ATTN_NORM);
+	//makevectors(self.v_angle);     
+	pointparticles(particleeffectnum("double_shotgun_muzzleflash"), self.origin + self.view_ofs + v_up * -2.6 + v_forward * 26 + v_right*3.7, self.velocity*50, 1);
+	eject_shell (self.origin + self.view_ofs + v_up * -8 + v_forward*22 - v_right * -8);
+
 };
 
 void() playerShotgunAttack = [1, playerShotgunAttack2] 
@@ -90,10 +26,8 @@ void() playerShotgunAttack = [1, playerShotgunAttack2]
 	self.nextthink = time + 0.03;
 	self.punchangle_x = -2;
 	self.punchangle_z = 2;
-	sound(self,CHAN_WEAPON,"weapons/shotgun/shot.wav", 1,ATTN_NORM);
 	W_FireShotgun ();
-	makevectors(self.v_angle);     
-	eject_shell (self.origin + self.view_ofs + v_up * -8 + v_forward*22 - v_right * -8, dir);
+
 };
 
 void() playerShotgunAttack2 = [2, playerShotgunAttack2] 

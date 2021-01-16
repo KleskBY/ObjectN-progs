@@ -818,7 +818,7 @@ void(float damage, vector dir) guardFire =
 {
 	if(self.duck == 1) pointparticles(particleeffectnum("double_shotgun_muzzleflash"), self.origin + self.view_ofs + v_up * -21 , self.velocity*50, 1);
 	else pointparticles(particleeffectnum("double_shotgun_muzzleflash"), self.origin + self.view_ofs + v_up * -10, self.velocity*50, 1);
-	local	vector	src;
+	local vector src;
 
 	makevectors(self.v_angle);
 
