@@ -43,12 +43,12 @@ void() SetChangeParms =
 	if (self.health < 50) self.health = 50;
 	parm1 = self.items;
 	parm2 = self.health;
-	parm3 = self.armorvalue;
+	//parm3 = self.armorvalue;
 	parm4 = self.ammoPistol;
 	parm5 = self.ammoRifle;
 	parm6 = self.ammoGrenades;
 	parm7 = self.ammoShells;
-	parm17 = self.ammoSniper;
+	parm3 = self.ammoSniper;
 	parm8 = self.weapon;
 	parm9 = self.armortype * 100;
 	parm10 = self.weapons;
@@ -193,7 +193,7 @@ void() SetNewParmsEngineer =
 	parm1 = IT_PM | IT_KNIFE | IT_HAMMER | IT_GRENADE ;
 	parm2 = 100;
 	parm3 = 0;
-	parm4 = 60;
+	parm4 = 80;
 	parm5 = 0;
     parm6 = 1;
 	parm7 = 25;
@@ -220,7 +220,7 @@ void() SetNewParmsMarksman =
 	parm5 = 0;
     parm6 = 2;
 	parm7 = 0;
-	parm17 = 25;
+	parm3 = 30;
     parm8 = WP_SNIPER;
 	parm9 = 0;
         parm10 = WP_ONE | WP_PISTOL | WP_SNIPER | WP_GRENADE;
@@ -310,12 +310,12 @@ void() DecodeLevelParms =
 	if(!parm2 || parm2 > 600) SetNewParms();
 	self.items = parm1;
 	self.health = parm2;
-	self.armorvalue = parm3;
+	//self.armorvalue = parm3;
 	self.ammoPistol = parm4;
 	self.ammoRifle = parm5;
 	self.ammoGrenades = parm6;
 	self.ammoShells = parm7;
-	self.ammoSniper = parm17;
+	self.ammoSniper = parm3;
 	self.ammoBarricades = parm18;
 	self.weapon = parm8;
 	self.armortype = parm9 * 0.01;
@@ -532,8 +532,6 @@ void() respawn = // called by ClientKill and DeadThink
 		local entity e;
 		local float players;
 		for (e = findchain(classname, "player"); e; e = e.chain) if(e.deadflag != DEAD_DEAD && e.deadflag != DEAD_DYING && e.deadflag != DEAD_RESPAWNABLE) players = players + 1;
-		// bprint(ftos(players));
-		// bprint("\n");
 		if(players) PutObserverInServer();
 		else localcmd ("restart\n");
 	}
@@ -828,11 +826,10 @@ The normal starting point for a level.
 */
 void() global_think =
 {
-	//if(world.lastTouch  + 1 < time)
+	local entity e;
+	local float players;
 	if(deathmatch && AUTOBOTS)
 	{
-		local entity e;
-		local float players;
 		for (e = findchain(classname, "player"); e; e = e.chain) players = players + 1;
 		for (e = findchain(classname, "observer"); e; e = e.chain) players = players + 1;
 		if(players < AUTOBOTS) SpawnBot();
@@ -841,7 +838,7 @@ void() global_think =
 			e = find(world, classname, "player");
 			while (e)
 			{
-				if (clienttype(e) == CLIENTTYPE_BOT) 
+				if (e && clienttype(e) == CLIENTTYPE_BOT) 
 				{
 					dropclient(e);
 					return;
@@ -849,7 +846,30 @@ void() global_think =
 			}
 		}
 	}
-	self.nextthink = time + 5;
+	if(coop && time > 600)
+	{
+		for (e = findchain(classname, "player"); e; e = e.chain) players = players + 1;
+		for (e = findchain(classname, "observer"); e; e = e.chain) players = players + 1;
+		if(!players) 
+		{
+			bprint("restarting\n");
+			localcmd("coop 1; maxplayers 4; deathmatch 0; map e1m1\n");
+		}
+	}
+	if(coop)
+	{
+		local float allive;
+		for (e = findchain(classname, "player"); e; e = e.chain) players = players + 1;
+		for (e = findchain(classname, "observer"); e; e = e.chain) players = players + 1;
+		if(players)
+		{
+			for (e = findchain(classname, "player"); e; e = e.chain) 
+				if(e.deadflag != DEAD_DEAD && e.deadflag != DEAD_DYING && e.deadflag != DEAD_RESPAWNABLE) allive = allive + 1;
+			if(!allive) localcmd ("restart\n");
+		}
+	}
+		
+	self.nextthink = time + 10;
 }
 
 void() info_player_start =
@@ -912,7 +932,7 @@ void() NextLevel =
 	if(deathmatch == 1)
 	{
 		r = rint(random() * 6);
-		if(r == 1) nextmap = "multiply";
+		if(r == 1) nextmap = "dusty";
 		else if(r == 2) nextmap = "snowy";
 		else if(r == 3) nextmap = "factory";
 		else if(r == 4) nextmap = "terrain";
@@ -923,7 +943,7 @@ void() NextLevel =
 		//while(mapname == nextmap)
 		{
 			r = rint(random() * 6);
-			if(r == 1) nextmap = "multiply";
+			if(r == 1) nextmap = "dusty";
 			else if(r == 2) nextmap = "snowy";
 			else if(r == 3) nextmap = "factory";
 			else if(r == 4) nextmap = "terrain";

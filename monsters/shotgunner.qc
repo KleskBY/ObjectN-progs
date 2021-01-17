@@ -708,36 +708,6 @@ void(entity attacker, float damage)	shotgunner_pain =
 	}
 };
 
-void(float damage, vector dir) shotgunnerFire =
-{
-	if (self.duck == 1) pointparticles(particleeffectnum("double_shotgun_muzzleflash"), self.origin + self.view_ofs + v_up * -21 , self.velocity * 50, 1);
-	else pointparticles(particleeffectnum("double_shotgun_muzzleflash"), self.origin + self.view_ofs + v_up * -10, self.velocity * 50, 1);
-
-	local	vector	src;
-
-	makevectors(self.v_angle);
-
-	src = self.origin + v_forward * 10;
-	src_z = self.absmin_z + self.size_z * 0.7;
-	traceline(src, src + dir * 1024, FALSE, self);
-	if (trace_fraction != 1.0)
-	{
-		if (trace_ent.takedamage) T_Damage(trace_ent, self, self, damage);
-		else
-		{
-			WriteByte(MSG_BROADCAST,SVC_TEMPENTITY);
-			WriteByte(MSG_BROADCAST,TE_GUNSHOT);
-			WriteCoord(MSG_BROADCAST,trace_ent.origin_x);
-			WriteCoord(MSG_BROADCAST,trace_ent.origin_y);
-			WriteCoord(MSG_BROADCAST,trace_ent.origin_z);
-			particle(trace_endpos,'3 2 7',192,TE_WIZSPIKE);
-			particle(trace_endpos,'7 6 8',192,TE_WIZSPIKE);
-			//sound (self.enemy,CHAN_AUTO,"weapons/mp5ric1.wav",TRUE,ATTN_NORM);   
-			sound(self, CHAN_WEAPON, "weapons/rifle/m4.wav", 1, ATTN_NORM);
-		}
-	}
-};
-
 void() shotgunner_fire =
 {
 	local	vector	dir;
@@ -752,7 +722,7 @@ void() shotgunner_fire =
 	dir = normalize(dir - self.origin);
 
 	//guardFire(17,dir);
-	FireShotgun(16, dir, '0.08 0.06 0.0');
+	FireShotgun(14, dir, '0.08 0.06 0.0');
 	self.shotgunClip = self.shotgunClip - 1;
 };
 

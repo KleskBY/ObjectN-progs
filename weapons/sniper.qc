@@ -31,10 +31,10 @@ void() playerSniperAttack2 = [2, playerSniperAttack2]
 	if(self.team == TEAM_USA)
 	{
 		if (self.weaponframe == 56) sound(self,CHAN_WEAPON,"weapons/sniper/boltback.wav",0.4,ATTN_NORM); 
-		else if (self.weaponframe == 63) eject_shell (self.origin + self.view_ofs + v_up * -15 + v_forward*28 - v_right * (-6), dir);
+		else if (self.weaponframe == 63) eject_shell (self.origin + self.view_ofs + v_up * -15 + v_forward * 28 - v_right * -6);
 		else if (self.weaponframe == 66) sound(self,CHAN_WEAPON,"weapons/sniper/boltrelease.wav",0.4,ATTN_NORM);
 	}
-	else if (self.weaponframe == 32) eject_shell (self.origin + self.view_ofs + v_up * -15 + v_forward*28 - v_right * (-6), dir);
+	else if (self.weaponframe == 32) eject_shell (self.origin + self.view_ofs + v_up * -15 + v_forward * 28 - v_right * -6);
 	if (self.weaponframe == 86) self.think = player_run;
 };
 
@@ -60,16 +60,17 @@ void() playerSniperReload2 = [1, playerSniperReload2]
 
 	if(self.weaponframe >= 212)
 	{
-		if ((self.ammoSniper >= 1) && (self.ammoSniper <= CLIP_SNIPER))
+		if(self.ammoSniper >= CLIP_SNIPER)
 		{
-			self.sniperClip = self.ammoSniper; 
-			self.ammoSniper = 0;
+			self.ammoSniper = self.ammoSniper - (CLIP_SNIPER - self.sniperClip);
+			self.sniperClip = CLIP_SNIPER;
 		}
 		else
 		{
-			self.ammoSniper = (self.ammoSniper - (CLIP_SNIPER - self.sniperClip));
-			self.sniperClip = CLIP_SNIPER;
+			self.sniperClip = self.ammoSniper;
+			self.ammoSniper = 0;
 		}
+
 		W_SetCurrentAmmo();
 		self.think = player_run;
 	}

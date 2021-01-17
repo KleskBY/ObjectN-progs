@@ -635,3 +635,28 @@ void() trigger_monsterjump =
 	self.touch = trigger_monsterjump_touch;
 };
 
+//trigger_coop_teleport
+//Teleports all players
+
+void() trigger_coop_teleport_touch =
+{
+	local entity e;
+	if(other.classname != "player") return;
+	for (e = findchain(classname, "player"); e; e = e.chain)
+	{
+		if(e.deadflag != DEAD_DEAD && e.deadflag != DEAD_DYING && e.deadflag != DEAD_RESPAWNABLE)
+		{
+			if(e != other) setorigin(e, (self.absmin+ self.absmax) * 0.5);
+		}
+	}
+	remove(self);
+}
+
+void() trigger_coop_teleport =
+{
+	if(!coop) return;
+
+	InitTrigger ();
+	self.touch = trigger_coop_teleport_touch;
+	self.use = teleport_use;
+};

@@ -50,7 +50,8 @@ void(entity inflictor, entity attacker, float damage, entity ignore) T_GrenadeRa
 				if (CanDamage (head, inflictor))
 				{	
 					T_Damage (head, inflictor, attacker, points);
-					if (head.flags & FL_MONSTER || head.classname == "player" || head.classname == "bot")
+					if(head.takedamage)
+					//if (head.flags & FL_MONSTER || head.classname == "player" || head.classname == "player" || head.classname == "bot")
 					{
 						head.flags = head.flags - FL_ONGROUND;
 						temp = vlen(org - inflictor.origin);
@@ -143,11 +144,12 @@ void() BecomeGrenedeExplosion =
       shrapdir_z = (random(-1,1) * 200);
       shoot_shrapnel(self.origin , shrapdir);
 	}
-	
+	sound (self, CHAN_WEAPON, "weapons/grenade/explosion.wav", 1, ATTN_NORM);
+	remove(self);
 	//sound(self,CHAN_WEAPON,"weapons/explode1.wav",TRUE,ATTN_NORM);
 	//self.think = SUB_Remove;
 	//self.nextthink = time + 0.1;
-	explode1();
+	//explode1();
 };
 
 void() MyGrenadeExplode =
@@ -158,6 +160,8 @@ void() MyGrenadeExplode =
 	WriteCoord (MSG_BROADCAST, self.origin_x);
 	WriteCoord (MSG_BROADCAST, self.origin_y);
 	WriteCoord (MSG_BROADCAST, self.origin_z);
+		//te_explosionrgb(self.origin, '1. 1 0');
+
 	BecomeGrenedeExplosion ();
 };
 

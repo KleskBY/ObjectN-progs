@@ -243,9 +243,9 @@ void (float damage, vector dir) TraceAttack =
 		meatdir_z = ((random () * 300) );
 		makevectors (self.v_angle);
 		
-		if (particle_color < 0.8 && damage >= 12) 
+		if (particle_color < 0.7 && damage >= 6) 
 		{
-			//Shoot_Blood (org,meatdir);
+			//SpawnBlood (org, meatdir, 10); 
 			SpawnBlood (org, vel * 0.2, damage * 100); 
 		}
 		
@@ -520,6 +520,7 @@ void() W_Attack =
 		{
 			sound(self, CHAN_WEAPON, "weapons/noammo.wav", 1, ATTN_NORM);
 			self.attack_finished = time + 0.5;
+			if (AUTORELOAD) self.impulse = 100;
 		}
 	}
     else if (self.weapon == WP_SHOTGUN)
@@ -532,7 +533,8 @@ void() W_Attack =
         else 
         {
             sound(self, CHAN_WEAPON, "weapons/noammo.wav", 1, ATTN_NORM);
-            self.attack_finished = (time + 0.400);
+            self.attack_finished = time + 0.5;
+			if (AUTORELOAD) self.impulse = 100;
 		}
 	}
     else if (self.weapon == WP_RIFLE)
@@ -545,7 +547,8 @@ void() W_Attack =
 		else 
 		{
 			sound(self, CHAN_WEAPON, "weapons/noammo.wav", 1, ATTN_NORM);
-			self.attack_finished = (time + 0.400);
+			self.attack_finished = time + 0.5;
+			if (AUTORELOAD) self.impulse = 100;
 		}
 	} 
 	else if (self.weapon == WP_SNIPER)
@@ -559,6 +562,7 @@ void() W_Attack =
 		{
 			sound(self, CHAN_WEAPON, "weapons/noammo.wav", 1, ATTN_NORM);
 			self.attack_finished = time + 0.7;
+			if (AUTORELOAD) self.impulse = 100;
 		}
 	}
 	else if (self.weapon == WP_HAMMER)

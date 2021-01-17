@@ -112,12 +112,12 @@ void EndRound()
 		
 		e.items = parm1;
 		e.health = parm2;
-		e.armorvalue = parm3;
+		//e.armorvalue = parm3;
 		e.ammoPistol = parm4;
 		e.ammoRifle = parm5;
 		e.ammoGrenades = parm6;
 		e.ammoShells = parm7;
-		e.ammoSniper = parm17;
+		e.ammoSniper = parm3;
 		e.weapon = parm8;
 		e.armortype = parm9 * 0.01;
 		e.weapons = parm10;
@@ -227,8 +227,8 @@ void() USA_Win =
 		}
 	}
 	EndRound();
-	if(random() < 0.5) sound (self, CHAN_VOICE, "usa/win1.wav", 1, ATTN_NONE);
-	else sound (self, CHAN_VOICE, "usa/win2.wav", 1, ATTN_NONE);
+	// if(random() < 0.5) sound (self, CHAN_VOICE, "usa/win1.wav", 1, ATTN_NONE);
+	// else sound (self, CHAN_VOICE, "usa/win2.wav", 1, ATTN_NONE);
 	for (e = findchain(classname, "player"); e; e = e.chain) 
 	{
 		centerprint(e, "USA WON");
@@ -263,11 +263,11 @@ void() USSR_Win =
 	}
 	EndRound();
 	
-	local float r;
-	r = random();
-	if(r < 0.333) sound (self, CHAN_VOICE, "ussr/win1.wav", 1, ATTN_NONE);
-	else if(r > 0.333 && r < 0.666) sound (self, CHAN_VOICE, "ussr/win2.wav", 1, ATTN_NONE);
-	else sound (self, CHAN_VOICE, "ussr/win3.wav", 1, ATTN_NONE);
+	// local float r;
+	// r = random();
+	// if(r < 0.333) sound (self, CHAN_VOICE, "ussr/win1.wav", 1, ATTN_NONE);
+	// else if(r > 0.333 && r < 0.666) sound (self, CHAN_VOICE, "ussr/win2.wav", 1, ATTN_NONE);
+	// else sound (self, CHAN_VOICE, "ussr/win3.wav", 1, ATTN_NONE);
 	
 	for (e = findchain(classname, "player"); e; e = e.chain) 
 	{
@@ -335,14 +335,14 @@ void()	bombexplode15	=	[14,bombexplode16] {self.nextthink = time + 0.03;};
 void()	bombexplode16	=	[15,bombexplode17] {self.nextthink = time + 0.03;};
 void()	bombexplode17	=	[16,bomb_post_think] 
 {
-	if(world.model != "maps/e1m8.bsp")
-	{
-		local float r;
-		r = random();
-		if(r < 0.333) sound (self, CHAN_VOICE, "ussr/win1.wav", 1, ATTN_NONE);
-		else if(r > 0.333 && r < 0.666) sound (self, CHAN_VOICE, "ussr/win2.wav", 1, ATTN_NONE);
-		else sound (self, CHAN_VOICE, "ussr/win3.wav", 1, ATTN_NONE);
-	}
+	// if(world.model != "maps/e1m8.bsp")
+	// {
+		// local float r;
+		// r = random();
+		// if(r < 0.333) sound (self, CHAN_VOICE, "ussr/win1.wav", 1, ATTN_NONE);
+		// else if(r > 0.333 && r < 0.666) sound (self, CHAN_VOICE, "ussr/win2.wav", 1, ATTN_NONE);
+		// else sound (self, CHAN_VOICE, "ussr/win3.wav", 1, ATTN_NONE);
+	// }
 	setmodel(self, "");
 	self.light_lev = 0;
 	self.nextthink = time + 0.03;
@@ -413,7 +413,7 @@ void() bomb_think =
 		bombexplode1();
 		for (e = findchain(classname, "player"); e; e = e.chain) 
 		{
-			centerprint(e, "USSR WON");
+			if(world.model != "maps/e1m8.bsp") centerprint(e, "USSR WON");
 			self.owner.wait = time;
 		}
 	}
@@ -590,11 +590,11 @@ void() bomb_side =
 {
 	if(deathmatch != MODE_DE && world.model != "maps/e1m8.bsp") return;
 	precache_model2("models/w_bomb.md3");
-	precache_sound2("ussr/win1.wav");
-	precache_sound2("ussr/win2.wav");
-	precache_sound2("ussr/win3.wav");
-	precache_sound2("usa/win1.wav");
-	precache_sound2("usa/win2.wav");
+	// precache_sound2("ussr/win1.wav");
+	// precache_sound2("ussr/win2.wav");
+	// precache_sound2("ussr/win3.wav");
+	// precache_sound2("usa/win1.wav");
+	// precache_sound2("usa/win2.wav");
 	precache_sound2("bomb/armed.wav");
 	precache_sound2("bomb/beep.wav");
 	precache_sound2("bomb/c4on.wav");

@@ -36,6 +36,7 @@ func/breakable.qc	//MY
 func/ladder.qc		//MY
 func/checkpoint.qc	//MY
 func/bomb_side.qc	//MY
+func/corpse.qc		//MY
 //func/rdoor.qc		//MY
 //ogre.qc
 //demon.qc

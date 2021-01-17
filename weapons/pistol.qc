@@ -4,7 +4,7 @@ void() W_FirePM =
 	self.pistolClip = self.pistolClip - 1;
 	self.punchangle_x = -2;
 	self.punchangle_z = -random (2);
-	fireBullet('50 40 0', IT_9x18 * 2, 25);
+	fireBullet('40 35 0', IT_9x18 * 2, 25);
 	
 	if(self.weaponmodel == "models/v_colt.md3") 
 	{
