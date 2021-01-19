@@ -166,6 +166,12 @@ void() item_megahealth_rot =
 
 void() prop_brush =
 {
+	if(world.model == "maps/e1m3.bsp")
+	{
+	self.glow_color = 6;
+	self.glow_size = 50;
+	self.glow_trail = 1;
+	}
 	precache_model(self.weaponmodel);
 	setmodel (self, self.weaponmodel);
 };

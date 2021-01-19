@@ -96,7 +96,8 @@ void() func_breakable =
 	
 	self.max_health = self.health;
 	self.solid = SOLID_BSP;
-	self.movetype = MOVETYPE_NONE;
+	if(self.sounds == 2) self.movetype = MOVETYPE_NONE;
+	else self.movetype = MOVETYPE_TOSS;
 	setmodel (self, self.model);
 	self.classname = "breakable";
 	if (self.health)

@@ -752,8 +752,9 @@ float MODE_HNS = 3;
 float MODE_KZ = 4;
 float MODE_ZM = 5;
 
-float AUTOBOTS = 0;
+float AUTOBOTS = 5;
 float AUTORELOAD = 1;
+float ANTIAFK = 7;
 
 const float STAT_TIMER = 32;
 
@@ -766,3 +767,6 @@ const float STAT_TIMER = 32;
 .vector	pos4;
 .vector	pos5;
 .float timer;
+
+.vector lastAngles;
+.float afkWarnings;

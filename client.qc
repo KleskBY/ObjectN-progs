@@ -738,7 +738,7 @@ void() PutClientInServer =
 	self.invincible_finished = 0;
 	self.effects = 0;
 	self.invincible_time = 0;
-	if(coop) self.team = 1;
+	//if(coop) self.team = 1;
 
 	if(coop && parm8 == 0) SetNewParms();
 	DecodeLevelParms();
@@ -833,15 +833,18 @@ void() global_think =
 		for (e = findchain(classname, "player"); e; e = e.chain) players = players + 1;
 		for (e = findchain(classname, "observer"); e; e = e.chain) players = players + 1;
 		if(players < AUTOBOTS) SpawnBot();
-		if(players > AUTOBOTS)
+		if(players && players > AUTOBOTS)
 		{
 			e = find(world, classname, "player");
-			while (e)
+			if(e)
 			{
-				if (e && clienttype(e) == CLIENTTYPE_BOT) 
+				while (e)
 				{
-					dropclient(e);
-					return;
+					if (e && clienttype(e) == CLIENTTYPE_BOT) 
+					{
+						dropclient(e);
+						return;
+					}
 				}
 			}
 		}
@@ -863,19 +866,39 @@ void() global_think =
 		for (e = findchain(classname, "observer"); e; e = e.chain) players = players + 1;
 		if(players)
 		{
+			
 			for (e = findchain(classname, "player"); e; e = e.chain) 
+			{
+				
+				//antiafk
+				if(e.lastAngles == e.v_angle) e.afkWarnings = e.afkWarnings + 1;
+				else e.afkWarnings = 0;
+				if(e.afkWarnings > rint(ANTIAFK * 0.5))
+				{
+					centerprint(e, "MOVE OR YOU WILL BE KICKED FOR BEING AFK");
+					sound (e, CHAN_BODY, "misc/talk.wav", 1, ATTN_IDLE);
+				}
+				if(e.afkWarnings > ANTIAFK) 
+				{
+					bprint(e.netname);
+					bprint(" was kicked for being afk\n");
+					dropclient (e);
+				}
+				e.lastAngles = e.v_angle;
+				
 				if(e.deadflag != DEAD_DEAD && e.deadflag != DEAD_DYING && e.deadflag != DEAD_RESPAWNABLE) allive = allive + 1;
+			}
 			if(!allive) localcmd ("restart\n");
 		}
 	}
 		
-	self.nextthink = time + 10;
+	self.nextthink = time + 5;
 }
 
 void() info_player_start =
 {
 	self.think = global_think;
-	self.nextthink = time + 1;
+	self.nextthink = time + 5;
 };
 
 
@@ -1431,7 +1454,7 @@ void() PlayerPreThink =
 			if(!self.duck)
 			{
 				self.duck = 1;
-				setsize (self, '-15 -15 -24', '15 15 18');
+				setsize (self, '-16 -16 -24', '16 16 18');
 				self.view_ofs = '0 0 11';
 			}
 		}
@@ -1656,7 +1679,7 @@ void(entity targ, entity attacker) ClientObituary =
 			// killed by a montser?
 			if (attacker.flags & FL_MONSTER)
 			{
-				bprint (" was killed by a bot\n");
+				bprint (" was killed\n");
 				return;
 			}
 

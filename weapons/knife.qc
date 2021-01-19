@@ -6,7 +6,6 @@ void() W_FireKnife =
 {
 	local	entity	head;
 	local	vector	org;
-	local	vector	source;
 	local float damage;
 	
 	if(self.class == CLASS_ASSASSIN && deathmatch < 3) damage = 20;
@@ -40,69 +39,7 @@ void() W_FireKnife =
 	}
 	
 	{
-		makevectors (self.v_angle);
-		meatdir_x = ((random () * 300) );
-		meatdir_y = ((random () * 300) );
-		meatdir_z = ((random () * 300) );
-		source = self.origin + '0 0 16';
-		traceline (source, source + v_forward * 75, FALSE, self);
-		if (trace_fraction == 1.0) return;
-
-		org = trace_endpos - v_forward * 4;
-
-		if (trace_ent.takedamage && trace_ent.classname != "worldspawn")
-		{
-			if(trace_ent.classname == "button")
-			{
-				trace_ent.axhitme = 1;
-				T_Damage (trace_ent, self, self, damage);
-				sound(trace_ent, CHAN_WEAPON,"weapons/knife/hit.wav", 1, ATTN_NORM);
-				return;
-			}
-			if(trace_ent.classname == "breakable")
-			{
-				pointparticles(particleeffectnum("nailgun_muzzleflash"), org, self.velocity*50, 1);
-				WriteByte (MSG_BROADCAST,SVC_TEMPENTITY);
-				WriteByte (MSG_BROADCAST,TE_GUNSHOT);
-				WriteCoord (MSG_BROADCAST,org_x);
-				WriteCoord (MSG_BROADCAST,org_y);
-				WriteCoord (MSG_BROADCAST,org_z);
-				meatdir_x = ((random () * 300) + source_x);
-				meatdir_y = ((random () * 300) + source_y);
-				meatdir_z = ((random () * 300) + source_z);
-				shootGib (org,meatdir,trace_ent.sounds);
-				meatdir_x = ((random () * 300) + source_x);
-				meatdir_y = ((random () * 300) + source_y);
-				meatdir_z = ((random () * 300) + source_z);
-				shootGib (org,meatdir,trace_ent.sounds);
-				meatdir_x = ((random () * 300) + source_x);
-				meatdir_y = ((random () * 300) + source_y);
-				meatdir_z = ((random () * 300) + source_z);
-				shootGib (org,meatdir,trace_ent.sounds);
-				trace_ent.axhitme = 1;
-				T_Damage (trace_ent, self, self, damage);
-				sound(trace_ent, CHAN_WEAPON,"weapons/knife/hit.wav", 1, ATTN_NORM);
-				return;
-			}
-			
-			damage = DetectHitbox(damage);
-			
-			trace_ent.axhitme = 1;
-			Shoot_Blood (org,meatdir);
-			Shoot_Blood (org,meatdir * 2);
-			SpawnBlood (org,'0 0 0',400);
-			T_Damage (trace_ent, self, self, damage);
-			sound(self, CHAN_WEAPON,"weapons/knife/hit.wav", 1, ATTN_NORM);
-		}
-		else // hit wall
-		{	
-			sound(self, CHAN_WEAPON,"weapons/knife/miss.wav", 1, ATTN_NORM);
-			WriteByte (MSG_BROADCAST, SVC_TEMPENTITY);
-			WriteByte (MSG_BROADCAST, TE_GUNSHOT);
-			WriteCoord (MSG_BROADCAST, org_x);
-			WriteCoord (MSG_BROADCAST, org_y);
-			WriteCoord (MSG_BROADCAST, org_z);
-		}
+		fireBullet('8 8 0', 75, damage);
 	}
 }
 

@@ -333,3 +333,13 @@ void() ZombieAttackSound =
 	else if (r <=0.33 && r>0.66) sound(self, CHAN_BODY, "zombie/attack2.wav", 0.7, ATTN_NORM);
 	else sound(self, CHAN_BODY, "zombie/attack3.wav", 0.7, ATTN_NORM);
 }
+
+void(vector vec) printVector =
+{
+	bprint(ftos(vec_x));
+	bprint(" ");
+	bprint(ftos(vec_y));
+	bprint(" ");
+	bprint(ftos(vec_z));
+	bprint("\n");
+}

@@ -202,17 +202,17 @@ float (float damage, vector org, vector dir) DetectObject =
 			return TRUE;
 		}
 
-		meatdir_x = ((random () * 300) + dir_x);
-		meatdir_y = ((random () * 300) + dir_y);
-		meatdir_z = ((random () * 300) + dir_z);
+		meatdir_x = ((random () * 100) + dir_x);
+		meatdir_y = ((random () * 100) + dir_y);
+		meatdir_z = ((random () * 100) + dir_z);
 		shootGib (org,meatdir,trace_ent.sounds);
-		meatdir_x = ((random () * 300) + dir_x);
-		meatdir_y = ((random () * 300) + dir_y);
-		meatdir_z = ((random () * 300) + dir_z);
+		meatdir_x = ((random () * 100) + dir_x);
+		meatdir_y = ((random () * 100) + dir_y);
+		meatdir_z = ((random () * 100) + dir_z);
 		shootGib (org,meatdir,trace_ent.sounds);
-		meatdir_x = ((random () * 300) + dir_x);
-		meatdir_y = ((random () * 300) + dir_y);
-		meatdir_z = ((random () * 300) + dir_z);
+		meatdir_x = ((random () * 100) + dir_x);
+		meatdir_y = ((random () * 100) + dir_y);
+		meatdir_z = ((random () * 100) + dir_z);
 		shootGib (org,meatdir,trace_ent.sounds);
 		
 		AddMultiDamage (trace_ent, damage);
@@ -232,10 +232,30 @@ void (float damage, vector dir) TraceAttack =
 	vel = vel * 200;
 	org = trace_endpos - dir * 4;
 	
+	if(self.weapon == WP_ONE)
+	{
+		if (!trace_ent.takedamage || trace_ent.classname == "worldspawn")
+		{
+			sound(self, CHAN_WEAPON,"weapons/knife/miss.wav", 1, ATTN_NORM);
+			WriteByte (MSG_BROADCAST, SVC_TEMPENTITY);
+			WriteByte (MSG_BROADCAST, TE_GUNSHOT);
+			WriteCoord (MSG_BROADCAST, org_x);
+			WriteCoord (MSG_BROADCAST, org_y);
+			WriteCoord (MSG_BROADCAST, org_z);
+			return;
+		}
+	}
+	
 	if(trace_ent.takedamage) 
 	{
 		if(DetectObject(damage, org, dir)) return;
 		damage = DetectHitbox(damage);
+		
+		if(self.weapon == WP_ONE)
+		{
+			trace_ent.axhitme = 1;
+			sound(self, CHAN_WEAPON,"weapons/knife/hit.wav", 1, ATTN_NORM);
+		}
 		
 		particle_color = random ();
 		meatdir_x = ((random () * 300) );

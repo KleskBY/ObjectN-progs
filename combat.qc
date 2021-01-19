@@ -157,9 +157,12 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage=
 		return;
 	}
 
-// team play damage avoidance
-	if ( (teamplay == 1) && (targ.team > 0) && (targ.team == attacker.team) )
-	if(coop && targ != attacker	&& attacker.classname == "player" && inflictor.classname != "door") return;
+	
+	if(coop && targ.classname == "player" && attacker.classname == "player" 
+	&& inflictor.classname != "door" && targ != attacker) return;
+	// team play damage avoidance
+	//if ( (teamplay == 1) && (targ.team > 0) && (targ.team == attacker.team) )
+	//if(coop && targ != attacker	&& attacker.classname == "player" && inflictor.classname != "door") return;
 
 
 	if (teamplay && targ.team && targ.team == attacker.team && targ != attacker	

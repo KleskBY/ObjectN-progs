@@ -213,11 +213,11 @@ void() W_FireHandGrenade =
 
 	makevectors (self.v_angle);
 
-	if (self.v_angle_x) missile.velocity = v_forward * (25 * self.grenadetime) + v_up * 125 + (2*(random() - 0.5)) * v_right*10 + (2*(random() - 0.5)) *v_up*30;
+	if (self.v_angle_x) missile.velocity = v_forward * (25 * self.grenadetime) + v_up * 100 + (2*(random() - 0.5)) * v_right*10 + (2*(random() - 0.5)) *v_up*30;
 	else
 	{
 		missile.velocity = aim(self, 10000);
-        missile.velocity = missile.velocity * (20 * self.grenadetime) + '0 0 -300';
+        missile.velocity = missile.velocity * (20 * self.grenadetime);
 		missile.velocity_z = 30;
 	}
 
@@ -234,7 +234,7 @@ void() W_FireHandGrenade =
   
     setmodel (missile, "models/w_grenade.md3");
 	setsize (missile, '0 0 0', '1 1 1');
-	setorigin (missile, self.origin - (v_right * -6) + (v_up *    11));
+	setorigin (missile, self.origin - (v_right * -6) + (v_up * 11));
 	if(self.currentammo == 0) CycleWeaponReverseCommand();
 	self.grenadetime = 0;
 };
