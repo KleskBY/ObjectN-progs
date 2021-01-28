@@ -712,7 +712,7 @@ float WP_HAMMER = 32;
 
 .float reload;
 .float hgrenade;
-.float headshot;
+.float hitbox;
 
 //CLIPS
 .float pistolClip;

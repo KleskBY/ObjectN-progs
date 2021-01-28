@@ -47,8 +47,8 @@ func/corpse.qc		//MY
 //boss.qc
 
 //New Monsters
-monsters/guard.qc
-monsters/pdude.qc
+monsters/monster_heavy.qc
+monsters/monster_light.qc
 monsters/zombie.qc
 monsters/shotgunner.qc
 monsters/zombie_big.qc

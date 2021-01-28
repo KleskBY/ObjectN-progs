@@ -1669,7 +1669,7 @@ void(entity targ, entity attacker) ClientObituary =
 				bprint(attacker.netname);
 				deathstring = " >";
 				bprint(deathstring);
-				if(targ.headshot == 1) bprint("");
+				if(targ.hitbox == 1) bprint("");
 				bprint(" ");
 				bprint(targ.netname);
 				bprint("\n");

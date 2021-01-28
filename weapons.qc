@@ -163,19 +163,19 @@ float (float damage) DetectHitbox =
 	{
 		//sound (trace_ent, CHAN_WEAPON, "weapons/hitsound.wav", 1, ATTN_NORM);
 		damage = rint(damage * 1.7);
-		trace_ent.headshot = 1;
+		trace_ent.hitbox = 1;
 	}
 	else if(trace_ent.duck && trace_ent.absmax_z - trace_endpos_z <= 6)
 	{
 		damage = rint(damage * 1.7);
-		trace_ent.headshot = 1;
+		trace_ent.hitbox = 1;
 	}
 	else if (trace_ent.absmax_z - trace_endpos_z > 30)	//legshot
 	{
-		trace_ent.headshot = 0;
+		trace_ent.hitbox = 0;
 		damage = rint(damage * 0.7);
 	}
-	else trace_ent.headshot = -1;
+	else trace_ent.hitbox = -1;
 	return damage;
 }
 

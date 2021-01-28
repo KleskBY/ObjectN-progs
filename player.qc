@@ -380,7 +380,7 @@ void(string gibname, float dm) ThrowBlastedCorpse =
 	self.flags = self.flags - (self.flags & FL_ONGROUND);
 	self.avelocity = crandom() * '0 0 0';
 
-	blasted_corpse1 ();
+	blasted_corpse1();
 };
 
 void(string gibname, float dm) ThrowChunk =

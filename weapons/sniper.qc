@@ -2,7 +2,8 @@
 void() W_FireSniper = 
 {
 	self.sniperClip = self.sniperClip - 1;
-	self.punchangle_x = random(4, 8);
+	self.punchangle_x = random(-4, -8);
+	self.punchangle_y = random(-1, -4);
 	self.punchangle_z = random(3, 6);
 	if (self.zoomlevel || clienttype(self) == CLIENTTYPE_BOT) fireBullet('8 8 0', IT_762x54, 90);
 	else fireBullet('20 20 0', IT_762x54, 90);

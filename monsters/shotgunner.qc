@@ -812,36 +812,76 @@ void()	shotgunner_diec12 = [$deathc12, shotgunner_diec12] {self.nextthink = time
 void() shotgunner_die =
 {
 	local float temp;
-	temp = random();
 	self.ammoShells = self.shotgunClip;
 	DropShells();
 	
+	temp = random();
+	if (self.health < -10)
+	{
+		if (self.hitbox == 1)
+		{
+			sound (self,CHAN_VOICE,"npc/soldier_death1.wav",TRUE,ATTN_NORM);
+			ThrowBlastedCorpse ("models/npc/nohead.md3",self.health);
+			return;
+		}
+		else if(self.hitbox == 0)
+		{
+			if (temp < 0.5)
+			{
+				sound (self,CHAN_VOICE,"npc/soldier_death1.wav",TRUE,ATTN_NORM);
+				ThrowBlastedCorpse ("models/npc/corpse.md3",self.health);
+				ThrowChunk ("models/npc/Rleg.md3",self.health);
+				return;
+			}
+			else
+			{
+				sound (self,CHAN_VOICE,"player/death3.wav",TRUE,ATTN_NORM);
+				ThrowHead ("models/npc/tors.md3",self.health);
+				ThrowChunk ("models/npc/Rleg.md3",self.health);
+				ThrowChunk ("models/npc/Lleg.md3",self.health);
+				return;
+			}
+		}
+		else 
+		{
+			if (temp < 0.5)
+			{
+				sound (self,CHAN_VOICE,"player/death3.wav",TRUE,ATTN_NORM);
+				ThrowBlastedCorpse ("models/npc/corpse2.md3",self.health);
+				return;
+			}
+			else
+			{
+				sound (self,CHAN_VOICE,"player/death3.wav",TRUE,ATTN_NORM);
+				ThrowHead ("models/npc/tors.md3",self.health);
+				ThrowChunk ("models/npc/Rleg.md3",self.health);
+				ThrowChunk ("models/npc/Lleg.md3",self.health);
+				return;
+			}
+		}
+	}
+
 	if (self.duck == 1)
 	{
-		shotgunner_diea1();
-		self.flags = self.flags + FL_ONGROUND;
-		sound(self, CHAN_VOICE, "player/death2.wav", 1, ATTN_NORM);
+		monster_light_diea1 ();
+		sound (self, CHAN_VOICE, "npc/soldier_death1.wav", 1, ATTN_NORM);     
 	}
 	else
 	{
 		if (temp < 0.333)
 		{
-			shotgunner_dieb1();
-			sound(self, CHAN_VOICE, "player/death3.wav", 1, ATTN_NORM);
-			self.flags = 32;
-			self.velocity_z = self.velocity_z + 70;
+			monster_light_diea1 ();
+			sound (self, CHAN_VOICE, "npc/soldier_death2.wav", 1, ATTN_NORM);
 		}
-		else if ((temp < 0.666) && (temp >= 0.333))
+		else if ( (temp < 0.666) && (temp >= 0.333) )
 		{
-			shotgunner_diec1();
-			sound(self, CHAN_VOICE, "player/death2.wav", 1, ATTN_NORM);
-			self.flags = 32;
-			self.velocity_z = self.velocity_z + 70;
+			monster_light_dieb1 ();
+			sound (self, CHAN_VOICE, "npc/soldier_death3.wav", 1, ATTN_NORM);     
 		}
-		else if (temp >= 0.666)
+		else 
 		{
-			shotgunner_died1();
-			sound(self, CHAN_VOICE, "player/death2.wav", 1 , ATTN_NORM);
+			monster_light_diec1 ();
+			sound (self, CHAN_VOICE, "npc/soldier_death1.wav", 1 , ATTN_NORM);
 		}
 	}
 };
