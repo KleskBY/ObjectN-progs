@@ -830,6 +830,7 @@ void(float damage, vector dir) guardFire =
 		if (trace_ent.takedamage) T_Damage (trace_ent, self, self, damage);
 		else
 		{
+			CreateHitSound(trace_endpos);
 			WriteByte (MSG_BROADCAST,SVC_TEMPENTITY);
 			WriteByte (MSG_BROADCAST,TE_GUNSHOT);
 			WriteCoord (MSG_BROADCAST,trace_endpos_x);
@@ -882,11 +883,7 @@ void()	guard_died3	=[	$deathd3,	guard_died4	]
   self.ammoRifle = ceil(self.rifleClip * 0.5);
 //  Drop_Clip();
 };
-void()	guard_died4	=[	$deathd4,	guard_died5	] 
-{
-  if (self.headshot == 1)  self.skin = 2;
-  self.nextthink = time + 0.03;
-};
+void()	guard_died4	=[	$deathd4,	guard_died5	] {self.nextthink = time + 0.03;};
 void()	guard_died5	=[	$deathd5,	guard_died6	] {self.nextthink = time + 0.03;};
 void()	guard_died6	=[	$deathd6,	guard_died7	] {self.nextthink = time + 0.03;};
 void()	guard_died7	=[	$deathd7,	guard_died8	] {self.nextthink = time + 0.03;};
@@ -894,11 +891,7 @@ void()	guard_died8	=[	$deathd8,	guard_died9	] {self.nextthink = time + 0.03;};
 void()	guard_died9	=[	$deathd9,	guard_died9	] {};
 
 
-void()	guard_diea1	=[	$deatha1,	guard_diea2	] 
-{
-  if (self.headshot == 1) self.skin = 2;
-  self.nextthink = time + 0.03;
-};
+void()	guard_diea1	=[	$deatha1,	guard_diea2	] {self.nextthink = time + 0.03;};
 void()	guard_diea2	=[	$deatha2,	guard_diea3	] {self.nextthink = time + 0.03;};
 void()	guard_diea3	=[	$deatha3,	guard_diea4	] 
 {
@@ -916,13 +909,9 @@ void()	guard_diea9	=[	$deatha9,	guard_diea10	] {self.nextthink = time + 0.03;};
 void()	guard_diea10	=[	$deatha10,	guard_diea10	] {};
 
 
-void()	guard_dieb1	=[	$deathb1,	guard_dieb2	] 
-{
-  if (self.headshot == 1) self.skin = 2;
-  self.nextthink = time + 0.03;
-};
-void()	guard_dieb2	=[	$deathb2,	guard_dieb3	] {self.nextthink = time + 0.03;};
-void()	guard_dieb3	=[	$deathb3,	guard_dieb4	]
+void()	guard_dieb1	=[	$deathb1,	guard_dieb2	] {self.nextthink = time + 0.03;};
+void()	guard_dieb2	=[	$deathb2, guard_dieb3] {self.nextthink = time + 0.03;};
+void()	guard_dieb3	=[	$deathb3, guard_dieb4]
 {
   self.nextthink = time + 0.03;
   self.solid = SOLID_NOT;
@@ -938,11 +927,7 @@ void()	guard_dieb9	=[	$deathb9,	guard_dieb10	] {self.nextthink = time + 0.03;};
 void()	guard_dieb10	=[	$deathb10,	guard_dieb11	] {self.nextthink = time + 0.03;};
 void()	guard_dieb11	=[	$deathb11,	guard_dieb11	] {};
 
-void()	guard_diec1	=[	$deathc1,	guard_diec2	] 
-{
-  if (self.headshot == 1) self.skin = 2;
-  self.nextthink = time + 0.03;
-};
+void()	guard_diec1	=[	$deathc1,	guard_diec2	] { self.nextthink = time + 0.03; };
 void()	guard_diec2	=[	$deathc2,	guard_diec3	] {self.nextthink = time + 0.03;};
 void()	guard_diec3	=[	$deathc3,	guard_diec4	]
 {
@@ -995,7 +980,7 @@ void() guard_die =
 		guard_dieb1 ();
        	sound (self, CHAN_VOICE, "player/death3.wav", 1, ATTN_NORM);
         self.flags = 32;
-        self.velocity_z = self.velocity_z + 350;
+        self.velocity_z = self.velocity_z + 70;
 
        }
 	if ( (temp < 0.666) && (temp >= 0.333) )
@@ -1003,7 +988,7 @@ void() guard_die =
 		guard_diec1 ();
        	sound (self, CHAN_VOICE, "player/death2.wav", 1, ATTN_NORM);     
         self.flags = 32;
-        self.velocity_z = self.velocity_z + 350;
+        self.velocity_z = self.velocity_z + 70;
        }
       if (temp >= 0.666)
        {

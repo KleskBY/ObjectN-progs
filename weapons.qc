@@ -170,7 +170,7 @@ float (float damage) DetectHitbox =
 		damage = rint(damage * 1.7);
 		trace_ent.headshot = 1;
 	}
-	else if (((trace_ent.absmax_z - trace_endpos_z) > 26) && ((trace_ent.absmax_z - trace_endpos_z) < 35))	//legshot
+	else if (trace_ent.absmax_z - trace_endpos_z > 30)	//legshot
 	{
 		trace_ent.headshot = 0;
 		damage = rint(damage * 0.7);
@@ -221,6 +221,32 @@ float (float damage, vector org, vector dir) DetectObject =
 	return FALSE;
 }
 
+void (vector org) CreateHitSound =
+{
+	local entity snd;
+	local float rsnd;
+	
+	snd = spawn();
+	//snd.owner = self;
+	snd.movetype = MOVETYPE_NONE;
+	snd.solid = SOLID_NOT;
+	setorigin(snd, org);
+	snd.nextthink = time + 1;
+	snd.think = SUB_Remove;
+	if(random() > 0.2)
+	{
+		rsnd = rint(random() * 4);		
+		if (rsnd == 1) sound (snd, CHAN_VOICE, "impacts/hit1.wav", 1, ATTN_STATIC);
+		else if (rsnd == 2) sound (snd, CHAN_VOICE, "impacts/hit2.wav", 1, ATTN_STATIC);
+		else if (rsnd == 3) sound (snd, CHAN_VOICE, "impacts/hit3.wav", 1, ATTN_STATIC);
+		else if (rsnd == 4) sound (snd, CHAN_VOICE, "impacts/hit4.wav", 1, ATTN_STATIC);
+	}
+	else
+	{
+		if(random() >= 0.5) sound (snd, CHAN_VOICE, "impacts/ric1.wav", 1, ATTN_STATIC);
+		else sound (snd, CHAN_VOICE, "impacts/ric2.wav", 1, ATTN_STATIC);
+	}
+}
 
 void (float damage, vector dir) TraceAttack = 
 {
@@ -298,12 +324,12 @@ void (float damage, vector dir) TraceAttack =
 	} 
 	else 
 	{
+		CreateHitSound(org);
 		WriteByte (MSG_BROADCAST,SVC_TEMPENTITY);
 		WriteByte (MSG_BROADCAST,TE_GUNSHOT);
 		WriteCoord (MSG_BROADCAST,org_x);
 		WriteCoord (MSG_BROADCAST,org_y);
 		WriteCoord (MSG_BROADCAST,org_z);
-		particle_color = random();
 	}
 };
 
@@ -322,7 +348,11 @@ void(vector spread, float dist, float dmg) fireBullet =
 	makevectors(self.v_angle);
 	
 	src = self.origin + v_forward * 10;
-	if(self.duck) src_z = self.absmin_z + self.size_z;
+	if(self.duck) 
+	{
+		src_z = self.origin_z + self.view_ofs_z + 0.1;
+		spread = spread * 0.85;
+	}
 	else src_z = self.absmin_z + self.size_z * 0.8;
 	
 	ClearMultiDamage ();
@@ -750,7 +780,7 @@ void() W_ChangeWeapon =
 */
 void() CheatCommand =
 {
-	if (deathmatch /*|| coop*/) return;
+	if (deathmatch || coop) return;
 	
 	self.ammoPistol = 100;
 	self.ammoGrenades = 100;

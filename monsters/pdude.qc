@@ -14,58 +14,58 @@ $skin skin
 
 $frame stand1 stand2 stand3 stand4 stand5 stand6 stand7 stand8 stand9
 $frame stand10 stand11 stand12 stand13 stand14 stand15 stand16 stand17 
-$frame stand18 stand19 stand20 stand21 stand22
+$frame stand18 stand19 stand20 stand21 stand22 // 1-22
 
 $frame walk1 walk2 walk3 walk4 walk5 walk6 walk7 walk8 walk9 walk10
 $frame walk11 walk12 walk13 walk14 walk15 walk16 walk17 walk18 walk19
 $frame walk20 walk21 walk22 walk23 walk24 walk25 walk26 walk27 walk28
-$frame walk29 walk30
+$frame walk29 walk30 // 23-52
 
-$frame run1 run2 run3 run4 run5 run6 run7 run8 run9
+$frame run1 run2 run3 run4 run5 run6 run7 run8 run9 //53-61
 
-$frame firec1 firec2 firec3 firec4 firec5 firec6 firec7 firec8 firec9 firec10
+$frame firec1 firec2 firec3 firec4 firec5 firec6 firec7 firec8 firec9 firec10 // 62-74
 $frame firec11 firec12 firec13
 
-$frame drawc1 drawc2 drawc3 drawc4 drawc5 drawc6 drawc7 drawc8 drawc9
+$frame drawc1 drawc2 drawc3 drawc4 drawc5 drawc6 drawc7 drawc8 drawc9 //75-83
 
-$frame fireb1 fireb2
+$frame fireb1 fireb2	//84-85
 
-$frame drawb1 drawb2 drawb3 drawb4 drawb5 drawb6 drawb7 drawb8 drawb9
+$frame drawb1 drawb2 drawb3 drawb4 drawb5 drawb6 drawb7 drawb8 drawb9	//86-94
 
-$frame firea1 firea2 firea3 firea4 firea5 firea6 firea7 firea8
+$frame firea1 firea2 firea3 firea4 firea5 firea6 firea7 firea8	//95-102
 
-$frame drawa1 drawa2 drawa3 drawa4 drawa5 drawa6 drawa7
+$frame drawa1 drawa2 drawa3 drawa4 drawa5 drawa6 drawa7 //103-109
 
-$frame grenade1 grenade2 grenade3 grenade4 grenade5 grenade6 grenade7 grenade8 grenade9
+$frame grenade1 grenade2 grenade3 grenade4 grenade5 grenade6 grenade7 grenade8 grenade9 //110-125
 $frame grenade10 grenade11 grenade12 grenade13 grenade14 grenade15 grenade16
 
-$frame load1 load2 load3 load4 load5 load6 load7 load8 load9 load10
+$frame load1 load2 load3 load4 load5 load6 load7 load8 load9 load10 //126-139
 $frame load11 load12 load13 load14
 
-$frame melee1 melee2 melee3 melee4 melee5 melee6 melee7 melee8 melee9 melee10 //fix
+$frame melee1 melee2 melee3 melee4 melee5 melee6 melee7 melee8 melee9 melee10 //140-149 fix
 
-$frame paind1 paind2 paind3 paind4 paind5
+$frame paind1 paind2 paind3 paind4 paind5	//150-154
 
-$frame painc1 painc2 painc3 painc4 painc5 painc6 painc7 
+$frame painc1 painc2 painc3 painc4 painc5 painc6 painc7 //155-160
 
-$frame painb1 painb2 painb3 painb4 painb5
+$frame painb1 painb2 painb3 painb4 painb5 //162-166
 
-$frame paina1 paina2 paina3 paina4 paina5 
+$frame paina1 paina2 paina3 paina4 paina5 //167-171
 
 $frame deathc1 deathc2 deathc3 deathc4 deathc5 deathc6 deathc7 deathc8
-$frame deathc9 deathc10 deathc11 deathc12 
+$frame deathc9 deathc10 deathc11 deathc12 //172-183
 
 $frame deathb1 deathb2 deathb3 deathb4 deathb5 deathb6 deathb7 deathb8
-$frame deathb9 deathb10 deathb11 
+$frame deathb9 deathb10 deathb11 //184-194
 
 $frame deatha1 deatha2 deatha3 deatha4 deatha5 deatha6 deatha7 deatha8
-$frame deatha9 deatha10 
+$frame deatha9 deatha10 //195-204
 
 $frame deathd1 deathd2 deathd3 deathd4 deathd5 deathd6 deathd7 deathd8
-$frame deathd9 
+$frame deathd9 deathd10 deathd11 //205-215
 
 $frame leap1 leap2 leap3 leap4 leap5 leap6 leap7 leap8 leap9 leap10 leap11 leap12
-$frame leap13 leap14
+$frame leap13 leap14	//216-230
 
 $frame roll1 roll2 roll3 roll4 roll5 roll6 roll7 roll8 roll9 roll10 roll11 roll12 roll13
 $frame roll14 roll15 roll16 roll17 roll18 roll19 roll20 roll21 roll22 roll23 roll24
@@ -564,6 +564,7 @@ void() pdude_fire =
 			WriteCoord (MSG_BROADCAST,trace_endpos_x);
 			WriteCoord (MSG_BROADCAST,trace_endpos_y);
 			WriteCoord (MSG_BROADCAST,trace_endpos_z);
+			CreateHitSound(trace_endpos);
 			// particle (trace_endpos,'3 2 7',192,TE_WIZSPIKE);
 			// particle (trace_endpos,'7 6 8',192,TE_WIZSPIKE);
 						
@@ -605,11 +606,7 @@ void()	pdude_diea10	=[	$deatha10,	pdude_diea10	] {self.nextthink = time + 0.02;}
 // void()	pdude_diea14	=[	$deatha14,	pdude_diea14	] {};
 
 
-void()	pdude_dieb1	=[	$deathb1,	pdude_dieb2	] 
-{
-  if (self.headshot == 1) self.skin = 2;
-  self.nextthink = time + 0.03;
-};
+void()	pdude_dieb1	=[	$deathb1,	pdude_dieb2	] { self.nextthink = time + 0.03;};
 void()	pdude_dieb2	=[	$deathb2,	pdude_dieb3	] {self.nextthink = time + 0.03;};
 void()	pdude_dieb3	=[	$deathb3,	pdude_dieb4	]
 {
@@ -625,11 +622,7 @@ void()	pdude_dieb9	=[	$deathb9,	pdude_dieb10	] {self.nextthink = time + 0.03;};
 void()	pdude_dieb10	=[	$deathb10,	pdude_dieb11	] {self.nextthink = time + 0.03;};
 void()	pdude_dieb11	=[	$deathb11,	pdude_dieb11	] {};
 
-void()	pdude_diec1	=[	$deathc1,	pdude_diec2	] 
-{
-  if (self.headshot == 1) self.skin = 2;
-  self.nextthink = time + 0.03;
-};
+void()	pdude_diec1	=[	$deathc1,	pdude_diec2	] { self.nextthink = time + 0.03;};
 void()	pdude_diec2	=[	$deathc2,	pdude_diec3	] {self.nextthink = time + 0.03;};
 void()	pdude_diec3	=[	$deathc3,	pdude_diec4	]
 {
@@ -696,22 +689,15 @@ void() pdude_die =
 		{
 			ThrowHead ("models/npc/tors.md3",self.health);
 			ThrowBlastedCorpse ("models/npc/nohead.md3",self.health);
-			return ;
 		}
-		else 
+		else if(self.headshot == 0)
 		{
-			if (temp < 0.333)
-			{
-				sound (self,CHAN_VOICE,"player/death3.wav",TRUE,ATTN_NORM);
-				ThrowBlastedCorpse ("models/npc/corpse2.md3",self.health);
-				return ;
-			}
-			else if(temp >= 0.333 && temp < 0.666)
+			if (temp < 0.5)
 			{
 				sound (self,CHAN_VOICE,"npc/soldier_death1.wav",TRUE,ATTN_NORM);
 				ThrowBlastedCorpse ("models/npc/corpse.md3",self.health);
 				ThrowChunk ("models/npc/Rleg.md3",self.health);
-				return ;
+				return;
 			}
 			else
 			{
@@ -719,9 +705,25 @@ void() pdude_die =
 				ThrowHead ("models/npc/tors.md3",self.health);
 				ThrowChunk ("models/npc/Rleg.md3",self.health);
 				ThrowChunk ("models/npc/Lleg.md3",self.health);
-				return ;
+				return;
 			}
-			
+		}
+		else 
+		{
+			if (temp < 0.5)
+			{
+				sound (self,CHAN_VOICE,"player/death3.wav",TRUE,ATTN_NORM);
+				ThrowBlastedCorpse ("models/npc/corpse2.md3",self.health);
+				return;
+			}
+			else
+			{
+				sound (self,CHAN_VOICE,"player/death3.wav",TRUE,ATTN_NORM);
+				ThrowHead ("models/npc/tors.md3",self.health);
+				ThrowChunk ("models/npc/Rleg.md3",self.health);
+				ThrowChunk ("models/npc/Lleg.md3",self.health);
+				return;
+			}
 		}
 	}
 

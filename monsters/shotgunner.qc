@@ -722,7 +722,7 @@ void() shotgunner_fire =
 	dir = normalize(dir - self.origin);
 
 	//guardFire(17,dir);
-	FireShotgun(14, dir, '0.08 0.06 0.0');
+	FireShotgun(10, dir, '0.08 0.06 0.0');
 	self.shotgunClip = self.shotgunClip - 1;
 };
 
@@ -743,14 +743,9 @@ void()	shotgunner_died3 = [$deathd3, shotgunner_died4]
 {
 	self.nextthink = time + 0.03;
 	self.solid = SOLID_NOT;
-	self.ammoRifle = ceil(self.shotgunClip * 0.5);
-	//  Drop_Clip();
+	self.ammoShells = ceil(self.shotgunClip * 0.5);
 };
-void()	shotgunner_died4 = [$deathd4, shotgunner_died5]
-{
-	if (self.headshot == 1)  self.skin = 2;
-	self.nextthink = time + 0.03;
-};
+void()	shotgunner_died4 = [$deathd4, shotgunner_died5] {self.nextthink = time + 0.03; };
 void()	shotgunner_died5 = [$deathd5, shotgunner_died6] {self.nextthink = time + 0.03; };
 void()	shotgunner_died6 = [$deathd6, shotgunner_died7] {self.nextthink = time + 0.03; };
 void()	shotgunner_died7 = [$deathd7, shotgunner_died8] {self.nextthink = time + 0.03; };
@@ -758,12 +753,8 @@ void()	shotgunner_died8 = [$deathd8, shotgunner_died9] {self.nextthink = time + 
 void()	shotgunner_died9 = [$deathd9, shotgunner_died9] {};
 
 
-void()	shotgunner_diea1 = [$deatha1, shotgunner_diea2]
-{
-	if (self.headshot == 1) self.skin = 2;
-	self.nextthink = time + 0.03;
-};
-void()	shotgunner_diea2 = [$deatha2, shotgunner_diea3] {self.nextthink = time + 0.03; };
+void()	shotgunner_diea1 = [$deatha1, shotgunner_diea2] { self.nextthink = time + 0.03; };
+void()	shotgunner_diea2 = [$deatha2, shotgunner_diea3] { self.nextthink = time + 0.03; };
 void()	shotgunner_diea3 = [$deatha3, shotgunner_diea4]
 {
 	self.nextthink = time + 0.03;
@@ -780,12 +771,8 @@ void()	shotgunner_diea9 = [$deatha9, shotgunner_diea10] {self.nextthink = time +
 void()	shotgunner_diea10 = [$deatha10, shotgunner_diea10] {};
 
 
-void()	shotgunner_dieb1 = [$deathb1, shotgunner_dieb2]
-{
-	if (self.headshot == 1) self.skin = 2;
-	self.nextthink = time + 0.03;
-};
-void()	shotgunner_dieb2 = [$deathb2, shotgunner_dieb3] {self.nextthink = time + 0.03; };
+void()	shotgunner_dieb1 = [$deathb1, shotgunner_dieb2] {self.nextthink = time + 0.03;};
+void()	shotgunner_dieb2 = [$deathb2, shotgunner_dieb3] {self.nextthink = time + 0.03;};
 void()	shotgunner_dieb3 = [$deathb3, shotgunner_dieb4]
 {
 	self.nextthink = time + 0.03;
@@ -802,18 +789,13 @@ void()	shotgunner_dieb9 = [$deathb9, shotgunner_dieb10] {self.nextthink = time +
 void()	shotgunner_dieb10 = [$deathb10, shotgunner_dieb11] {self.nextthink = time + 0.03; };
 void()	shotgunner_dieb11 = [$deathb11, shotgunner_dieb11] {};
 
-void()	shotgunner_diec1 = [$deathc1, shotgunner_diec2]
-{
-	if (self.headshot == 1) self.skin = 2;
-	self.nextthink = time + 0.03;
-};
-void()	shotgunner_diec2 = [$deathc2, shotgunner_diec3] {self.nextthink = time + 0.03; };
+void()	shotgunner_diec1 = [$deathc1, shotgunner_diec2] { self.nextthink = time + 0.03; };
+void()	shotgunner_diec2 = [$deathc2, shotgunner_diec3] { self.nextthink = time + 0.03; };
 void()	shotgunner_diec3 = [$deathc3, shotgunner_diec4]
 {
 	self.nextthink = time + 0.03;
 	self.solid = SOLID_NOT;
-	self.ammoRifle = ceil(self.shotgunClip * 0.5);
-	// Drop_Clip();
+	self.ammoShells = ceil(self.shotgunClip * 0.5);
 	ai_back(4);
 };
 void()	shotgunner_diec4 = [$deathc4, shotgunner_diec5] {self.nextthink = time + 0.03; };
@@ -847,14 +829,14 @@ void() shotgunner_die =
 			shotgunner_dieb1();
 			sound(self, CHAN_VOICE, "player/death3.wav", 1, ATTN_NORM);
 			self.flags = 32;
-			self.velocity_z = self.velocity_z + 350;
+			self.velocity_z = self.velocity_z + 70;
 		}
 		else if ((temp < 0.666) && (temp >= 0.333))
 		{
 			shotgunner_diec1();
 			sound(self, CHAN_VOICE, "player/death2.wav", 1, ATTN_NORM);
 			self.flags = 32;
-			self.velocity_z = self.velocity_z + 350;
+			self.velocity_z = self.velocity_z + 70;
 		}
 		else if (temp >= 0.666)
 		{

@@ -132,7 +132,7 @@ void() worldspawn =
 	lastspawn = world;
 	InitBodyQue ();
 
-	cvar_set ("sv_gravity", "800");
+	//cvar_set ("sv_gravity", "800");
 	cvar_set ("sv_maxspeed", "200");
 	addstat(STAT_TIMER, 2, timer);
 

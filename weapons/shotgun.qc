@@ -168,6 +168,7 @@ void() player_toz_hide2 = [ 1, player_toz_hide2 ]
 
 void() player_TozSwitch = [ 1, player_TozSwitch2 ]
 {
+	playerAnim();
 	self.weaponframe = 1;
 	self.nextthink = time + 0.02;
 	self.reload = 1;
@@ -176,6 +177,7 @@ void() player_TozSwitch = [ 1, player_TozSwitch2 ]
 
 void() player_TozSwitch2 = [ 1, player_TozSwitch2 ]
 {
+	playerAnim();
 	self.weaponframe = self.weaponframe + 1;
 	self.nextthink = time + 0.02;
 	

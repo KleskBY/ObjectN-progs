@@ -13,6 +13,13 @@ void() playerPrecache =
 	precache_sound2 ("player/jump1.wav");
 	precache_sound2 ("player/land1.wav");		// player landing
 	precache_sound2 ("player/land2.wav");		// player hurt landing
+	
+	precache_sound2 ("impacts/hit1.wav");
+	precache_sound2 ("impacts/hit2.wav");
+	precache_sound2 ("impacts/hit3.wav");
+	precache_sound2 ("impacts/hit4.wav");
+	precache_sound2 ("impacts/ric1.wav");
+	precache_sound2 ("impacts/ric2.wav");
 
 	precache_sound2 ("player/pain1.wav");
 	precache_sound2 ("player/pain2.wav");
@@ -184,7 +191,7 @@ void() otherPrecache =
 	if(deathmatch || coop) precache_sound ("misc/item_respawn.wav");	// item respawn sound
 	precache_sound ("misc/talk.wav");			// talk
 	
-	precache_model2("models/gib1.bsp");
-	precache_model2("models/gib2.bsp");
-	precache_model2("models/gib3.bsp");
+	precache_model2("models/gib1.md3");
+	precache_model2("models/gib2.md3");
+	precache_model2("models/gib3.md3");
 };

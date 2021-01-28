@@ -39,7 +39,7 @@ void() W_FireKnife =
 	}
 	
 	{
-		fireBullet('8 8 0', 75, damage);
+		fireBullet('1 1 0', 75, damage);
 	}
 }
 
@@ -102,6 +102,7 @@ void() playerKnifeAttackB2 = [2, playerKnifeAttackB2]
 
 void() playerKnifeSwitch = [ 1, playerKnifeSwitch2 ]
 {
+	playerAnim();
 	self.weaponframe = 1;
 	self.nextthink = time + 0.025;
 	self.reload = 1;
@@ -109,6 +110,7 @@ void() playerKnifeSwitch = [ 1, playerKnifeSwitch2 ]
 
 void() playerKnifeSwitch2 = [ 1, playerKnifeSwitch2 ]
 {
+	playerAnim();
 	self.weaponframe = self.weaponframe + 1;
 	self.nextthink = time + 0.025;
 	

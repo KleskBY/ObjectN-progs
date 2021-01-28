@@ -3,10 +3,10 @@ void() func_corpse_die =
 	local entity t;
 	self.origin = (self.absmin + self.absmax) * 0.5;
 	sound (self, CHAN_VOICE, "player/death3.wav", 1, ATTN_NORM);
-	ThrowGib ("models/gib1.bsp", self.health);
-	ThrowGib ("models/gib2.bsp", self.health);
-	ThrowGib ("models/gib3.bsp", self.health);
-	ThrowGib ("models/gib3.bsp", self.health);
+	ThrowGib ("models/gib1.md3", self.health);
+	ThrowGib ("models/gib2.md3", self.health);
+	ThrowGib ("models/gib3.md3", self.health);
+	ThrowGib ("models/gib3.md3", self.health);
 	if (self.killtarget) // kill the killtagets
 	{
 		t = world;

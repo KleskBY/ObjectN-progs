@@ -407,10 +407,10 @@ void(string gibname, float dm) ThrowChunk =
 void() GibPlayer =
 {
 	//bprint("debug GibPlayer()\n");
-	ThrowHead ("models/gib1.bsp", self.health);
-	ThrowGib ("models/gib1.bsp", self.health);
-	ThrowGib ("models/gib2.bsp", self.health);
-	ThrowGib ("models/gib3.bsp", self.health);
+	ThrowHead ("models/gib1.md3", self.health);
+	ThrowGib ("models/gib1.md3", self.health);
+	ThrowGib ("models/gib2.md3", self.health);
+	ThrowGib ("models/gib3.md3", self.health);
 
 	self.deadflag = DEAD_DEAD;
 

@@ -827,22 +827,26 @@ The normal starting point for a level.
 void() global_think =
 {
 	local entity e;
-	local float players;
-	if(deathmatch && AUTOBOTS)
+	local float players, maxloop, bot_quota;
+	bot_quota = cvar("bot_quota");
+	if(deathmatch && bot_quota)
 	{
+		maxloop = 100;
 		for (e = findchain(classname, "player"); e; e = e.chain) players = players + 1;
 		for (e = findchain(classname, "observer"); e; e = e.chain) players = players + 1;
-		if(players < AUTOBOTS) SpawnBot();
-		if(players && players > AUTOBOTS)
+		if(players < bot_quota) SpawnBot();
+		if(players && players > bot_quota)
 		{
 			e = find(world, classname, "player");
 			if(e)
 			{
-				while (e)
+				while (e && maxloop > 0)
 				{
+					maxloop = maxloop - 1;
 					if (e && clienttype(e) == CLIENTTYPE_BOT) 
 					{
 						dropclient(e);
+						self.nextthink = time + 5;
 						return;
 					}
 				}
@@ -856,7 +860,7 @@ void() global_think =
 		if(!players) 
 		{
 			bprint("restarting\n");
-			localcmd("coop 1; maxplayers 4; deathmatch 0; map e1m1\n");
+			localcmd("coop 1; deathmatch 0; map e1m1\n");
 		}
 	}
 	if(coop)
@@ -1315,10 +1319,11 @@ Called every frame before physics are run
 */
 void() UseTouch =
 {
-	if (other.classname != "worldspawn" && (strstrofs(other.classname,"trigger", 0) == -1) && other.message)
+	if (other.classname != "worldspawn" && (strstrofs(other.classname,"trigger", 0) == -1) && other.message && other.lastTouch + 1 < time)
 	{
 		centerprint(self.owner, other.message);
-		sound (other, CHAN_BODY, "misc/talk.wav", 1, ATTN_NORM);
+		//sound (other, CHAN_BODY, "misc/talk.wav", 1, ATTN_NORM);
+		other.lastTouch = time;
 	}
 }
 
@@ -1534,7 +1539,7 @@ void() PlayerPostThink =
 // do weapon stuff
 	W_WeaponFrame();
 // check to see if player landed and play landing sound	
-	if ((self.jump_flag < -300) && (self.flags & FL_ONGROUND) && (self.health > 0))
+	if ((self.jump_flag < -300) && (self.flags & FL_ONGROUND) && (self.health > 0) && (world.model != "maps/e1m5.bsp"))
 	{
 		//if (self.watertype == CONTENT_WATER) sound (self, CHAN_BODY, "player/h2ojump.wav", 1, ATTN_NORM);
 		//else 

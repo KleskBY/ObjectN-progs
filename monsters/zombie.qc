@@ -231,9 +231,9 @@ void() zombie_die =
 	{
 		sound (self, CHAN_VOICE, "player/death3.wav", 1, ATTN_NORM);
 		ThrowHead ("", self.health);
-		ThrowGib ("models/gib1.bsp", self.health);
-		ThrowGib ("models/gib2.bsp", self.health);
-		ThrowGib ("models/gib3.bsp", self.health);
+		ThrowGib ("models/gib1.md3", self.health);
+		ThrowGib ("models/gib2.md3", self.health);
+		ThrowGib ("models/gib3.md3", self.health);
 		return;
 	}
 

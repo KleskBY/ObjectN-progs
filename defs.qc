@@ -752,7 +752,7 @@ float MODE_HNS = 3;
 float MODE_KZ = 4;
 float MODE_ZM = 5;
 
-float AUTOBOTS = 5;
+float AUTOBOTS = 0;
 float AUTORELOAD = 1;
 float ANTIAFK = 7;
 

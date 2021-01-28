@@ -583,6 +583,8 @@ void() bomb_side_think =
 	if(self.wait + 150 < time) USA_Win();
 	
 	if(self.timer == 0) for (e = findchain(classname, "player"); e; e = e.chain) e.timer = (time + maxTimer) - (self.wait + 150);
+	if(self.timer == 0) for (e = findchain(classname, "observer"); e; e = e.chain) e.timer = (time + maxTimer) - (self.wait + 150);
+
 	self.nextthink = time + 0.1;
 }
 
